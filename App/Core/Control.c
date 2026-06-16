@@ -15,7 +15,7 @@
 static volatile uint8_t s_adc_target_enable = 1;
 static volatile uint8_t s_pwm_start_boost_tick=0;
 static volatile uint8_t s_pwm_start_boost_active=0;
-static volatile PID_t s_pid;
+static  PID_t s_pid;
 
 static volatile Motor_Status_t s_motor_status;
 
@@ -47,10 +47,8 @@ void Control_Init(){
 void Control_EnterFault(FaultCode_t fault){
 	s_motor_status.fault=fault;
 	s_motor_status.state=SYS_FAULT;
-	s_motor_status.PWM=0;
 	s_motor_status.enable=0;
 	Motor_Stop();
-	PID_Reset(&s_pid);
 }
 
 void Control_ReportFault(FaultCode_t fault){
@@ -63,16 +61,16 @@ static uint32_t Control_Abs(int32_t value){
 	return (value>0)?value:(-value);
 }
 
-void Control_CheckFault(){
+static FaultCode_t Control_CheckFault(){
 	if(s_motor_status.state!=SYS_RUN){
 		s_encoder_lost_count=0;
 		s_motor_pwm_saturation_count=0;
-		return;
+		return FAULT_NONE;
 	}
 
 	if(Control_Abs(s_motor_status.actual_speed)>APP_SPEED_ABS_LIMIT){
 		Control_EnterFault(FAULT_SPEED_OVER_LIMIT);
-		return;
+		return FAULT_SPEED_OVER_LIMIT;
 	}
 
 	if(Control_Abs(s_motor_status.target_speed)>APP_ENCODER_LOST_CHECK_TARGET&&
@@ -80,11 +78,12 @@ void Control_CheckFault(){
 			Control_Abs(s_motor_status.actual_speed)<APP_ENCODER_LOST_CHECK_EPS){
 		if(s_encoder_lost_count<APP_ENCODER_LOST_TICK){
 			s_encoder_lost_count++;
+
 		}
 		else{
 			s_encoder_lost_count=0;
 			Control_EnterFault(FAULT_ENCODER_LOST);
-			return;
+			return FAULT_ENCODER_LOST;
 		}
 	}
 	else{
@@ -98,12 +97,13 @@ void Control_CheckFault(){
 		else{
 			s_motor_pwm_saturation_count=0;
 			Control_EnterFault(FAULT_PWM_SATURATION);
-			return;
+			return FAULT_PWM_SATURATION;
 		}
 	}
 	else{
 		s_motor_pwm_saturation_count=0;
 	}
+	return FAULT_NONE;
 }
 
 
@@ -228,10 +228,14 @@ static void Control_Update(){
 
 	s_motor_status.encoder_delta=Encoder_GetLastDelta();
 
-	if(s_motor_status.state==SYS_FAULT||s_motor_status.state==SYS_CALIB){
-		s_motor_status.PWM=0;
+	if(s_motor_status.state==SYS_FAULT){
 		Motor_Stop();
 		return;
+	}
+	if(s_motor_status.state == SYS_CALIB){
+	    s_motor_status.PWM = 0;
+	    Motor_Stop();
+	    return;
 	}
 
 	if(s_motor_status.enable==0){
@@ -243,8 +247,11 @@ static void Control_Update(){
 	s_motor_status.state=SYS_RUN;
 	int16_t temp_PWM=Control_CalcOutputPWM(&s_pid,s_motor_status.target_speed,s_motor_status.actual_speed);
 	s_motor_status.PWM=temp_PWM;
+	if(Control_CheckFault()!=FAULT_NONE){
+		return;
+	}
 	Motor_SetPWM((int16_t)s_motor_status.PWM);
-	Control_CheckFault();
+
 }
 
 
