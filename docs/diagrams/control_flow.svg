@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="1580" viewBox="0 0 1220 1580">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#344054"/>
+    </marker>
+    <style>
+      .title{font:700 26px Arial,"Microsoft YaHei",sans-serif;fill:#111827}
+      .note{font:14px Arial,"Microsoft YaHei",sans-serif;fill:#475467}
+      .box{fill:#ffffff;stroke:#344054;stroke-width:1.5;rx:8;ry:8}
+      .init{fill:#eef6ff;stroke:#175cd3;stroke-width:1.7;rx:8;ry:8}
+      .main{fill:#f8fafc;stroke:#667085;stroke-width:1.5;rx:8;ry:8}
+      .ctrl{fill:#ecfdf3;stroke:#039855;stroke-width:1.7;rx:8;ry:8}
+      .fault{fill:#fff4ed;stroke:#d92d20;stroke-width:1.6;rx:8;ry:8}
+      .end{fill:#fef3c7;stroke:#b54708;stroke-width:1.4;rx:8;ry:8}
+      .text{font:14px Arial,"Microsoft YaHei",sans-serif;fill:#101828}
+      .small{font:12px Arial,"Microsoft YaHei",sans-serif;fill:#475467}
+      .line{stroke:#344054;stroke-width:1.5;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#667085;stroke-width:1.4;fill:none;stroke-dasharray:6 5;marker-end:url(#arrow)}
+      .laneTitle{font:700 18px Arial,"Microsoft YaHei",sans-serif;fill:#101828}
+    </style>
+  </defs>
+
+  <rect width="1220" height="1580" fill="#ffffff"/>
+  <text x="45" y="48" class="title">My_PID_Motor 控制流程图</text>
+  <text x="45" y="76" class="note">根据 main.c、Control_Tick10ms()、Control_Update()、Uart_Task() 当前真实流程整理。</text>
+
+  <text x="150" y="120" text-anchor="middle" class="laneTitle">系统初始化</text>
+  <text x="455" y="120" text-anchor="middle" class="laneTitle">main while 串口任务</text>
+  <text x="850" y="120" text-anchor="middle" class="laneTitle">TIM3 10ms 控制周期</text>
+
+  <rect x="55" y="145" width="190" height="52" class="init"/>
+  <text x="150" y="176" text-anchor="middle" class="text">系统上电 / main()</text>
+
+  <rect x="55" y="230" width="190" height="52" class="init"/>
+  <text x="150" y="261" text-anchor="middle" class="text">HAL_Init()</text>
+
+  <rect x="55" y="315" width="190" height="52" class="init"/>
+  <text x="150" y="346" text-anchor="middle" class="text">SystemClock_Config()</text>
+
+  <rect x="35" y="400" width="230" height="88" class="init"/>
+  <text x="150" y="430" text-anchor="middle" class="text">MX 外设初始化</text>
+  <text x="150" y="452" text-anchor="middle" class="small">GPIO / DMA / TIM1 / TIM2</text>
+  <text x="150" y="471" text-anchor="middle" class="small">TIM3 / USART1 / ADC1</text>
+
+  <rect x="35" y="525" width="230" height="96" class="init"/>
+  <text x="150" y="556" text-anchor="middle" class="text">应用模块初始化</text>
+  <text x="150" y="580" text-anchor="middle" class="small">Motor_Init / Encoder_Init</text>
+  <text x="150" y="599" text-anchor="middle" class="small">Control_Init / Uart_Init</text>
+
+  <rect x="35" y="660" width="230" height="70" class="init"/>
+  <text x="150" y="690" text-anchor="middle" class="text">启动 TIM3 中断</text>
+  <text x="150" y="712" text-anchor="middle" class="small">HAL_TIM_Base_Start_IT</text>
+
+  <line x1="150" y1="197" x2="150" y2="230" class="line"/>
+  <line x1="150" y1="282" x2="150" y2="315" class="line"/>
+  <line x1="150" y1="367" x2="150" y2="400" class="line"/>
+  <line x1="150" y1="488" x2="150" y2="525" class="line"/>
+  <line x1="150" y1="621" x2="150" y2="660" class="line"/>
+
+  <rect x="350" y="145" width="210" height="70" class="main"/>
+  <text x="455" y="175" text-anchor="middle" class="text">main while(1)</text>
+  <text x="455" y="197" text-anchor="middle" class="small">等待运行 / 处理串口</text>
+
+  <rect x="350" y="255" width="210" height="56" class="main"/>
+  <text x="455" y="289" text-anchor="middle" class="text">Uart_Task()</text>
+
+  <polygon points="455,350 565,405 455,460 345,405" fill="#ffffff" stroke="#667085" stroke-width="1.5"/>
+  <text x="455" y="402" text-anchor="middle" class="text">收到完整</text>
+  <text x="455" y="421" text-anchor="middle" class="text">串口命令?</text>
+
+  <rect x="330" y="505" width="250" height="88" class="main"/>
+  <text x="455" y="535" text-anchor="middle" class="text">Uart_HandleCmd()</text>
+  <text x="455" y="558" text-anchor="middle" class="small">run / stop / t / kp / ki / kd</text>
+  <text x="455" y="577" text-anchor="middle" class="small">rst / status / help</text>
+
+  <rect x="330" y="635" width="250" height="86" class="main"/>
+  <text x="455" y="665" text-anchor="middle" class="text">调用 Control_xxx 接口</text>
+  <text x="455" y="688" text-anchor="middle" class="small">修改 enable / target</text>
+  <text x="455" y="707" text-anchor="middle" class="small">PID / 目标源 / fault</text>
+
+  <polygon points="455,765 585,825 455,885 325,825" fill="#ffffff" stroke="#667085" stroke-width="1.5"/>
+  <text x="455" y="813" text-anchor="middle" class="text">距离上次自动上报</text>
+  <text x="455" y="834" text-anchor="middle" class="text">&gt; 3000 ms?</text>
+
+  <rect x="330" y="930" width="250" height="88" class="main"/>
+  <text x="455" y="960" text-anchor="middle" class="text">Uart_PrintfStatus()</text>
+  <text x="455" y="983" text-anchor="middle" class="small">读取 Control 状态快照</text>
+  <text x="455" y="1002" text-anchor="middle" class="small">串口输出状态</text>
+
+  <path d="M 265 695 C 305 460, 310 220, 350 180" class="line"/>
+  <line x1="455" y1="215" x2="455" y2="255" class="line"/>
+  <line x1="455" y1="311" x2="455" y2="350" class="line"/>
+  <line x1="455" y1="460" x2="455" y2="505" class="line"/>
+  <text x="468" y="485" class="small">是</text>
+  <line x1="455" y1="593" x2="455" y2="635" class="line"/>
+  <line x1="455" y1="721" x2="455" y2="765" class="line"/>
+  <path d="M 345 405 C 305 520, 305 720, 325 825" class="line"/>
+  <text x="316" y="492" class="small">否</text>
+  <line x1="455" y1="885" x2="455" y2="930" class="line"/>
+  <text x="468" y="910" class="small">是</text>
+  <path d="M 585 825 C 640 610, 625 240, 560 180" class="line"/>
+  <text x="607" y="790" class="small">否</text>
+  <path d="M 580 974 C 670 780, 660 260, 560 180" class="line"/>
+
+  <rect x="735" y="145" width="230" height="64" class="ctrl"/>
+  <text x="850" y="174" text-anchor="middle" class="text">TIM3 Update IRQ</text>
+  <text x="850" y="195" text-anchor="middle" class="small">10 ms 周期</text>
+
+  <rect x="735" y="245" width="230" height="64" class="ctrl"/>
+  <text x="850" y="274" text-anchor="middle" class="text">HAL_TIM_PeriodElapsedCallback()</text>
+  <text x="850" y="295" text-anchor="middle" class="small">htim3 分支</text>
+
+  <rect x="735" y="345" width="230" height="56" class="ctrl"/>
+  <text x="850" y="379" text-anchor="middle" class="text">Control_Tick10ms()</text>
+
+  <rect x="735" y="435" width="230" height="56" class="ctrl"/>
+  <text x="850" y="469" text-anchor="middle" class="text">Control_Update()</text>
+
+  <rect x="715" y="525" width="270" height="76" class="ctrl"/>
+  <text x="850" y="554" text-anchor="middle" class="text">ADC_Update()</text>
+  <text x="850" y="577" text-anchor="middle" class="small">更新 adc_raw / adc_filtered</text>
+
+  <polygon points="850,635 1000,700 850,765 700,700" fill="#ffffff" stroke="#039855" stroke-width="1.5"/>
+  <text x="850" y="697" text-anchor="middle" class="text">ADC 目标源</text>
+  <text x="850" y="718" text-anchor="middle" class="text">使能?</text>
+
+  <rect x="995" y="655" width="190" height="90" class="ctrl"/>
+  <text x="1090" y="685" text-anchor="middle" class="text">更新 target_speed</text>
+  <text x="1090" y="708" text-anchor="middle" class="small">ADC_MapTargetSpeed()</text>
+  <text x="1090" y="727" text-anchor="middle" class="small">TargetSpeed_Limit()</text>
+
+  <rect x="715" y="805" width="270" height="78" class="ctrl"/>
+  <text x="850" y="833" text-anchor="middle" class="text">读取编码器</text>
+  <text x="850" y="856" text-anchor="middle" class="small">Encoder_Getspeed()</text>
+  <text x="850" y="875" text-anchor="middle" class="small">actual_speed / encoder_delta</text>
+
+  <polygon points="850,925 1000,990 850,1055 700,990" fill="#ffffff" stroke="#039855" stroke-width="1.5"/>
+  <text x="850" y="986" text-anchor="middle" class="text">state 是</text>
+  <text x="850" y="1007" text-anchor="middle" class="text">FAULT / CALIB?</text>
+
+  <polygon points="850,1095 1000,1160 850,1225 700,1160" fill="#ffffff" stroke="#039855" stroke-width="1.5"/>
+  <text x="850" y="1157" text-anchor="middle" class="text">enable == 0?</text>
+
+  <rect x="1015" y="955" width="170" height="70" class="end"/>
+  <text x="1100" y="984" text-anchor="middle" class="text">停机返回</text>
+  <text x="1100" y="1006" text-anchor="middle" class="small">PWM=0 / Motor_Stop</text>
+
+  <rect x="1015" y="1125" width="170" height="70" class="end"/>
+  <text x="1100" y="1154" text-anchor="middle" class="text">IDLE 停机返回</text>
+  <text x="1100" y="1176" text-anchor="middle" class="small">state=SYS_IDLE</text>
+
+  <rect x="715" y="1265" width="270" height="82" class="ctrl"/>
+  <text x="850" y="1295" text-anchor="middle" class="text">Control_CalcOutputPWM()</text>
+  <text x="850" y="1318" text-anchor="middle" class="small">启动助推 或 前馈 + PID</text>
+
+  <rect x="715" y="1385" width="270" height="72" class="ctrl"/>
+  <text x="850" y="1415" text-anchor="middle" class="text">Motor_SetPWM()</text>
+  <text x="850" y="1437" text-anchor="middle" class="small">写 TIM1_CH1 + IN1/IN2</text>
+
+  <rect x="715" y="1490" width="270" height="58" class="fault"/>
+  <text x="850" y="1525" text-anchor="middle" class="text">Control_CheckFault()</text>
+
+  <line x1="850" y1="209" x2="850" y2="245" class="line"/>
+  <line x1="850" y1="309" x2="850" y2="345" class="line"/>
+  <line x1="850" y1="401" x2="850" y2="435" class="line"/>
+  <line x1="850" y1="491" x2="850" y2="525" class="line"/>
+  <line x1="850" y1="601" x2="850" y2="635" class="line"/>
+  <path d="M 1000 700 L 995 700" class="line"/>
+  <text x="1004" y="686" class="small">是</text>
+  <path d="M 1090 745 C 1090 780, 1015 805, 985 840" class="line"/>
+  <line x1="850" y1="765" x2="850" y2="805" class="line"/>
+  <text x="862" y="790" class="small">否</text>
+  <line x1="850" y1="883" x2="850" y2="925" class="line"/>
+  <path d="M 1000 990 L 1015 990" class="line"/>
+  <text x="1008" y="976" class="small">是</text>
+  <line x1="850" y1="1055" x2="850" y2="1095" class="line"/>
+  <text x="862" y="1080" class="small">否</text>
+  <path d="M 1000 1160 L 1015 1160" class="line"/>
+  <text x="1008" y="1146" class="small">是</text>
+  <line x1="850" y1="1225" x2="850" y2="1265" class="line"/>
+  <text x="862" y="1250" class="small">否</text>
+  <line x1="850" y1="1347" x2="850" y2="1385" class="line"/>
+  <line x1="850" y1="1457" x2="850" y2="1490" class="line"/>
+
+  <path d="M 850 1548 C 1030 1568, 1115 1370, 1115 220 C 1115 150, 1000 145, 965 177" class="dash"/>
+  <text x="1008" y="1510" class="small">下一周期</text>
+  <path d="M 1100 1025 C 1170 1080, 1170 1470, 970 1518" class="dash"/>
+  <path d="M 1100 1195 C 1170 1240, 1155 1470, 970 1518" class="dash"/>
+  <path d="M 265 695 C 455 735, 640 740, 735 177" class="dash"/>
+</svg>

@@ -1,0 +1,52 @@
+flowchart TD
+    START(["系统上电 / main()"]) --> HAL["HAL_Init()"]
+    HAL --> CLOCK["SystemClock_Config()"]
+    CLOCK --> MX_INIT["MX_GPIO / DMA / TIM1 / TIM2 / TIM3 / USART1 / ADC1 Init"]
+    MX_INIT --> APP_INIT["Motor_Init()<br/>Encoder_Init()<br/>Control_Init()<br/>Uart_Init()"]
+    APP_INIT --> START_TIM3["HAL_TIM_Base_Start_IT(&htim3)"]
+
+    START_TIM3 --> MAIN_LOOP["main while(1)<br/>等待运行 / 处理串口"]
+    MAIN_LOOP --> UART_TASK["Uart_Task()"]
+    UART_TASK --> CMD_READY{"收到完整串口命令?"}
+    CMD_READY -- "是" --> HANDLE_CMD["Uart_HandleCmd()<br/>run / stop / t / kp / ki / kd / rst / status / help"]
+    HANDLE_CMD --> CTRL_API["调用 Control_xxx 接口<br/>修改 enable / target / PID / source / fault"]
+    CMD_READY -- "否" --> STATUS_TIMER{"距离上次自动上报 > 3000 ms?"}
+    CTRL_API --> STATUS_TIMER
+    STATUS_TIMER -- "是" --> PRINT_STATUS["Uart_PrintfStatus()<br/>读取 Control 状态快照和 PID 参数并串口输出"]
+    STATUS_TIMER -- "否" --> MAIN_LOOP
+    PRINT_STATUS --> MAIN_LOOP
+
+    START_TIM3 --> TIM3_IRQ["TIM3 Update IRQ<br/>10 ms 周期"]
+    TIM3_IRQ --> TIM_CB["HAL_TIM_PeriodElapsedCallback()"]
+    TIM_CB --> TICK["Control_Tick10ms()"]
+    TICK --> UPDATE["Control_Update()"]
+
+    UPDATE --> ADC_READ["ADC_Update()<br/>更新 adc_raw / adc_filtered"]
+    ADC_READ --> ADC_SRC{"s_adc_target_enable == 1?"}
+    ADC_SRC -- "是" --> ADC_TARGET["ADC_MapTargetSpeed()<br/>Control_TargetSpeed_Limit()<br/>更新 target_speed"]
+    ADC_SRC -- "否" --> KEEP_TARGET["保持 UART 设置的 target_speed"]
+    ADC_TARGET --> ENC_READ
+    KEEP_TARGET --> ENC_READ
+
+    ENC_READ["Encoder_Getspeed()<br/>Encoder_GetLastDelta()<br/>更新 actual_speed / encoder_delta"] --> STATE_CHECK{"state 是 FAULT 或 CALIB?"}
+    STATE_CHECK -- "是" --> STOP_FAULT_CALIB["PWM = 0<br/>Motor_Stop()<br/>本周期结束"]
+    STATE_CHECK -- "否" --> ENABLE_CHECK{"enable == 0?"}
+    ENABLE_CHECK -- "是" --> STOP_IDLE["state = SYS_IDLE<br/>PWM = 0<br/>Motor_Stop()<br/>本周期结束"]
+    ENABLE_CHECK -- "否" --> RUN_STATE["state = SYS_RUN"]
+
+    RUN_STATE --> CALC_PWM["Control_CalcOutputPWM()"]
+    CALC_PWM --> BOOST_CHECK{"启动助推条件成立?"}
+    BOOST_CHECK -- "是" --> BOOST_PWM["PWM = APP_PWM_START_BOOST<br/>PID_Reset()<br/>boost_tick++"]
+    BOOST_CHECK -- "否" --> PID_PWM["Control_CalcFeedForward(target)<br/>+ PID_Update(target, actual)"]
+    BOOST_PWM --> PWM_LIMIT["PWM 限幅<br/>±APP_PID_OUTPUT_MAX"]
+    PID_PWM --> PWM_LIMIT
+
+    PWM_LIMIT --> MOTOR_OUT["s_motor_status.PWM = temp_PWM<br/>Motor_SetPWM()"]
+    MOTOR_OUT --> FAULT_CHECK["Control_CheckFault()"]
+    FAULT_CHECK --> FAULT_HIT{"触发故障?"}
+    FAULT_HIT -- "是" --> ENTER_FAULT["Control_EnterFault()<br/>state = SYS_FAULT<br/>enable = 0<br/>Motor_Stop()<br/>PID_Reset()"]
+    FAULT_HIT -- "否" --> NEXT_CYCLE["等待下一次 TIM3 周期"]
+    ENTER_FAULT --> NEXT_CYCLE
+    STOP_FAULT_CALIB --> NEXT_CYCLE
+    STOP_IDLE --> NEXT_CYCLE
+    NEXT_CYCLE --> TIM3_IRQ

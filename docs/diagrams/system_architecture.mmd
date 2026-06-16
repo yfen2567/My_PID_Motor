@@ -1,0 +1,36 @@
+flowchart TD
+    ADC_HW["ADC1_IN3 + DMA<br/>电位器输入"] --> ADC_MOD["ADC_Sensor.c<br/>ADC_Update / Filter / MapTargetSpeed"]
+    ADC_MOD --> TARGET_ADC["target_speed<br/>ADC 目标源"]
+
+    UART_HW["USART1 RX/TX<br/>串口助手"] --> UART_ISR["HAL_UART_RxCpltCallback<br/>接收命令缓存"]
+    UART_ISR --> UART_TASK["Uart_Task / Uart_HandleCmd"]
+    UART_TASK -->|"run / stop / t / kp / ki / kd / rst"| CTRL_API["Control_xxx 接口<br/>SetEnable / SetTarget / SetPID / Reset"]
+    CTRL_API --> CTRL_STATE["s_motor_status / s_pid<br/>控制状态"]
+
+    TIM3_IRQ["TIM3 Update IRQ<br/>10 ms"] --> CTRL_TICK["HAL_TIM_PeriodElapsedCallback<br/>Control_Tick10ms"]
+    CTRL_TICK --> CTRL_UPDATE["Control_Update"]
+
+    TARGET_ADC --> CTRL_UPDATE
+    CTRL_STATE --> CTRL_UPDATE
+
+    ENC_HW["Encoder A/B<br/>TIM2_CH1 PA15 / TIM2_CH2 PB3"] --> ENC_MOD["Encoder.c<br/>Encoder_Getspeed / GetLastDelta"]
+    ENC_MOD --> FEEDBACK["actual_speed / encoder_delta"]
+    FEEDBACK --> CTRL_UPDATE
+
+    CTRL_UPDATE --> CALC_PWM["Control_CalcOutputPWM<br/>Start Boost 或 FeedForward + PID"]
+    PID_MOD["PID.c<br/>PID_Update / PID_Reset / PID_SetGains"] --> CALC_PWM
+    CALC_PWM --> PWM_CMD["signed PWM"]
+    PWM_CMD --> MOTOR_MOD["Motor.c<br/>Motor_SetPWM / Motor_Stop"]
+    MOTOR_MOD --> PWM_HW["TIM1_CH1 PA8 PWM<br/>PA1/PA2 IN1/IN2"]
+    PWM_HW --> MOTOR_HW["H 桥驱动 + GA12-N20 电机"]
+    MOTOR_HW --> ENC_HW
+
+    CTRL_UPDATE --> FAULT_LOGIC["Control_CheckFault<br/>Speed / Encoder Lost / PWM Saturation"]
+    FAULT_LOGIC -->|"fault"| FAULT_ENTER["Control_EnterFault<br/>Motor_Stop + PID_Reset"]
+    FAULT_ENTER --> MOTOR_MOD
+
+    CTRL_UPDATE --> STATUS_SNAPSHOT["Control_GetStatusSnapshot"]
+    PID_MOD --> PID_SNAPSHOT["Control_GetPID"]
+    STATUS_SNAPSHOT --> STATUS_PRINT["Uart_PrintfStatus<br/>status / 3s 自动上报"]
+    PID_SNAPSHOT --> STATUS_PRINT
+    STATUS_PRINT --> UART_HW
