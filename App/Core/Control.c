@@ -16,6 +16,7 @@ static volatile uint8_t s_adc_target_enable = 1;
 static volatile uint8_t s_pwm_start_boost_tick=0;
 static volatile uint8_t s_pwm_start_boost_active=0;
 static  PID_t s_pid;
+volatile uint8_t flag_control_tick=0;
 
 static volatile Motor_Status_t s_motor_status;
 
@@ -40,6 +41,7 @@ void Control_Init(){
 	s_motor_pwm_saturation_count = 0;
 	s_pwm_start_boost_tick=0;
 	s_pwm_start_boost_active=0;
+	flag_control_tick=0;
 }
 //==================================================================================
 
@@ -418,13 +420,10 @@ const char* Control_FaultName(FaultCode_t fault){
 }
 
 //回调
-void My_TIM_PeriodElapsedCallback(){
-	Control_Tick10ms();
-
-}
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance==TIM3){
-		My_TIM_PeriodElapsedCallback();
+		if(flag_control_tick<10){
+		flag_control_tick++;
+		}
 	}
 }

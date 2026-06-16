@@ -115,6 +115,19 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uint8_t need_control_tick=0;
+	  if(flag_control_tick>0){
+		  __disable_irq();
+	  	  if(flag_control_tick>0){
+	  		  flag_control_tick--;
+			  need_control_tick=1;
+	  	  	  }
+	  		__enable_irq();
+	  	  }
+	  if(need_control_tick==1){
+		  Control_Tick10ms();
+	  }
+
 	  Uart_Task();
 	  if(HAL_GetTick()-last_tick>3000){
 		  last_tick=HAL_GetTick();

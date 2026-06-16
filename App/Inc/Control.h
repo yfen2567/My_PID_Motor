@@ -9,7 +9,10 @@
 #define INC_CONTROL_H_
 #include<stdint.h>
 
+extern volatile uint8_t flag_control_tick;
+
 void Control_Tick10ms(void);
+
 
 typedef enum {
     FAULT_NONE = 0,
