@@ -34,6 +34,7 @@ typedef struct{
 	 int32_t actual_speed;
 	 int32_t target_speed;
 	 uint16_t adc_raw;
+	 uint16_t adc_aux_raw;
 	 float adc_filtered;
 	 FaultCode_t fault;
 	 SystemState_t state;

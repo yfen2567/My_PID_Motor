@@ -33,4 +33,5 @@
 #define APP_PWM_FF_KV 0.12f
 #define APP_PWM_START_BOOST 900
 #define APP_PWM_START_BOOST_TICK 10
+#define APP_ADC_CH_COUNT 2
 #endif /* INC_APP_CONFIG_H_ */

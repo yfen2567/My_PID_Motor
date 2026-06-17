@@ -89,7 +89,7 @@ void Uart_PrintfStatus(){
 	Uart_FormatFloat2(kd_text,sizeof(kd_text),kd);
 
 	char Message[APP_UART_TX_SIZE]={0};
-	snprintf(Message,sizeof(Message),"ms:%lu,enable:%d,State:%s,source:%s,target:%ld,actual:%ld,delta:%ld,PWM:%d,adc:%u,fault:%s,kp:%s,ki:%s,kd:%s\r\n",HAL_GetTick(),motor_status.enable,Control_StateName(motor_status.state),Control_IsAdcTargetEnabled()?"ADC":"Uart",(long)motor_status.target_speed,(long)motor_status.actual_speed,motor_status.encoder_delta,motor_status.PWM,motor_status.adc_raw,Control_FaultName(motor_status.fault),kp_text,ki_text,kd_text);
+	snprintf(Message,sizeof(Message),"ms:%lu,enable:%d,State:%s,source:%s,target:%ld,actual:%ld,delta:%ld,PWM:%d,adc1:%u,adc2:%u,fault:%s,kp:%s,ki:%s,kd:%s\r\n",HAL_GetTick(),motor_status.enable,Control_StateName(motor_status.state),Control_IsAdcTargetEnabled()?"ADC":"Uart",(long)motor_status.target_speed,(long)motor_status.actual_speed,motor_status.encoder_delta,motor_status.PWM,motor_status.adc_raw,motor_status.adc_aux_raw,Control_FaultName(motor_status.fault),kp_text,ki_text,kd_text);
 	HAL_UART_Transmit(&huart1, (uint8_t*)Message, strlen(Message), HAL_MAX_DELAY);
 }
 

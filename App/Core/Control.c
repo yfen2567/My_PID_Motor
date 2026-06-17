@@ -32,6 +32,7 @@ void Control_Init(){
 	s_motor_status.encoder_delta = 0;
 	s_motor_status.PWM = 0;
 	s_motor_status.adc_raw = 0;
+	s_motor_status.adc_aux_raw=0;
 	s_motor_status.adc_filtered = 0.0f;
 	s_motor_status.fault = FAULT_NONE;
 	s_motor_status.state = SYS_IDLE;
@@ -241,6 +242,7 @@ static void Control_Update(){
 
 	ADC_Update();
 	s_motor_status.adc_raw=ADC_Get_Raw();
+	s_motor_status.adc_aux_raw=ADC_Get_Aux_Raw();
 	s_motor_status.adc_filtered=ADC_Get_Filtered();
 	if(s_adc_target_enable){
 	s_motor_status.target_speed=Control_TargetSpeed_Limit(ADC_MapTargetSpeed());
@@ -295,6 +297,7 @@ void Control_GetStatusSnapshot(Motor_Status_t *status){
 	status->PWM=s_motor_status.PWM;
 	status->state=s_motor_status.state;
 	status->adc_raw=s_motor_status.adc_raw;
+	status->adc_aux_raw=s_motor_status.adc_aux_raw;
 	status->adc_filtered=s_motor_status.adc_filtered;
 	status->encoder_delta=s_motor_status.encoder_delta;
 	status->fault=s_motor_status.fault;
