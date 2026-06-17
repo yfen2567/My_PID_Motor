@@ -110,6 +110,7 @@ void Uart_PrintHelp(){
 			"  rst:reset\r\n"
 			"  status\r\n"
 			"  help\r\n"
+			"  get fault:return shot\r\n"
 	);
 }
 
@@ -117,6 +118,30 @@ void Uart_PrintHelp(){
 static void Uart_InvalidCmd(){
 	Uart_TxText("ERR:INVALID_CMD\r\n");
 }
+
+
+//处理获取错误状态快照命令
+void Uart_HandleFaultSnapShot(){
+	if(Control_HasFaultShot()==0){
+		Uart_TxText("FAULT_SNAPSHOT_NONE\r\n");
+		return;
+	}
+	FaultSnapshot_t shot=Control_GetFaultShot();
+	char Message[APP_UART_TX_SIZE]={0};
+	snprintf(Message,sizeof(Message),"valid:%d,time:%lu,state:%s,fault:%s,T_speed:%ld,A_speed:%ld,pwm=%d,adc_target=%u,adc_aux=%u\r\n",
+			shot.valid,
+			shot.tick_ms,
+			Control_StateName(shot.state),
+			Control_FaultName(shot.fault),
+			shot.target_speed,
+			shot.actual_speed,
+			shot.pwm,
+			shot.adc_target,
+			shot.adc_aux);
+	HAL_UART_Transmit(&huart1, (uint8_t*)Message, strlen(Message), HAL_MAX_DELAY);
+}
+
+
 
 //PID参数检查
 static uint8_t Uart_Check_PID_Gains(float Gains){
@@ -216,6 +241,9 @@ static void Uart_HandleCmd(){
 		}
 		else if(strcmp(cmd,"help")==0){
 			Uart_PrintHelp();
+		}
+		else if((strcmp(cmd,"get fault")==0)){
+			Uart_HandleFaultSnapShot();
 		}
 		else{
 			Uart_InvalidCmd();

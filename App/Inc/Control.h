@@ -41,6 +41,19 @@ typedef struct{
 }Motor_Status_t;
 
 
+typedef struct
+{
+    uint8_t valid;
+    uint32_t tick_ms;
+    FaultCode_t fault;
+    SystemState_t state;
+    int32_t target_speed;
+    int32_t actual_speed;
+    int16_t pwm;
+    uint16_t adc_target;
+    uint16_t adc_aux;
+} FaultSnapshot_t;
+
 
 void Control_Init();
 void Control_SetEnable(uint8_t enable);
@@ -58,5 +71,7 @@ const char* Control_FaultName(FaultCode_t fault);
 void Control_PID_Rst();
 void Control_ResetFault();
 void Control_ReportFault(FaultCode_t fault);
+FaultSnapshot_t Control_GetFaultShot();
+uint8_t Control_HasFaultShot();
 #endif /* INC_CONTROL_H_ */
 

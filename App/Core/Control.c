@@ -22,6 +22,7 @@ static volatile Motor_Status_t s_motor_status;
 
 static volatile uint8_t s_encoder_lost_count=0;
 static volatile uint8_t s_motor_pwm_saturation_count=0;
+static FaultSnapshot_t s_fault_snapshot;
 //初始化
 void Control_Init(){
 	PID_Init(&s_pid, APP_PID_DEFAULT_KP, APP_PID_DEFAULT_KI, APP_PID_DEFAULT_KD, APP_CONTROL_DT_SEC, APP_PID_OUTPUT_MAX);
@@ -44,9 +45,27 @@ void Control_Init(){
 	flag_control_tick=0;
 }
 //==================================================================================
+//保存故障状态快照
+static void Control_SaveFaultSnapShot(FaultCode_t fault){
+	if(s_fault_snapshot.valid!=0){
+		return;
+	}
+	s_fault_snapshot.valid=1;
+	s_fault_snapshot.tick_ms=HAL_GetTick();
+	s_fault_snapshot.fault=fault;
+	s_fault_snapshot.state=s_motor_status.state;
+	s_fault_snapshot.actual_speed=s_motor_status.actual_speed;
+	s_fault_snapshot.target_speed=s_motor_status.target_speed;
+	s_fault_snapshot.pwm=s_motor_status.PWM;
+	s_fault_snapshot.adc_target = ADC_Get_Raw();
+	//s_fault_snapshot.adc_aux=
+}
 
+
+//====================================================================================
 //保护系统
 void Control_EnterFault(FaultCode_t fault){
+	Control_SaveFaultSnapShot(fault);
 	s_motor_status.fault=fault;
 	s_motor_status.state=SYS_FAULT;
 	s_motor_status.enable=0;
@@ -107,7 +126,7 @@ static FaultCode_t Control_CheckFault(){
 	}
 	return FAULT_NONE;
 }
-
+//====================================================================================
 
 
 void Control_ResetFault(){
@@ -118,10 +137,10 @@ void Control_ResetFault(){
 	s_motor_status.enable=0;
 	s_encoder_lost_count=0;
 	s_motor_pwm_saturation_count=0;
-
 	PID_Reset(&s_pid);
 	__enable_irq();
 	Motor_Stop();
+	s_fault_snapshot = (FaultSnapshot_t){0};
 }
 //====================================================================================
 
@@ -144,7 +163,7 @@ static int32_t Control_TargetSpeed_Limit(int32_t target_speed){
 		return -abs_target_speed;
 	}
 }
-
+//=========================================================================================
 
 //PWM前馈
 int16_t Control_CalcFeedForward(int16_t target_speed){
@@ -185,7 +204,7 @@ static int8_t Control_GetSpeedSign(int32_t target_speed){
 	}
 	return 0;
 }
-
+//===========================================================================
 
 //计算输出PWM
 int16_t Control_CalcOutputPWM(PID_t* pid,int32_t target_speed,int32_t actual_speed){
@@ -215,6 +234,7 @@ int16_t Control_CalcOutputPWM(PID_t* pid,int32_t target_speed,int32_t actual_spe
 	return temp_PWM;
 }
 
+//======================================================================================
 
 //电机控制
 static void Control_Update(){
@@ -417,6 +437,18 @@ const char* Control_FaultName(FaultCode_t fault){
 	default:
 		return "UNKNOWN";
 	}
+}
+
+
+
+//获取错误状态快照对外接口
+uint8_t Control_HasFaultShot(){
+	return s_fault_snapshot.valid;
+}
+
+FaultSnapshot_t Control_GetFaultShot(){
+		return s_fault_snapshot;
+
 }
 
 //回调
