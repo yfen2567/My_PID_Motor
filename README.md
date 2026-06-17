@@ -288,6 +288,12 @@ flowchart TD
 - 前馈输出：`PWM_ff = sign(target) * (kS + kV * abs(target))`，用于提供稳定运行所需的大致 PWM。
 - PID 修正：根据 `target_speed - actual_speed` 修正前馈误差。
 
+状态机图用于说明 `SYS_IDLE`、`SYS_RUN`、`SYS_FAULT` 和 `SYS_CALIB` 之间的切换关系：
+
+![状态机图](docs/diagrams/state_machine.svg)
+
+详细说明见 [`docs/state_machine.md`](docs/state_machine.md)，Mermaid 源码见 [`docs/diagrams/state_machine.mmd`](docs/diagrams/state_machine.mmd)。
+
 ## 串口命令说明
 
 串口参数：`115200-8-N-1`。命令需要以 `\r` 或 `\n` 结束，串口助手建议开启 CRLF。ADC 目标源当前映射为 `0` 到 `APP_TARGET_SPEED_MAX`；UART 目标源通过 `t=<num>` 支持正负速度。

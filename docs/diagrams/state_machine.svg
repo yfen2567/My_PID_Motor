@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="760" viewBox="0 0 1320 760">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#475569"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 30px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #475569; }
+      .nodeText { font: 700 22px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .nodeSub { font: 400 14px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #334155; }
+      .edge { stroke: #475569; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .loop { stroke: #475569; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .label { font: 600 14px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #334155; }
+      .note { font: 400 13px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #64748b; }
+      .idle { fill: #fff7e6; stroke: #d9a441; stroke-width: 2.5; }
+      .run { fill: #e8f2ff; stroke: #4b80c0; stroke-width: 2.5; }
+      .fault { fill: #fff0f0; stroke: #d45d5d; stroke-width: 2.5; }
+      .calib { fill: #f3f0ff; stroke: #8a6fd1; stroke-width: 2.5; stroke-dasharray: 8 6; }
+      .start { fill: #0f172a; stroke: #0f172a; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1320" height="760"/>
+  <text class="title" x="60" y="54">My_PID_Motor 状态机图</text>
+  <text class="sub" x="60" y="80">基于当前 Control.c / Uart.c / docs/state_machine.md 的真实状态整理</text>
+
+  <circle class="start" cx="130" cy="110" r="22"/>
+  <text class="label" x="88" y="152">START</text>
+
+  <rect class="idle" x="90" y="180" width="280" height="120" rx="16"/>
+  <text class="nodeText" x="230" y="224" text-anchor="middle">SYS_IDLE</text>
+  <text class="nodeSub" x="230" y="251" text-anchor="middle">stop / run=0</text>
+  <text class="nodeSub" x="230" y="273" text-anchor="middle">target 可改，PWM=0</text>
+
+  <rect class="run" x="470" y="160" width="340" height="140" rx="16"/>
+  <text class="nodeText" x="640" y="206" text-anchor="middle">SYS_RUN</text>
+  <text class="nodeSub" x="640" y="233" text-anchor="middle">ADC + Encoder + 前馈 + PID</text>
+  <text class="nodeSub" x="640" y="255" text-anchor="middle">run=1 / enable=1</text>
+  <text class="nodeSub" x="640" y="277" text-anchor="middle">Control_Update() 输出 PWM</text>
+
+  <rect class="fault" x="870" y="360" width="320" height="140" rx="16"/>
+  <text class="nodeText" x="1030" y="406" text-anchor="middle">SYS_FAULT</text>
+  <text class="nodeSub" x="1030" y="433" text-anchor="middle">enable=0 / Motor_Stop()</text>
+  <text class="nodeSub" x="1030" y="455" text-anchor="middle">保存故障快照</text>
+  <text class="nodeSub" x="1030" y="477" text-anchor="middle">rst 后回到 SYS_IDLE</text>
+
+  <rect class="calib" x="130" y="470" width="280" height="120" rx="16"/>
+  <text class="nodeText" x="270" y="514" text-anchor="middle">SYS_CALIB</text>
+  <text class="nodeSub" x="270" y="541" text-anchor="middle">预留状态</text>
+  <text class="nodeSub" x="270" y="563" text-anchor="middle">Control_Update() / Motor_Stop()</text>
+
+  <path class="edge" d="M130 132 L130 180"/>
+  <text class="label" x="150" y="166">Control_Init()</text>
+
+  <path class="edge" d="M370 240 L470 235"/>
+  <text class="label" x="378" y="217">run=1 / fault=NONE / 非CALIB</text>
+
+  <path class="edge" d="M470 250 C 410 335, 360 330, 350 250"/>
+  <text class="label" x="372" y="332">stop / run=0</text>
+
+  <path class="edge" d="M760 270 C 830 300, 850 345, 895 375"/>
+  <text class="label" x="806" y="314">超速 / 编码器丢失 / PWM 饱和</text>
+
+  <path class="edge" d="M870 410 C 760 160, 500 150, 350 235"/>
+  <text class="label" x="600" y="154">rst</text>
+
+  <path class="loop" d="M520 165 C 620 120, 740 120, 800 165 C 830 185, 830 245, 800 265"/>
+  <text class="label" x="630" y="128">t= / kp= / ki= / kd=</text>
+
+  <path class="loop" d="M350 310 C 250 345, 160 345, 110 310 C 90 295, 90 245, 110 230"/>
+  <text class="label" x="120" y="338">t= / set target adc / set target uart / status</text>
+
+  <path class="loop" d="M1100 360 C 1185 385, 1205 450, 1160 495 C 1125 530, 1015 530, 980 495"/>
+  <text class="label" x="1080" y="344">status / get fault</text>
+
+  <path class="loop" d="M130 470 C 80 450, 80 390, 130 370 C 180 350, 310 350, 360 390 C 390 415, 390 465, 360 490"/>
+  <text class="label" x="90" y="420">Control_Update() / Motor_Stop()</text>
+
+  <text class="note" x="60" y="716">说明：当前工程里 SYS_CALIB 已定义，但未看到清晰的串口入口；图中只保留其预留停机行为。</text>
+</svg>

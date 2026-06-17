@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> SYS_IDLE: Control_Init()
+
+    SYS_IDLE --> SYS_RUN: run=1 / fault=NONE / 非CALIB
+    SYS_RUN --> SYS_IDLE: stop 或 run=0 / 无故障
+
+    SYS_RUN --> SYS_FAULT: FAULT_SPEED_OVER_LIMIT
+    SYS_RUN --> SYS_FAULT: FAULT_ENCODER_LOST
+    SYS_RUN --> SYS_FAULT: FAULT_PWM_SATURATION
+
+    SYS_FAULT --> SYS_FAULT: Control_Update() / Motor_Stop()
+    SYS_FAULT --> SYS_IDLE: rst / 清PID + 清故障
+
+    SYS_RUN --> SYS_RUN: t= / 修改目标速度
+    SYS_RUN --> SYS_RUN: kp= / ki= / kd= / 修改PID参数
+    SYS_IDLE --> SYS_IDLE: t= / set target adc / set target uart / status
+    SYS_FAULT --> SYS_FAULT: status / get fault
+
+    SYS_CALIB --> SYS_CALIB: Control_Update() / Motor_Stop()
