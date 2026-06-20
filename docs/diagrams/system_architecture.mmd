@@ -2,7 +2,7 @@ flowchart TD
     ADC_HW["ADC1_IN3 + DMA<br/>电位器输入"] --> ADC_MOD["ADC_Sensor.c<br/>ADC_Update / Filter / MapTargetSpeed"]
     ADC_MOD --> TARGET_ADC["target_speed<br/>ADC 目标源"]
 
-    UART_HW["USART1 RX/TX<br/>串口助手"] --> UART_ISR["HAL_UART_RxCpltCallback<br/>接收命令缓存"]
+    UART_HW["USART1 RX/TX<br/>串口助手"] --> UART_ISR["HAL_UARTEx_RxEventCallback<br/>ReceiveToIdle + ring buffer"]
     UART_ISR --> UART_TASK["Uart_Task / Uart_HandleCmd"]
     UART_TASK -->|"run / stop / t / kp / ki / kd / rst"| CTRL_API["Control_xxx 接口<br/>SetEnable / SetTarget / SetPID / Reset"]
     CTRL_API --> CTRL_STATE["s_motor_status / s_pid<br/>控制状态"]

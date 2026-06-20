@@ -10,7 +10,7 @@
 
 **原因分析**
 
-周期状态输出来自 `main while` 中的 `Uart_PrintfStatus()`，只能说明 USART1 TX 正常。命令接收走的是另一条链路：`HAL_UART_RxCpltCallback()` 按字节接收，只有收到 `\r` 或 `\n` 后才会置位 `s_cmd_ready`，再由 `Uart_Task()` 解析。
+周期状态输出来自 `main while` 中的 `Uart_PrintfStatus()`，只能说明 USART1 TX 正常。命令接收走的是另一条链路：USART1 通过 `HAL_UARTEx_ReceiveToIdle_IT()` 不定长接收，`HAL_UARTEx_RxEventCallback()` 将收到的数据写入 ring buffer，再由 `Uart_Task()` 按 `\r` 或 `\n` 组装命令并解析。
 
 **解决方案**
 
