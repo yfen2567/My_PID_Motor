@@ -49,11 +49,11 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 512 * 4,
+/* Definitions for LogTask */
+osThreadId_t LogTaskHandle;
+const osThreadAttr_t LogTask_attributes = {
+  .name = "LogTask",
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for ControlTask */
@@ -63,16 +63,44 @@ const osThreadAttr_t ControlTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for UartTask */
+osThreadId_t UartTaskHandle;
+const osThreadAttr_t UartTask_attributes = {
+  .name = "UartTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void *argument);
+void StartLogTask(void *argument);
 void StartControlTask(void *argument);
+void StartUartTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* Hook prototypes */
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
+
+/* USER CODE BEGIN 4 */
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+   /* Run time stack overflow checking is performed if
+   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+   called if a stack overflow is detected. */
+	volatile TaskHandle_t overflow_task_handle=xTask;
+	volatile signed char* overflow_task_name=pcTaskName;
+	(void)overflow_task_handle;
+	(void)overflow_task_name;
+	taskDISABLE_INTERRUPTS();
+	while(1){
+
+	}
+}
+/* USER CODE END 4 */
 
 /**
   * @brief  FreeRTOS initialization
@@ -101,11 +129,14 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of LogTask */
+  LogTaskHandle = osThreadNew(StartLogTask, NULL, &LogTask_attributes);
 
   /* creation of ControlTask */
   ControlTaskHandle = osThreadNew(StartControlTask, NULL, &ControlTask_attributes);
+
+  /* creation of UartTask */
+  UartTaskHandle = osThreadNew(StartUartTask, NULL, &UartTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -117,28 +148,23 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_StartLogTask */
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+* @brief Function implementing the LogTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartLogTask */
+void StartLogTask(void *argument)
 {
-  /* USER CODE BEGIN StartDefaultTask */
-	uint32_t last_log_time=HAL_GetTick();
+  /* USER CODE BEGIN StartLogTask */
   /* Infinite loop */
   for(;;)
   {
-	  Uart_Task();
-	  if(HAL_GetTick()-last_log_time>APP_LOG_TICK){
-		  last_log_time=HAL_GetTick();
-		  Uart_PrintfStatus();
-	  }
-    osDelay(1);
+	  Uart_PrintfStatus();
+	  osDelay(3000);
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END StartLogTask */
 }
 
 /* USER CODE BEGIN Header_StartControlTask */
@@ -160,6 +186,25 @@ void StartControlTask(void *argument)
 	  vTaskDelayUntil(&last_time, period);
   }
   /* USER CODE END StartControlTask */
+}
+
+/* USER CODE BEGIN Header_StartUartTask */
+/**
+* @brief Function implementing the UartTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartUartTask */
+void StartUartTask(void *argument)
+{
+  /* USER CODE BEGIN StartUartTask */
+  /* Infinite loop */
+  for(;;)
+  {
+	  Uart_Task();
+    osDelay(1);
+  }
+  /* USER CODE END StartUartTask */
 }
 
 /* Private application code --------------------------------------------------*/
