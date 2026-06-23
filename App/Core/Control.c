@@ -16,7 +16,7 @@ static volatile uint8_t s_adc_target_enable = 1;
 static volatile uint8_t s_pwm_start_boost_tick=0;
 static volatile uint8_t s_pwm_start_boost_active=0;
 static  PID_t s_pid;
-volatile uint8_t flag_control_tick=0;
+
 
 static volatile Motor_Status_t s_motor_status;
 
@@ -27,23 +27,14 @@ static FaultSnapshot_t s_fault_snapshot;
 void Control_Init(){
 	PID_Init(&s_pid, APP_PID_DEFAULT_KP, APP_PID_DEFAULT_KI, APP_PID_DEFAULT_KD, APP_CONTROL_DT_SEC, APP_PID_OUTPUT_MAX);
 	ADC_Init();
-	s_motor_status.target_speed = 0;
-	s_motor_status.actual_speed = 0;
-	s_motor_status.encoder_delta = 0;
-	s_motor_status.PWM = 0;
-	s_motor_status.adc_raw = 0;
-	s_motor_status.adc_aux_raw=0;
-	s_motor_status.adc_filtered = 0.0f;
-	s_motor_status.fault = FAULT_NONE;
-	s_motor_status.state = SYS_IDLE;
-	s_motor_status.enable = 0;
+	s_motor_status=(Motor_Status_t){0};
 
 	s_adc_target_enable = 1;
 	s_encoder_lost_count = 0;
 	s_motor_pwm_saturation_count = 0;
 	s_pwm_start_boost_tick=0;
 	s_pwm_start_boost_active=0;
-	flag_control_tick=0;
+
 }
 //==================================================================================
 //保存故障状态快照
@@ -454,11 +445,4 @@ FaultSnapshot_t Control_GetFaultShot(){
 
 }
 
-//回调
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(htim->Instance==TIM3){
-		if(flag_control_tick<10){
-		flag_control_tick++;
-		}
-	}
-}
+
