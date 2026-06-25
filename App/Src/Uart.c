@@ -19,11 +19,35 @@ static uint8_t s_uart_ring_buf[APP_UART_RX_RING_SIZE];
 static volatile uint16_t s_uart_ring_head = 0;
 static volatile uint16_t s_uart_ring_tail = 0;
 static volatile uint8_t s_uart_ring_overflow = 0;
-static volatile uint8_t s_cmd_ready;
 static char s_uart_line_buf[APP_UART_LINE_SIZE];
 static uint16_t s_uart_line_len = 0;
 static uint8_t s_uart_line_discarding = 0;
-static char s_cmd_buf[APP_UART_LINE_SIZE];
+static char s_cmd_queue[APP_UART_LINE_QUEUE_DEPTH][APP_UART_LINE_SIZE];
+static uint8_t s_cmd_queue_head = 0;
+static uint8_t s_cmd_queue_tail = 0;
+static uint8_t s_cmd_queue_count = 0;
+
+static uint8_t Uart_LineQueueNext(uint8_t index)
+{
+	index++;
+	if (index >= APP_UART_LINE_QUEUE_DEPTH) {
+		index = 0;
+	}
+	return index;
+}
+
+static uint8_t Uart_LineQueuePush(const char *line)
+{
+	if (s_cmd_queue_count >= APP_UART_LINE_QUEUE_DEPTH) {
+		return 0;
+	}
+
+	strncpy(s_cmd_queue[s_cmd_queue_head], line, APP_UART_LINE_SIZE - 1U);
+	s_cmd_queue[s_cmd_queue_head][APP_UART_LINE_SIZE - 1U] = '\0';
+	s_cmd_queue_head = Uart_LineQueueNext(s_cmd_queue_head);
+	s_cmd_queue_count++;
+	return 1;
+}
 
 static void Uart_StartReceiveToIdle(void)
 {
@@ -90,14 +114,16 @@ void Uart_Init(void)
 	memset(s_uart_rx_idle_buf, 0, sizeof(s_uart_rx_idle_buf));
 	memset(s_uart_ring_buf, 0, sizeof(s_uart_ring_buf));
 	memset(s_uart_line_buf, 0, sizeof(s_uart_line_buf));
-	memset(s_cmd_buf, 0, sizeof(s_cmd_buf));
+	memset(s_cmd_queue, 0, sizeof(s_cmd_queue));
 
 	s_uart_ring_head = 0;
 	s_uart_ring_tail = 0;
 	s_uart_ring_overflow = 0;
 	s_uart_line_len = 0;
 	s_uart_line_discarding = 0;
-	s_cmd_ready=0;
+	s_cmd_queue_head = 0;
+	s_cmd_queue_tail = 0;
+	s_cmd_queue_count = 0;
 
 	Uart_StartReceiveToIdle();
 }
@@ -107,16 +133,15 @@ uint8_t Uart_ReadLine(char *line, uint16_t size){
 	if(line==NULL||size==0){
 		return 0;
 	}
-	__disable_irq();
-	if(s_cmd_ready==0){
-		__enable_irq();
+
+	if(s_cmd_queue_count==0){
 		return 0;
 	}
 
-	strncpy(line,s_cmd_buf,size-1);
+	strncpy(line,s_cmd_queue[s_cmd_queue_tail],size-1);
 	line[size-1]='\0';
-	 s_cmd_ready = 0U;
-	__enable_irq();
+	s_cmd_queue_tail = Uart_LineQueueNext(s_cmd_queue_tail);
+	s_cmd_queue_count--;
 	return 1;
 }
 
@@ -183,8 +208,9 @@ void Uart_Task(void)
 			}
 			else if (s_uart_line_len > 0) {
 				s_uart_line_buf[s_uart_line_len] = '\0';
-				memcpy(s_cmd_buf, s_uart_line_buf, s_uart_line_len + 1U);
-				s_cmd_ready = 1U;
+				if (Uart_LineQueuePush(s_uart_line_buf) == 0U) {
+					Uart_TxText("ERR:CMD_LINE_QUEUE_FULL\r\n");
+				}
 				s_uart_line_len = 0;
 			}
 			else {
