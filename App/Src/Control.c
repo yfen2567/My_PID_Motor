@@ -12,6 +12,7 @@
 #include "Encoder.h"
 #include "ADC_Sensor.h"
 #include "tim.h"
+#include "App_Cmd.h"
 static volatile uint8_t s_adc_target_enable = 1;
 static volatile uint8_t s_pwm_start_boost_tick=0;
 static volatile uint8_t s_pwm_start_boost_active=0;
@@ -445,4 +446,12 @@ FaultSnapshot_t Control_GetFaultShot(){
 
 }
 
-
+void Control_ApplyCommand(const App_Cmd_t *cmd){
+	if(cmd == 0){
+		return;
+	}
+	switch(cmd->type){
+	case APP_CMD_RUN:Control_SetEnable(1);break;
+	default:break;
+	}
+}

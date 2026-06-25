@@ -8,6 +8,7 @@
 #ifndef INC_CONTROL_H_
 #define INC_CONTROL_H_
 #include<stdint.h>
+#include"App_Cmd.h"
 
 extern volatile uint8_t flag_control_tick;
 
@@ -74,5 +75,6 @@ void Control_ResetFault();
 void Control_ReportFault(FaultCode_t fault);
 FaultSnapshot_t Control_GetFaultShot();
 uint8_t Control_HasFaultShot();
+void Control_ApplyCommand(const App_Cmd_t *cmd);
 #endif /* INC_CONTROL_H_ */
 

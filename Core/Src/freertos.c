@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Control.h"
+#include "LogTask.h"
 #include "app_config.h"
 #include "Uart.h"
 /* USER CODE END Includes */
@@ -61,14 +62,19 @@ osThreadId_t ControlTaskHandle;
 const osThreadAttr_t ControlTask_attributes = {
   .name = "ControlTask",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
-/* Definitions for UartTask */
-osThreadId_t UartTaskHandle;
-const osThreadAttr_t UartTask_attributes = {
-  .name = "UartTask",
+/* Definitions for CmdTask */
+osThreadId_t CmdTaskHandle;
+const osThreadAttr_t CmdTask_attributes = {
+  .name = "CmdTask",
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for CmdQueue */
+osMessageQueueId_t CmdQueueHandle;
+const osMessageQueueAttr_t CmdQueue_attributes = {
+  .name = "CmdQueue"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -78,7 +84,7 @@ const osThreadAttr_t UartTask_attributes = {
 
 void StartLogTask(void *argument);
 void StartControlTask(void *argument);
-void StartUartTask(void *argument);
+void StartCmdTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -124,6 +130,10 @@ void MX_FREERTOS_Init(void) {
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of CmdQueue */
+  CmdQueueHandle = osMessageQueueNew (16, sizeof(App_Cmd_t*), &CmdQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -135,8 +145,8 @@ void MX_FREERTOS_Init(void) {
   /* creation of ControlTask */
   ControlTaskHandle = osThreadNew(StartControlTask, NULL, &ControlTask_attributes);
 
-  /* creation of UartTask */
-  UartTaskHandle = osThreadNew(StartUartTask, NULL, &UartTask_attributes);
+  /* creation of CmdTask */
+  CmdTaskHandle = osThreadNew(StartCmdTask, NULL, &CmdTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -155,14 +165,13 @@ void MX_FREERTOS_Init(void) {
 * @retval None
 */
 /* USER CODE END Header_StartLogTask */
-void StartLogTask(void *argument)
+__weak void StartLogTask(void *argument)
 {
   /* USER CODE BEGIN StartLogTask */
   /* Infinite loop */
   for(;;)
   {
-	  Uart_PrintfStatus();
-	  osDelay(3000);
+
   }
   /* USER CODE END StartLogTask */
 }
@@ -174,37 +183,34 @@ void StartLogTask(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartControlTask */
-void StartControlTask(void *argument)
+__weak void StartControlTask(void *argument)
 {
   /* USER CODE BEGIN StartControlTask */
-	TickType_t last_time=xTaskGetTickCount();
-	TickType_t period=pdMS_TO_TICKS(10);
+
   /* Infinite loop */
   for(;;)
   {
-	  Control_Tick10ms();
-	  vTaskDelayUntil(&last_time, period);
+
   }
   /* USER CODE END StartControlTask */
 }
 
-/* USER CODE BEGIN Header_StartUartTask */
+/* USER CODE BEGIN Header_StartCmdTask */
 /**
-* @brief Function implementing the UartTask thread.
+* @brief Function implementing the CmdTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartUartTask */
-void StartUartTask(void *argument)
+/* USER CODE END Header_StartCmdTask */
+__weak void StartCmdTask(void *argument)
 {
-  /* USER CODE BEGIN StartUartTask */
+  /* USER CODE BEGIN StartCmdTask */
   /* Infinite loop */
   for(;;)
   {
-	  Uart_Task();
     osDelay(1);
   }
-  /* USER CODE END StartUartTask */
+  /* USER CODE END StartCmdTask */
 }
 
 /* Private application code --------------------------------------------------*/
