@@ -26,6 +26,7 @@ static void CmdTask_ProcessLine(void)
     char line[APP_UART_LINE_SIZE];
     App_Cmd_t cmd;
     Cmd_ServiceResult_t result;
+    Uart_Task();
 
     if (Uart_ReadLine(line, sizeof(line)) == 0U)
     {

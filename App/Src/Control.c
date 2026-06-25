@@ -452,6 +452,41 @@ void Control_ApplyCommand(const App_Cmd_t *cmd){
 	}
 	switch(cmd->type){
 	case APP_CMD_RUN:Control_SetEnable(1);break;
-	default:break;
+
+	case APP_CMD_STOP:
+	    Control_SetEnable(0U);
+	    break;
+
+	case APP_CMD_SET_TARGET:
+	    Control_SetTargetSpeed(cmd->value);
+	    break;
+
+	case APP_CMD_SET_TARGET_ADC:
+	    Control_UseAdcTarget(1U);
+	    break;
+
+	case APP_CMD_SET_TARGET_UART:
+	    Control_UseAdcTarget(0U);
+	    break;
+
+	case APP_CMD_SET_KP:
+	    Control_SetKp(cmd->fvalue);
+	    break;
+
+	case APP_CMD_SET_KI:
+	    Control_SetKi(cmd->fvalue);
+	    break;
+
+	case APP_CMD_SET_KD:
+	    Control_SetKd(cmd->fvalue);
+	    break;
+
+	case APP_CMD_RESET:
+	    Control_ResetFault();
+	    break;
+
+	default:
+	    break;
 	}
+
 }
