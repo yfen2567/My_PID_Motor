@@ -76,6 +76,11 @@ osMessageQueueId_t CmdQueueHandle;
 const osMessageQueueAttr_t CmdQueue_attributes = {
   .name = "CmdQueue"
 };
+/* Definitions for uartTxMutex */
+osMutexId_t uartTxMutexHandle;
+const osMutexAttr_t uartTxMutex_attributes = {
+  .name = "uartTxMutex"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -117,6 +122,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
+  /* Create the mutex(es) */
+  /* creation of uartTxMutex */
+  uartTxMutexHandle = osMutexNew(&uartTxMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */

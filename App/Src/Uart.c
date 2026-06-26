@@ -12,7 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include "App_Rtos.h"
+#include "cmsis_os.h"
 
 static uint8_t s_uart_rx_idle_buf[APP_UART_RX_IDLE_CHUNK_SIZE];
 static uint8_t s_uart_ring_buf[APP_UART_RX_RING_SIZE];
@@ -149,7 +150,17 @@ uint8_t Uart_ReadLine(char *line, uint16_t size){
 
 void Uart_TxText(const char* text)
 {
+	osStatus_t lock_status;
+	if(text==NULL){
+		return;
+	}
+	if(uartTxMutexHandle!=NULL){
+		lock_status=osMutexAcquire(uartTxMutexHandle,osWaitForever);
+	}
 	HAL_UART_Transmit(&huart1, (uint8_t*)text, strlen(text), HAL_MAX_DELAY);
+	if(lock_status==osOk){
+		osMutexRelease(uartTxMutexHandle);
+	}
 }
 
 /*
@@ -161,28 +172,7 @@ static void Uart_InvalidCmd(void)
 	Uart_TxText("ERR:INVALID_CMD\r\n");
 }
 
-//处理获取错误状态快照命令
-void Uart_HandleFaultSnapShot(void)
-{
-	if (Control_HasFaultShot() == 0) {
-		Uart_TxText("FAULT_SNAPSHOT_NONE\r\n");
-		return;
-	}
-	FaultSnapshot_t shot = Control_GetFaultShot();
-	char Message[APP_UART_TX_SIZE] = {0};
-	snprintf(Message, sizeof(Message),
-	         "valid:%d,time:%lu,state:%s,fault:%s,T_speed:%ld,A_speed:%ld,pwm=%d,adc_target=%u,adc_aux=%u\r\n",
-	         shot.valid,
-	         shot.tick_ms,
-	         Control_StateName(shot.state),
-	         Control_FaultName(shot.fault),
-	         (long)shot.target_speed,
-	         (long)shot.actual_speed,
-	         shot.pwm,
-	         shot.adc_target,
-	         shot.adc_aux);
-	HAL_UART_Transmit(&huart1, (uint8_t*)Message, strlen(Message), HAL_MAX_DELAY);
-}
+
 */
 
 

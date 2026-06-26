@@ -9,7 +9,8 @@ void StartControlTask(void *argument)
     App_Cmd_t cmd;
 
     (void)argument;
-
+    TickType_t last_time=xTaskGetTickCount();
+    TickType_t period=pdMS_TO_TICKS(10);
     for (;;)
     {
         while (Cmd_Service_TryGetControlCommand(&cmd))
@@ -18,6 +19,6 @@ void StartControlTask(void *argument)
         }
 
         Control_Tick10ms();
-        osDelay(10U);
+        vTaskDelayUntil(&last_time, period);
     }
 }

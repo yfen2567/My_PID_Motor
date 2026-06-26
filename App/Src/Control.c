@@ -13,6 +13,7 @@
 #include "ADC_Sensor.h"
 #include "tim.h"
 #include "App_Cmd.h"
+#include "LogTask.h"
 static volatile uint8_t s_adc_target_enable = 1;
 static volatile uint8_t s_pwm_start_boost_tick=0;
 static volatile uint8_t s_pwm_start_boost_active=0;
@@ -486,6 +487,7 @@ void Control_ApplyCommand(const App_Cmd_t *cmd){
 	    break;
 
 	default:
+		LogTask_PrintFaultSnapshot();
 	    break;
 	}
 

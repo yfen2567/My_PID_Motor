@@ -51,6 +51,12 @@ static void CmdTask_ProcessLine(void)
         return;
     }
 
+    if (cmd.type == APP_CMD_GET_FAULT)
+    {
+        LogTask_PrintFaultSnapshot();
+        return;
+    }
+
     result = Cmd_Service_PostControlCommand(&cmd);
     switch (result)
     {

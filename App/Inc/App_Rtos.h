@@ -11,5 +11,5 @@
 #include "cmsis_os.h"
 
 extern osMessageQueueId_t CmdQueueHandle;
-
+extern osMutexId_t uartTxMutexHandle;
 #endif /* INC_APP_RTOS_H_ */

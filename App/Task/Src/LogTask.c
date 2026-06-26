@@ -6,6 +6,8 @@
 #include "cmsis_os2.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "usart.h"
+#include "string.h"
 
 static void LogTask_FormatFloat3(char *buf, uint8_t size, float num)
 {
@@ -66,6 +68,29 @@ void LogTask_PrintPeriodicStatus(void)
     Uart_TxText(message);
 }
 
+//处理获取错误状态快照命令
+void LogTask_PrintFaultSnapshot(void){
+
+		if (Control_HasFaultShot() == 0) {
+			Uart_TxText("FAULT_SNAPSHOT_NONE\r\n");
+			return;
+		}
+		FaultSnapshot_t shot = Control_GetFaultShot();
+		char Message[APP_UART_TX_SIZE] = {0};
+		snprintf(Message, sizeof(Message),
+		         "valid:%d,time:%lu,state:%s,fault:%s,T_speed:%ld,A_speed:%ld,pwm=%d,adc_target=%u,adc_aux=%u\r\n",
+		         shot.valid,
+		         shot.tick_ms,
+		         Control_StateName(shot.state),
+		         Control_FaultName(shot.fault),
+		         (long)shot.target_speed,
+		         (long)shot.actual_speed,
+		         shot.pwm,
+		         shot.adc_target,
+		         shot.adc_aux);
+		HAL_UART_Transmit(&huart1, (uint8_t*)Message, strlen(Message), HAL_MAX_DELAY);
+
+}
 
 void StartLogTask(void *argument){
 	for(;;){
