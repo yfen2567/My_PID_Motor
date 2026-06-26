@@ -150,15 +150,18 @@ uint8_t Uart_ReadLine(char *line, uint16_t size){
 
 void Uart_TxText(const char* text)
 {
-	osStatus_t lock_status;
+	uint8_t lock_status=0;
 	if(text==NULL){
 		return;
 	}
 	if(uartTxMutexHandle!=NULL){
-		lock_status=osMutexAcquire(uartTxMutexHandle,osWaitForever);
+		if(osMutexAcquire(uartTxMutexHandle,osWaitForever)!=osOK){
+			return;
+		}
+		lock_status=1;
 	}
 	HAL_UART_Transmit(&huart1, (uint8_t*)text, strlen(text), HAL_MAX_DELAY);
-	if(lock_status==osOk){
+	if(lock_status==1){
 		osMutexRelease(uartTxMutexHandle);
 	}
 }

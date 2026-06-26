@@ -88,7 +88,7 @@ void LogTask_PrintFaultSnapshot(void){
 		         shot.pwm,
 		         shot.adc_target,
 		         shot.adc_aux);
-		HAL_UART_Transmit(&huart1, (uint8_t*)Message, strlen(Message), HAL_MAX_DELAY);
+				 Uart_TxText(Message);
 
 }
 

@@ -483,6 +483,7 @@ void Control_ApplyCommand(const App_Cmd_t *cmd){
 	    break;
 
 	case APP_CMD_RESET:
+		Control_PID_Rst();
 	    Control_ResetFault();
 	    break;
 
