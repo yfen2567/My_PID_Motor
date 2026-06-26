@@ -158,24 +158,10 @@ void Uart_TxText(const char* text)
 		lock_status=osMutexAcquire(uartTxMutexHandle,osWaitForever);
 	}
 	HAL_UART_Transmit(&huart1, (uint8_t*)text, strlen(text), HAL_MAX_DELAY);
-	if(lock_status==osOk){
+	if(lock_status==osOK){
 		osMutexRelease(uartTxMutexHandle);
 	}
 }
-
-/*
-
-
-//命令无效
-static void Uart_InvalidCmd(void)
-{
-	Uart_TxText("ERR:INVALID_CMD\r\n");
-}
-
-
-*/
-
-
 
 
 
