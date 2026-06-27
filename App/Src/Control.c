@@ -208,7 +208,7 @@ int16_t Control_CalcOutputPWM(PID_t* pid,int32_t target_speed,int32_t actual_spe
 			&&target_speed!=0
 			&&s_motor_status.encoder_delta==0){
 
-		temp_PWM=APP_PWM_START_BOOST;
+		temp_PWM=(target_speed>0)?APP_PWM_START_BOOST:(-APP_PWM_START_BOOST);
 
 		PID_Reset(&s_pid);
 		s_pwm_start_boost_tick++;
