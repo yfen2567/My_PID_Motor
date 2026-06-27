@@ -39,6 +39,13 @@ static void CmdTask_ProcessLine(void)
         return;
     }
 
+    if(cmd.type==APP_CMD_SET_TARGET&&
+    		cmd.value>(-APP_TARGET_SPEED_MIN_RUN)&&
+			cmd.value<APP_TARGET_SPEED_MIN_RUN){
+        Uart_TxText("ERR:TARGET_BELOW_MIN\r\n");
+        return;
+    }
+
     if (cmd.type == APP_CMD_STATUS)
     {
         LogTask_PrintPeriodicStatus();
