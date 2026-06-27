@@ -95,6 +95,6 @@ void LogTask_PrintFaultSnapshot(void){
 void StartLogTask(void *argument){
 	for(;;){
 		LogTask_PrintPeriodicStatus();
-		osDelay(3000);
+		osDelay(APP_LOG_TICK);
 	}
 }
