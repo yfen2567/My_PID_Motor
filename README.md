@@ -1,140 +1,202 @@
 # My_PID_Motor
 
-`My_PID_Motor` 是一个基于 STM32F103C8Tx、STM32CubeIDE、HAL 和 FreeRTOS 的直流电机闭环控制项目。当前阶段已经从早期裸机控制整理为 RTOS 任务化结构：控制逻辑由 `ControlTask` 周期执行，串口命令由 `CmdTask` 接收解析并通过队列传递，状态日志由 `LogTask` 周期输出。
+基于 STM32F103C8Tx、STM32 HAL 和 FreeRTOS 的直流电机速度控制项目。项目已经完成 RTOS 命令队列发布基线，并在此基础上完成前馈修正、默认比例参数验证和轻载扰动观察。
 
-本仓库用于记录个人独立电机控制项目的代码、调试过程和阶段测试结果。
+## 1. 项目状态
 
-## 硬件平台
+当前主线处于 `v2.0-rtos-cmdqueue` 发布基线之后的控制调参补充阶段。
 
-| 项目 | 当前配置 |
-|---|---|
-| MCU | STM32F103C8Tx |
-| 开发环境 | STM32CubeIDE + STM32CubeMX + HAL |
-| RTOS | FreeRTOS / CMSIS-RTOS2 |
-| PWM 输出 | TIM1_CH1 / PA8 |
-| 电机方向 | PA1 / PA2 |
-| 编码器 | TIM2 Encoder，PA15 / PB3 |
-| ADC | ADC1 + DMA，当前用于目标速度输入/辅助采集 |
-| 串口 | USART1，PA9 TX / PA10 RX，115200-8-N-1 |
-| HAL Tick | TIM4 |
+已经完成：
 
-## 已实现功能
+- ControlTask、CmdTask、LogTask 的 FreeRTOS 任务链路；
+- UART 命令解析、命令队列传递和状态输出；
+- 20 条、50 条连续命令压力验证；
+- fault snapshot 字段评审及无快照分支验证；
+- 零 PID 前馈基线验证；
+- `Kp=0.05, Ki=0, Kd=0` 的正反向全范围验证；
+- `target=600` 人工轻载扰动验证；
+- 诊断结论、release 基线和验证记录审计。
 
-- TIM1 PWM + 方向 GPIO 控制直流电机。
-- TIM2 Encoder 读取编码器反馈并计算速度。
-- ADC1 + DMA 采集模拟输入，可作为目标速度来源。
-- PID 控制、前馈输出、启动助推和 PWM 限幅。
-- 基础故障检测与故障快照，包括超速、编码器丢失、PWM 饱和等方向。
-- FreeRTOS 三任务结构：`ControlTask`、`CmdTask`、`LogTask`。
-- `CmdQueue` 用于 `CmdTask -> ControlTask` 的控制命令传递。
-- `uartTxMutex` 用于保护串口发送，避免 status / OK / fault 输出交叉粘连。
-- UART ReceiveToIdle + ring buffer + 小型命令行队列，用于接收连续串口命令。
+当前正式默认参数为：
 
-## 软件模块结构
-
-```text
-Core/
-  CubeMX 生成的 HAL 初始化、FreeRTOS 对象创建、中断和系统文件
-
-App/Inc/
-  应用层头文件，包括 Control、Uart、ADC_Sensor、Encoder、Motor、App_Cmd、App_Rtos
-
-App/Src/
-  电机控制、串口接收、命令解析、传感器和驱动封装
-
-App/Task/Inc
-App/Task/Src
-  FreeRTOS 任务和命令服务，包括 ControlTask、CmdTask、LogTask、Cmd_Service
-
-Lib/
-  PID 等通用算法模块
-
-docs/
-  架构说明、串口命令、测试用例、测试报告和调试记录
+```c
+#define APP_PID_DEFAULT_KP 0.05f
+#define APP_PID_DEFAULT_KI 0.0f
+#define APP_PID_DEFAULT_KD 0.0f
+#define APP_LOG_TICK       1000
 ```
 
-## FreeRTOS 任务划分
+`Kp=0.05` 是经过前馈基线、正反向全范围控制结果和轻载扰动结果共同支撑的已验证默认值。`APP_LOG_TICK=200` 仅曾用于提高测试观察密度，正式默认日志周期已经恢复为 `1000 ms`。
 
-| 任务 | 文件 | 周期/触发 | 职责 |
-|---|---|---|---|
-| `ControlTask` | `App/Task/Src/Control_Task.c` | 10 ms | 非阻塞读取 `CmdQueue`，应用控制命令，执行 `Control_Tick10ms()` |
-| `CmdTask` | `App/Task/Src/CmdTask.c` | 5 ms | 调用 `Uart_Task()` 组行，解析命令，查询类命令直接输出，控制类命令入队 |
-| `LogTask` | `App/Task/Src/LogTask.c` | 3000 ms | 周期输出状态日志 |
+当前不继续执行 ADC 目标源一致性、目标阶跃、Ki/Kd 试探、100 条命令压力、主动故障注入或正反转直接切换测试。
 
-RTOS 对象在 `Core/Src/freertos.c` 中创建：
+## 2. 主要功能
 
-- `CmdQueue`：长度 16，item 为 `App_Cmd_t *`。
-- `uartTxMutex`：保护所有 `Uart_TxText()` 文本发送。
+- STM32F103C8Tx 平台；
+- TIM1 CH1（PA8）PWM 输出；
+- PA1、PA2 电机方向控制；
+- TIM2 编码器接口测速；
+- ADC 双通道采样和 ADC/UART 目标源切换；
+- 启动助推、速度前馈和 PID 修正；
+- 正反向速度控制；
+- UART 文本命令与状态查询；
+- FreeRTOS 命令队列、串口发送互斥和周期日志；
+- 基础故障状态及 fault snapshot 查询接口。
 
-## 串口命令简介
+当前主要实测控制路径为 UART 目标源，非零目标的已验证范围为 `±500` 至 `±1000`。
 
-串口命令以文本形式发送，建议追加 `\r\n`。当前实际支持的主要命令如下：
-
-| 命令 | 功能 |
-|---|---|
-| `run=1` | 启动控制 |
-| `stop` / `run=0` | 停止控制 |
-| `t=xxx` | 设置 UART 目标速度，范围 `-1000` 到 `1000` |
-| `set target uart` | 切换目标来源为 UART |
-| `set target adc` | 切换目标来源为 ADC |
-| `kp=x` | 设置 Kp，范围 `0.0` 到 `100.0` |
-| `ki=x` | 设置 Ki，范围 `0.0` 到 `100.0` |
-| `kd=x` | 设置 Kd，范围 `0.0` 到 `100.0` |
-| `status` | 立即输出一次状态 |
-| `help` | 输出命令帮助 |
-| `get fault` | 输出故障快照 |
-| `rst` | 复位故障/控制状态 |
-
-控制类命令成功解析并入队后，典型返回为：
+## 3. 控制与命令架构
 
 ```text
-OK:CMD_QUEUED
+USART1 接收
+    │
+    ▼
+UART 行缓冲 / 行队列
+    │
+    ▼
+CmdTask：解析命令
+    ├── status / help / get fault：直接查询并输出
+    └── 控制命令：写入 CmdQueue
+                         │
+                         ▼
+              ControlTask（10 ms）
+                         │
+             应用命令、读取反馈、执行控制
+                         │
+             方向引脚 + TIM1 PWM 输出
+
+LogTask（1000 ms）── 周期输出运行状态
 ```
 
-详细命令说明见 [docs/serial_commands.md](docs/serial_commands.md)。
+命令入队成功返回 `OK:CMD_QUEUED`。该回应只代表命令成功进入队列；控制状态是否改变仍应结合后续 `status` 和真实硬件现象判断。
 
-## 阶段测试记录
+## 4. FreeRTOS 任务
 
-当前阶段已完成 FreeRTOS 任务化，并形成 `CmdTask / ControlTask / LogTask / CmdQueue` 的基础命令链路。串口发送侧已加入 `uartTxMutex`，所有文本输出统一走 `Uart_TxText()`，用于避免 `status`、`OK`、`fault` 输出交叉。
+| 任务 | 周期或阻塞方式 | 主要职责 |
+| --- | --- | --- |
+| `ControlTask` | 10 ms 周期 | 消费控制命令、更新控制状态、执行测速和 PWM 输出 |
+| `CmdTask` | UART 行接收，约 5 ms 轮询间隔 | 接收并解析命令，执行查询或投递 `CmdQueue` |
+| `LogTask` | 1000 ms 周期 | 输出 `status` 格式的运行状态 |
 
-本轮手动串口测试覆盖了：
+当前应用源码未创建名为 `defaultTask` 的业务任务，因此不把 FreeRTOS 内部空闲任务列入应用任务表。
 
-- `run=1`：命令入队后系统进入 `RUN`，PWM 有输出，编码器 `actual` 有反馈。
-- `run=0` / `stop`：命令入队后系统回到 `IDLE`，PWM 归零。
-- `status`：可以正常返回状态、速度、PWM、ADC、fault 和 PID 参数。
-- `get fault`：无故障状态下返回 `FAULT_SNAPSHOT_NONE`。
-- 非法命令：`hajimiyolanbeinvdou` 返回 `ERR:BAD_CMD`。
-- 越界目标速度：`t=100000` 返回 `ERR:BAD_CMD`。
-- 快速连续发送 20 条 `kp=0.01`：每条均返回 `OK:CMD_QUEUED`，未观察到串口输出粘连或明显丢命令。
-- `set target adc` / `set target uart`：状态日志能显示 `source:ADC` 和 `source:Uart`。
-- `rst`：无故障状态下可以入队，执行后系统保持 `IDLE`、`fault:NONE`、`PWM:0`。
+## 5. 串口命令
 
-关键运行日志示例：
+串口命令使用文本模式和真实 CRLF 结束符。
+
+| 命令 | 作用 | 备注 |
+| --- | --- | --- |
+| `run=1` | 启动运行 | 使用当前目标源和目标值 |
+| `run=0` / `stop` | 停止运行 | 进入安全停止状态 |
+| `status` | 查询当前状态 | 返回控制、反馈、PWM、故障和 PID 字段 |
+| `get fault` | 查询 fault snapshot | 无快照时返回 `FAULT_SNAPSHOT_NONE` |
+| `t=600` | 设置 UART 速度目标 | 绝对上限为 1000；当前非零支持区间为 `±500…±1000` |
+| `kp=0.05` | 设置比例系数 | 在线参数设置 |
+| `ki=0` | 设置积分系数 | 当前默认值为 0 |
+| `kd=0` | 设置微分系数 | 当前默认值为 0 |
+| `set target uart` | 选择 UART 目标源 | 当前控制验证采用该目标源 |
+| `set target adc` | 选择 ADC 目标源 | 已实现，低速策略一致性尚未专项验证 |
+| `rst` | 复位控制相关状态 | 具体行为以当前固件实现为准 |
+
+`status` 当前包含：
 
 ```text
-ms:9037,enable:1,State:RUN,source:ADC,target:551,actual:642,delta:3,PWM:132,adc1:2261,adc2:2058,fault:NONE,kp:0.000,ki:0.000,kd:0.000
+ms, enable, State, source, target, actual, delta, PWM,
+adc1, adc2, fault, kp, ki, kd
 ```
 
-详细测试记录见：
+## 6. 控制验证结果
 
-- [docs/test_cases.md](docs/test_cases.md)
-- [docs/test_report.md](docs/test_report.md)
-- [docs/debug_record.md](docs/debug_record.md)
-- [docs/rtos_architecture.md](docs/rtos_architecture.md)
-- [docs/serial_commands.md](docs/serial_commands.md)
+### 6.1 Kp=0.05 正反向全范围验证
 
-## 当前阶段结论
+测试条件：UART 目标源，`Kp=0.05, Ki=0, Kd=0`。
 
-当前 RTOS + CmdQueue + UART TX mutex 版本已经完成基础命令链路和一轮手动串口回归测试。控制任务不等待串口输入，控制类命令通过 `CmdQueue` 交给 `ControlTask`，周期日志和命令响应通过 `uartTxMutex` 做发送保护。
+| target | 稳态 actual 均值 | PWM 范围 | 平均误差 |
+| -----: | ----------------: | -------: | -------: |
+| 500 | 496.8 | 112～118 | -3.2 |
+| 600 | 608.3 | 125～130 | +8.3 |
+| 800 | 811.1 | 150～154 | +11.1 |
+| 1000 | 999.3 | 176～178 | -0.7 |
+| -500 | -496.8 | -116～-112 | +3.2 |
+| -600 | -599.8 | -130～-125 | +0.2 |
+| -800 | -799.7 | -154～-150 | +0.3 |
+| -1000 | -993.6 | -178～-176 | +6.4 |
 
-本轮测试说明运行/停止、状态查询、非法命令处理、目标来源切换、基础参数设置和无故障状态下 fault 查询均能按当前代码逻辑工作；测试中未再观察到 status / OK / fault 输出粘连。
+在上述八个档位中，电机均能持续运行，正反向控制方向正确，平均误差不超过约 11 RPM，PWM 仅在前馈值附近小幅修正；测试记录中未观察到明显振荡，`fault:NONE`。结合约 42.9 RPM 的测速量化粒度，现有证据不支持继续增加 Ki 或 Kd，因此保留 `Kp=0.05, Ki=0, Kd=0` 作为当前默认值。
 
-该阶段结论为“手动回归测试初步通过”，还不是完整压力测试或完整故障测试完成。
+### 6.2 target=600 人工轻载扰动
 
-## 后续计划
+| 阶段 | actual 均值 | 最低 actual | PWM 均值 | 最高 PWM |
+| --- | ---: | ---: | ---: | ---: |
+| 扰动前 | 604.7 | — | 127.5 | — |
+| 第一次负载 | 580.7 | 471 | 128.7 | 134 |
+| 第一次释放 | 594.7 | — | 128.1 | — |
+| 第二次负载 | 568.8 | 385 | 129.3 | 138 |
+| 第二次释放 | 601.5 | — | 127.7 | — |
 
-- 补充 Python 串口半自动测试，覆盖常用命令和异常命令。
-- 补充闭环 PID 调参记录，记录不同参数下的实际响应。
-- 补充故障注入测试，验证 `get fault` 有快照时的输出和故障状态下 `rst` 的恢复效果。
-- 扩大快速连续命令测试规模，观察 `CmdQueue`、命令行队列和 UART ring buffer 的边界行为。
-- 在当前基础 RTOS 命令链路稳定后，再继续整理更完整的故障处理和长期运行测试记录。
+两次轻微负载期间均观察到 `actual` 下降、PWM 同步提高；释放负载后，`actual` 回到 600 附近，PWM 回到约 128 的基线附近。全程记录为 `fault:NONE`，最终 `stop` 后 `enable:0`、`State:IDLE`、`PWM:0`、`actual:0`。
+
+本项只能支持“系统具备基本轻载扰动补偿能力”的定性结论。负载由人工施加，大小和动作时刻没有精确测量，因此不能据此计算精确恢复时间、控制带宽或其他严格动态性能指标。
+
+### 6.3 串口命令队列
+
+在已经执行的 20 条和 50 条连续 `kp=0.01` 测试条件下，未发现命令丢失、`CMD_QUEUE_FULL`、错误返回或测试后系统卡死。100 条极限压力测试已明确暂停，20/50 条结果不能外推为未测试负载下的保证。
+
+## 7. 诊断与发布资料
+
+- [v2.0 诊断结论汇总](docs/diagnosis/v2_diagnosis_summary.md)
+- [命令队列压力测试](docs/diagnosis/cmd_queue_pressure_test.md)
+- [fault snapshot 字段评审](docs/diagnosis/fault_snapshot_review.md)
+- [Kp=0.05 控制调参记录](docs/diagnosis/control_tuning_summary_kp_0p05.md)
+- [target=600 负载扰动结果](docs/diagnosis/load_disturbance_600_result.md)
+- [验证记录归档审计](docs/diagnosis/verification_record_audit.md)
+- [v2.0 release notes](release/v2.0-rtos-cmdqueue/RELEASE_NOTES.md)
+- [v2.0 release 诊断摘要](release/v2.0-rtos-cmdqueue/DIAGNOSIS_SUMMARY.md)
+- [release 文件校验值](release/v2.0-rtos-cmdqueue/SHA256SUMS.txt)
+
+`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。部分控制测试原始日志保存在项目目录外，证据完整度和人工确认项以《验证记录归档审计》为准；没有归档的日志不会被表述为已经完整纳入仓库。
+
+## 8. 已知边界
+
+- 当前主要控制结论来自 UART 目标源，ADC 目标源虽已实现，但最低转速策略一致性尚未专项验证；
+- 当前连续运行验证范围为 `±500…±1000`，不宣称支持物理上不可持续的更低连续转速；
+- `Ki=0`、`Kd=0` 是基于当前稳态结果和测速分辨率作出的阶段性选择，不代表所有负载和机械条件下的最终最优参数；
+- 人工轻载扰动测试仅反映补偿趋势，不代表精确动态性能测量；
+- 100 条命令压力、实际 fault snapshot 触发分支、主动故障注入和正反转直接切换未在当前阶段验证；
+- 本项目是嵌入式控制与诊断验证项目，不应直接视为工业级电机驱动器或功能安全实现。
+
+## 9. 构建环境
+
+- MCU：STM32F103C8Tx；
+- IDE / 工具链：STM32CubeIDE、GNU Arm Embedded Toolchain；
+- 配置与驱动：STM32CubeMX、STM32 HAL；
+- RTOS：FreeRTOS，CMSIS-RTOS V2 接口；
+- 工程入口：使用 STM32CubeIDE 打开仓库根目录下的工程配置。
+
+发布基线的可执行文件及 SHA-256 校验值位于 `release/v2.0-rtos-cmdqueue/`。README 更新不会重新构建或替换该发布文件。
+
+## 10. 目录结构
+
+```text
+My_PID_Motor/
+├─ App/                    应用配置、控制模块和 FreeRTOS 任务
+├─ Core/                   CubeMX 生成的核心初始化与中断代码
+├─ Drivers/                STM32 HAL/CMSIS 驱动
+├─ Lib/                    项目使用的独立库
+├─ Middlewares/            FreeRTOS 等中间件
+├─ docs/diagnosis/         诊断、调参、结果和证据审计文档
+├─ release/
+│  └─ v2.0-rtos-cmdqueue/ 发布说明、诊断摘要、校验值和 ELF
+├─ My_PID_Motor.ioc        CubeMX 工程配置
+└─ README.md
+```
+
+## 11. 可选完善方向
+
+以下项目仅作为未来可能的工程化方向，不属于当前测试计划，也不表示已经验证或承诺实施：
+
+- 明确 ADC 目标源的低速映射和最低连续目标策略；
+- 使用脚本自动解析串口日志并生成统计摘要；
+- 在具备明确安全方案时补充 fault 与保护路径的真实证据；
+- 增加受控、可测量的负载平台，以获得可重复的动态数据；
+- 根据具体硬件应用补充电流、温升和长期运行验证。
