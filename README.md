@@ -4,7 +4,7 @@
 
 ## 1. 项目状态
 
-当前主线处于 `v2.0-rtos-cmdqueue` 发布基线之后的控制调参补充阶段。
+当前主线处于 `v2.1-diagnostic-verification` 候选证据整理阶段。LD-001 / LD-002 / LD-003 负载扰动证据链已收口，但完整 v2.1 release tag 尚未创建。
 
 已经完成：
 
@@ -29,6 +29,42 @@
 `Kp=0.05` 是经过前馈基线、正反向全范围控制结果和轻载扰动结果共同支撑的已验证默认值。`APP_LOG_TICK=200` 仅曾用于提高测试观察密度，正式默认日志周期已经恢复为 `1000 ms`。
 
 当前不继续执行 ADC 目标源一致性、目标阶跃、Ki/Kd 试探、100 条命令压力、主动故障注入或正反转直接切换测试。
+
+## Verification Status / 验证状态
+
+### 已验证
+
+以下内容有仓库现有测试记录或 release 文档支撑，结论仅适用于记录中的固件、硬件和人工测试条件：
+
+- UART 目标源下的基本命令链路已经通过手动验证；
+- LD-001 / LD-002 / LD-003 三档人工轻载负载扰动趋势验证已经完成；
+- 在 `target=500/600/700` 下，施加轻载后观察到 actual 均值下降、PWM 均值上升；
+- `RELEASE_LOAD_CONFIRMED` 后，actual/PWM 回到各自 baseline 附近；
+- 三组负载扰动测试均未记录 fault；
+- stop 后软件状态与 PWM 命令归零；
+- `get fault` 无快照分支返回 `FAULT_SNAPSHOT_NONE`。
+
+### 待验证 / 可延期
+
+- Python 串口半自动回归；
+- 非法命令 / 越界命令 / run-stop 的候选固件回归；
+- status 字段完整性专项检查；
+- 真实 fault snapshot 有快照分支；
+- demo video；
+- 示波器 / 逻辑分析仪 / 电流测量；
+- 长时间稳定性测试。
+
+### 不能外推
+
+- 当前项目不是工业级电机控制器；
+- 当前人工轻载测试不能证明精确动态性能；
+- 当前人工轻载测试不能证明恢复时间、控制带宽或频响；
+- 当前测试结果不能证明长期可靠性；
+- 当前测试结果不能证明工业级电机控制能力；
+- 当前 PID 参数和测试结果不能外推到其他电机、驱动板、供电、负载或 PID 参数；
+- 人工负载大小不可量化；
+- 当前测试结果不能证明所有异常场景都已覆盖；
+- 当前项目不包含 FOC、伺服控制、OTA、无线维护或洗袜机功能。
 
 ## 2. 主要功能
 
@@ -154,7 +190,21 @@ adc1, adc2, fault, kp, ki, kd
 - [v2.0 release 诊断摘要](release/v2.0-rtos-cmdqueue/DIAGNOSIS_SUMMARY.md)
 - [release 文件校验值](release/v2.0-rtos-cmdqueue/SHA256SUMS.txt)
 
-`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。部分控制测试原始日志保存在项目目录外，证据完整度和人工确认项以《验证记录归档审计》为准；没有归档的日志不会被表述为已经完整纳入仓库。
+v2.1 候选证据链资料：
+
+- [v2.1 验证计划](docs/verification/v2.1_verification_plan.md)
+- [日志字段字典](docs/verification/log_field_dictionary.md)
+- [负载扰动测试计划](docs/verification/load_disturbance_test_plan.md)
+- [v2.1 Release 检查表](docs/verification/release_checklist_v2.1.md)
+- [LD-001 负载扰动报告](reports/v2.1_LD-001_report.md)
+- [LD-002 负载扰动报告](reports/v2.1_LD-002_report.md)
+- [LD-003 负载扰动报告](reports/v2.1_LD-003_report.md)
+- [v2.1 负载扰动汇总报告](reports/v2.1_load_disturbance_summary.md)
+- [v2.1 证据索引](reports/v2.1_evidence_index.md)
+- [v2.1 release notes 草稿](reports/v2.1_release_notes_draft.md)
+- [v2.1 历史测试记录索引](reports/v2.1_legacy_test_records.md)
+
+`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。v2.1 当前仅完成候选证据链整理与负载扰动证据链收口，不表示 v2.1 已正式发布。部分控制测试原始日志保存在项目目录外，证据完整度和人工确认项以《验证记录归档审计》和 v2.1 证据索引为准；没有归档的日志不会被表述为已经完整纳入仓库。
 
 ## 8. 已知边界
 

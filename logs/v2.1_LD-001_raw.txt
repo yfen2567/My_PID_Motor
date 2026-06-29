@@ -1,0 +1,359 @@
+LD-001 raw LLCOM log
+Target: load disturbance test, target = 500
+Log file: F:/hal_stm32_project/My_PID_Motor/logs/v2.1_LD-001_raw.txt
+Line ending: CRLF, \r\n
+Command delay: 200 ms
+Status interval: 300 ms
+Baseline status count: 10
+Apply load status count: 8
+Release status count: 15
+Start time: 2026-06-29 09:55:40
+Important: MARK is not sent to STM32. MARK is only written to log and LLCOM console.
+========================================
+
+[2026-06-29 09:55:40] MARK: TEST_START
+
+[2026-06-29 09:55:40] TX ASCII: stop\r\n
+
+[2026-06-29 09:55:40] RX ASCII: ms:13740,enable:0,State:IDLE,source:ADC,target:552,actual:0,delta:0,PWM:0,adc1:2264,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:40] RX ASCII: ms:13528,enable:0,State:IDLE,source:ADC,target:552,actual:0,delta:0,PWM:0,adc1:2263,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:40] TX ASCII: status\r\n
+
+[2026-06-29 09:55:41] RX ASCII: ms:13953,enable:0,State:IDLE,source:ADC,target:552,actual:0,delta:0,PWM:0,adc1:2257,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:13968,enable:0,State:IDLE,source:ADC,target:552,actual:0,delta:0,PWM:0,adc1:2256,adc2:2049,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:41] TX ASCII: set target uart\r\n
+
+[2026-06-29 09:55:41] RX ASCII: ms:14165,enable:0,State:IDLE,source:ADC,target:552,actual:0,delta:0,PWM:0,adc1:2262,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:41] TX ASCII: kp=0.05\r\n
+
+[2026-06-29 09:55:41] RX ASCII: ms:14377,enable:0,State:IDLE,source:Uart,target:552,actual:0,delta:0,PWM:0,adc1:2260,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:41] TX ASCII: ki=0\r\n
+
+[2026-06-29 09:55:41] RX ASCII: ms:14589,enable:0,State:IDLE,source:Uart,target:552,actual:0,delta:0,PWM:0,adc1:2260,adc2:2054,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:41] TX ASCII: kd=0\r\n
+
+[2026-06-29 09:55:41] RX ASCII: ms:14801,enable:0,State:IDLE,source:Uart,target:552,actual:0,delta:0,PWM:0,adc1:2263,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:41] TX ASCII: t=500\r\n
+
+[2026-06-29 09:55:42] RX ASCII: ms:15013,enable:0,State:IDLE,source:Uart,target:552,actual:0,delta:0,PWM:0,adc1:2261,adc2:2061,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:42] TX ASCII: run=1\r\n
+
+[2026-06-29 09:55:42] RX ASCII: ms:15225,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2267,adc2:2052,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nOK:CMD_QUEUED\r\n
+
+[2026-06-29 09:55:42] MARK: BASELINE_START
+
+[2026-06-29 09:55:42] TX ASCII: status\r\n
+
+[2026-06-29 09:55:42] MARK: BASELINE_START_STATUS_1/10
+
+[2026-06-29 09:55:42] RX ASCII: ms:15437,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2263,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:15506,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2263,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:42] RX ASCII: ms:15649,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2264,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:42] TX ASCII: status\r\n
+
+[2026-06-29 09:55:42] MARK: BASELINE_START_STATUS_2/10
+
+[2026-06-29 09:55:42] RX ASCII: ms:15833,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2257,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:15861,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2260,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:43] TX ASCII: status\r\n
+
+[2026-06-29 09:55:43] MARK: BASELINE_START_STATUS_3/10
+
+[2026-06-29 09:55:43] RX ASCII: ms:16073,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2258,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:16165,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2261,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:43] RX ASCII: ms:16285,enable:1,State:RUN,source:Uart,target:500,actual:557,delta:3,PWM:112,adc1:2261,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:43] TX ASCII: status\r\n
+
+[2026-06-29 09:55:43] MARK: BASELINE_START_STATUS_4/10
+
+[2026-06-29 09:55:43] RX ASCII: ms:16492,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2265,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:16504,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2263,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:43] TX ASCII: status\r\n
+
+[2026-06-29 09:55:43] MARK: BASELINE_START_STATUS_5/10
+
+[2026-06-29 09:55:43] RX ASCII: ms:16716,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2260,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:16819,enable:1,State:RUN,source:Uart,target:500,actual:557,delta:3,PWM:112,adc1:2264,adc2:2061,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:44] RX ASCII: ms:16928,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2263,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:44] TX ASCII: status\r\n
+
+[2026-06-29 09:55:44] MARK: BASELINE_START_STATUS_6/10
+
+[2026-06-29 09:55:44] RX ASCII: ms:17140,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2262,adc2:2054,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:17151,enable:1,State:RUN,source:Uart,target:500,actual:557,delta:3,PWM:112,adc1:2258,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:44] TX ASCII: status\r\n
+
+[2026-06-29 09:55:44] MARK: BASELINE_START_STATUS_7/10
+
+[2026-06-29 09:55:44] RX ASCII: ms:17364,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2261,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:17479,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2263,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:17576,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2062,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:44] TX ASCII: status\r\n
+
+[2026-06-29 09:55:44] MARK: BASELINE_START_STATUS_8/10
+
+[2026-06-29 09:55:44] RX ASCII: ms:17788,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2265,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:17821,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2263,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:45] RX ASCII: ms:18000,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2267,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:45] TX ASCII: status\r\n
+
+[2026-06-29 09:55:45] MARK: BASELINE_START_STATUS_9/10
+
+[2026-06-29 09:55:45] RX ASCII: ms:18148,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2262,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:18212,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2265,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:45] TX ASCII: status\r\n
+
+[2026-06-29 09:55:45] MARK: BASELINE_START_STATUS_10/10
+
+[2026-06-29 09:55:45] RX ASCII: ms:18424,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2261,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:18470,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2264,adc2:2052,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:45] RX ASCII: ms:18636,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2260,adc2:2061,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:45] MARK: APPLY_LOAD_PREPARE
+
+[2026-06-29 09:55:45] RX ASCII: ms:18848,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2261,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:46] RX ASCII: ms:19060,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2265,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:46] RX ASCII: ms:19272,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2260,adc2:2061,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:46] RX ASCII: ms:19484,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2260,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:46] MARK: APPLY_LOAD_NOW
+
+[2026-06-29 09:55:46] MARK: OPERATOR_ACTION: APPLY_LIGHT_LOAD_NOW
+
+[2026-06-29 09:55:46] MARK: APPLY_LOAD_STATUS
+
+[2026-06-29 09:55:46] TX ASCII: status\r\n
+
+[2026-06-29 09:55:46] MARK: APPLY_LOAD_STATUS_STATUS_1/8
+
+[2026-06-29 09:55:46] RX ASCII: ms:19696,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2247,adc2:2047,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:46] RX ASCII: ms:19847,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2263,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:19908,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2256,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:47] TX ASCII: status\r\n
+
+[2026-06-29 09:55:47] MARK: APPLY_LOAD_STATUS_STATUS_2/8
+
+[2026-06-29 09:55:47] RX ASCII: ms:20120,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2255,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:20179,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2063,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:47] RX ASCII: ms:20332,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2254,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:47] TX ASCII: status\r\n
+
+[2026-06-29 09:55:47] MARK: APPLY_LOAD_STATUS_STATUS_3/8
+
+[2026-06-29 09:55:47] RX ASCII: ms:20506,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2258,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:20544,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2257,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:47] TX ASCII: status\r\n
+
+[2026-06-29 09:55:47] MARK: APPLY_LOAD_STATUS_STATUS_4/8
+
+[2026-06-29 09:55:47] RX ASCII: ms:20756,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2256,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:20848,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2273,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:48] RX ASCII: ms:20968,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2262,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:48] TX ASCII: status\r\n
+
+[2026-06-29 09:55:48] MARK: APPLY_LOAD_STATUS_STATUS_5/8
+
+[2026-06-29 09:55:48] RX ASCII: ms:21180,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2262,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:21192,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2260,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:48] TX ASCII: status\r\n
+
+[2026-06-29 09:55:48] MARK: APPLY_LOAD_STATUS_STATUS_6/8
+
+[2026-06-29 09:55:48] RX ASCII: ms:21404,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:21522,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2250,adc2:2049,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:21616,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2264,adc2:2052,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:48] TX ASCII: status\r\n
+
+[2026-06-29 09:55:48] MARK: APPLY_LOAD_STATUS_STATUS_7/8
+
+[2026-06-29 09:55:48] RX ASCII: ms:21828,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2264,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:21854,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2262,adc2:2063,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:49] RX ASCII: ms:22040,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2262,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:49] TX ASCII: status\r\n
+
+[2026-06-29 09:55:49] MARK: APPLY_LOAD_STATUS_STATUS_8/8
+
+[2026-06-29 09:55:49] RX ASCII: ms:22186,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2258,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:22252,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2273,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:49] MARK: RELEASE_LOAD_PREPARE
+
+[2026-06-29 09:55:49] RX ASCII: ms:22464,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2063,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:49] RX ASCII: ms:22676,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:49] RX ASCII: ms:22888,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2258,adc2:2062,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:50] RX ASCII: ms:23100,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:3,PWM:118,adc1:2258,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:50] RX ASCII: ms:23312,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2259,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:50] MARK: RELEASE_LOAD_NOW
+
+[2026-06-29 09:55:50] MARK: OPERATOR_ACTION: FULLY_RELEASE_LOAD_NOW
+
+[2026-06-29 09:55:50] RX ASCII: ms:23524,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2266,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:50] RX ASCII: ms:23736,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2267,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:51] RX ASCII: ms:23948,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:51] RX ASCII: ms:24160,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2260,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:51] RX ASCII: ms:24372,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2264,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:51] MARK: RELEASE_LOAD_CONFIRMED
+
+[2026-06-29 09:55:51] MARK: RELEASE_STATUS
+
+[2026-06-29 09:55:51] TX ASCII: status\r\n
+
+[2026-06-29 09:55:51] MARK: RELEASE_STATUS_STATUS_1/15
+
+[2026-06-29 09:55:51] RX ASCII: ms:24573,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2054,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:24585,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2260,adc2:2061,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:51] TX ASCII: status\r\n
+
+[2026-06-29 09:55:51] MARK: RELEASE_STATUS_STATUS_2/15
+
+[2026-06-29 09:55:51] RX ASCII: ms:24797,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:24895,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2263,adc2:2054,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:52] RX ASCII: ms:25009,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2261,adc2:2061,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:52] TX ASCII: status\r\n
+
+[2026-06-29 09:55:52] MARK: RELEASE_STATUS_STATUS_3/15
+
+[2026-06-29 09:55:52] RX ASCII: ms:25221,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2261,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:25232,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:3,PWM:118,adc1:2254,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:52] TX ASCII: status\r\n
+
+[2026-06-29 09:55:52] MARK: RELEASE_STATUS_STATUS_4/15
+
+[2026-06-29 09:55:52] RX ASCII: ms:25445,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2260,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:52] RX ASCII: ms:25560,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2265,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:25657,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:52] TX ASCII: status\r\n
+
+[2026-06-29 09:55:52] MARK: RELEASE_STATUS_STATUS_5/15
+
+[2026-06-29 09:55:52] RX ASCII: ms:25869,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:25902,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2260,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:53] RX ASCII: ms:26081,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:53] TX ASCII: status\r\n
+
+[2026-06-29 09:55:53] MARK: RELEASE_STATUS_STATUS_6/15
+
+[2026-06-29 09:55:53] RX ASCII: ms:26239,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2052,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:26293,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2258,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:53] TX ASCII: status\r\n
+
+[2026-06-29 09:55:53] MARK: RELEASE_STATUS_STATUS_7/15
+
+[2026-06-29 09:55:53] RX ASCII: ms:26505,enable:1,State:RUN,source:Uart,target:500,actual:557,delta:3,PWM:112,adc1:2259,adc2:2062,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:26566,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2261,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:53] RX ASCII: ms:26717,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:3,PWM:118,adc1:2261,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:53] TX ASCII: status\r\n
+
+[2026-06-29 09:55:53] MARK: RELEASE_STATUS_STATUS_8/15
+
+[2026-06-29 09:55:53] RX ASCII: ms:26898,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2262,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:26929,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2261,adc2:2058,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:54] TX ASCII: status\r\n
+
+[2026-06-29 09:55:54] MARK: RELEASE_STATUS_STATUS_9/15
+
+[2026-06-29 09:55:54] RX ASCII: ms:27141,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2261,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:27240,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2261,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:54] RX ASCII: ms:27353,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2263,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:54] TX ASCII: status\r\n
+
+[2026-06-29 09:55:54] MARK: RELEASE_STATUS_STATUS_10/15
+
+[2026-06-29 09:55:54] RX ASCII: ms:27565,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2266,adc2:2054,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:27572,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2266,adc2:2054,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:54] RX ASCII: ms:27789,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2258,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:54] TX ASCII: status\r\n
+
+[2026-06-29 09:55:54] MARK: RELEASE_STATUS_STATUS_11/15
+
+[2026-06-29 09:55:55] RX ASCII: ms:27914,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:4,PWM:114,adc1:2263,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:28001,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2258,adc2:2059,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:55] TX ASCII: status\r\n
+
+[2026-06-29 09:55:55] MARK: RELEASE_STATUS_STATUS_12/15
+
+[2026-06-29 09:55:55] RX ASCII: ms:28213,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2260,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:28251,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2262,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:55] RX ASCII: ms:28425,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2261,adc2:2055,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:55] TX ASCII: status\r\n
+
+[2026-06-29 09:55:55] MARK: RELEASE_STATUS_STATUS_13/15
+
+[2026-06-29 09:55:55] RX ASCII: ms:28578,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2262,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:28637,enable:1,State:RUN,source:Uart,target:500,actual:557,delta:3,PWM:112,adc1:2265,adc2:2062,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:55] TX ASCII: status\r\n
+
+[2026-06-29 09:55:55] MARK: RELEASE_STATUS_STATUS_14/15
+
+[2026-06-29 09:55:55] RX ASCII: ms:28849,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2265,adc2:2064,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:28920,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2265,adc2:2062,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] RX ASCII: ms:29061,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2265,adc2:2064,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] TX ASCII: status\r\n
+
+[2026-06-29 09:55:56] MARK: RELEASE_STATUS_STATUS_15/15
+
+[2026-06-29 09:55:56] RX ASCII: ms:29247,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2262,adc2:2051,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\nms:29273,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2265,adc2:2052,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] MARK: STOP_AND_FINAL_STATUS
+
+[2026-06-29 09:55:56] TX ASCII: stop\r\n
+
+[2026-06-29 09:55:56] RX ASCII: ms:29485,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2262,adc2:2063,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] RX ASCII: OK:CMD_QUEUED\r\nms:29697,enable:0,State:IDLE,source:Uart,target:500,actual:-85,delta:0,PWM:0,adc1:2260,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] TX ASCII: status\r\n
+
+[2026-06-29 09:55:56] RX ASCII: ms:29820,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2256,adc2:2052,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] RX ASCII: ms:29909,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2260,adc2:2057,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:56] TX ASCII: get fault\r\n
+
+[2026-06-29 09:55:57] RX ASCII: FAULT_SNAPSHOT_NONE\r\nms:30121,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2259,adc2:2056,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:57] MARK: TEST_DONE
+
+[2026-06-29 09:55:57] RX ASCII: ms:30333,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2258,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:57] RX ASCII: ms:30545,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2265,adc2:2060,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:57] RX ASCII: ms:30757,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2261,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:58] RX ASCII: ms:30969,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2261,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+
+[2026-06-29 09:55:58] RX ASCII: ms:31181,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2261,adc2:2053,fault:NONE,kp:0.050,ki:0.000,kd:0.000\r\n
+

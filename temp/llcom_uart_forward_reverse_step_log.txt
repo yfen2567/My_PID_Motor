@@ -1,0 +1,27 @@
+LLCOM UART forward/reverse motor step test log
+ASCII + HEX compact version
+Test sequence:
+run=1 -> t=400 -> wait 3s -> t=600 -> wait 3s -> t=800 -> wait 3s -> t=-400 -> wait 3s -> stop -> status
+Line ending: CRLF, \r\n
+Command delay: 200 ms
+Stage delay: 3000 ms
+Start time: 2026-06-27 19:33:09
+========================================
+
+[2026-06-27 19:33:09] MARK: TEST_START forward/reverse step test
+
+[2026-06-27 19:33:09] MARK: ABOUT_TO_RUN
+
+[2026-06-27 19:33:09] TX ASCII: run=1\r\n
+[2026-06-27 19:33:09] TX HEX  : 72 75 6E 3D 31 0D 0A
+
+[2026-06-27 19:33:09] MARK: SET_TARGET_FORWARD_400
+
+[2026-06-27 19:33:09] TX ASCII: t=400\r\n
+[2026-06-27 19:33:09] TX HEX  : 74 3D 34 30 30 0D 0A
+
+[2026-06-27 19:33:09] TX ASCII: status\r\n
+[2026-06-27 19:33:09] TX HEX  : 73 74 61 74 75 73 0D 0A
+
+[2026-06-27 19:33:09] MARK: OBSERVE_FORWARD_400_FOR_3_SECONDS
+
