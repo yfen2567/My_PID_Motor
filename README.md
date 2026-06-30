@@ -4,7 +4,7 @@
 
 ## 1. 项目状态
 
-当前主线处于 `v2.1-diagnostic-verification` 候选证据整理阶段。LD-001 / LD-002 / LD-003 负载扰动证据链已收口，但完整 v2.1 release tag 尚未创建。
+当前主线处于 `v2.1-diagnostic-verification` 本地证据封版阶段。LD-001 / LD-002 / LD-003 负载扰动证据链与 Debug Clean + Build 记录已经收口；本状态不代表工业级验证或远程 release 已发布。
 
 已经完成：
 
@@ -201,10 +201,12 @@ v2.1 候选证据链资料：
 - [LD-003 负载扰动报告](reports/v2.1_LD-003_report.md)
 - [v2.1 负载扰动汇总报告](reports/v2.1_load_disturbance_summary.md)
 - [v2.1 证据索引](reports/v2.1_evidence_index.md)
-- [v2.1 release notes 草稿](reports/v2.1_release_notes_draft.md)
+- [v2.1 release notes](reports/v2.1_release_notes.md)
+- [v2.1 Debug 构建 manifest](reports/v2.1_build_manifest.md)
+- [v2.1 Build Console](reports/v2.1_build_console.txt)
 - [v2.1 历史测试记录索引](reports/v2.1_legacy_test_records.md)
 
-`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。v2.1 当前仅完成候选证据链整理与负载扰动证据链收口，不表示 v2.1 已正式发布。部分控制测试原始日志保存在项目目录外，证据完整度和人工确认项以《验证记录归档审计》和 v2.1 证据索引为准；没有归档的日志不会被表述为已经完整纳入仓库。
+`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。v2.1 当前完成的是本地诊断验证证据封版，不表示远程 release 已发布。部分控制测试原始日志保存在项目目录外，证据完整度和人工确认项以《验证记录归档审计》和 v2.1 证据索引为准；没有归档的日志不会被表述为已经完整纳入仓库。
 
 ## 8. 已知边界
 

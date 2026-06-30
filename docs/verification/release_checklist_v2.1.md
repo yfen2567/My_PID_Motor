@@ -10,8 +10,8 @@
 - [x] 已建立本 Release checklist；
 - [x] README 已包含 `Verification Status / 验证状态` 边界说明；
 - [x] LD-001/002/003 负载扰动子范围已经冻结并形成汇总报告；
-- [ ] 完整 v2.1 diagnostic release tag 的整体实际范围已经最终冻结；
-- [x] 未执行项、延期项和不能外推的结论已在负载扰动汇总报告和 release notes 草稿中明确。
+- [x] `v2.1-diagnostic-verification` 本地证据封版范围已经冻结；
+- [x] 未执行项、延期项和不能外推的结论已在负载扰动汇总报告和最终 release notes 中明确。
 
 勾选 `[x]` 仅表示文档骨架已经存在，不表示对应测试已经通过。
 
@@ -40,17 +40,16 @@
 
 ## 4. 版本与构建产物
 
-- [x] 已记录当前源码基线 HEAD：`dd72ccc8b44cb0235c7c6e505b719adaa48d12b5`（工作区未提交，不能代表完整证据链）；
-- [ ] 已记录包含全部候选证据的最终 commit hash；
-- [x] 当前工作树状态已经记录；
-- [ ] 已记录 STM32CubeIDE、固件包和工具链版本；
-- [ ] 已记录构建命令或 CubeIDE 构建配置；
-- [ ] 构建成功且警告/错误情况已记录；
-- [x] 已盘点现有 ELF 的文件名、大小、生成时间和 SHA-256，但尚未确认其为 v2.1 最终候选产物；
-- [ ] 已记录 v2.1 最终候选 ELF/HEX/BIN 的文件名、大小和生成时间；
-- [ ] 已计算 v2.1 最终候选构建产物 SHA-256；
+- [x] 已记录构建输入 HEAD：`c373bda0347ac860d7513e8a5432673917bce21b`；
+- [x] 已保存完整 Build Console：`reports/v2.1_build_console.txt`；
+- [x] 已记录构建配置 `Debug` 和构建命令 `make -j24 all`；
+- [x] Build Console 明确记录构建成功：`0 errors, 0 warnings`；
+- [x] Debug Makefile 工具链标注 `GNU Tools for STM32 (13.3.rel1)`；
+- [ ] STM32CubeIDE 与固件包的精确版本未在 Build Console 中记录；
+- [x] 已记录 ELF/MAP/LIST 的文件名、大小、生成时间和 SHA-256；
+- [x] HEX/BIN 未生成，已明确不纳入 v2.1；
 - [x] LD-001/002/003 正式原始日志及证据文件已计算 SHA-256；
-- [ ] 构建产物、commit 和测试日志能够建立唯一对应关系。
+- [ ] 最终封版 commit、构建产物和测试日志的对应关系需在本地 commit/tag 完成后核对。
 
 ## 5. README 与演示材料
 
@@ -58,8 +57,8 @@
 - [x] README 已说明 PID 参数不能外推到其他电机、负载或驱动板；
 - [x] README 已说明测试不能证明长期可靠性或覆盖全部异常；
 - [x] README 的“已验证/待验证”状态已按 LD-001/002/003 完成事实更新；
-- [x] 已建立 `reports/v2.1_release_notes_draft.md` 草稿；
-- [ ] 已形成项目负责人确认的最终 release notes；
+- [x] 已保留 `reports/v2.1_release_notes_draft.md` 草稿；
+- [x] 已形成 `reports/v2.1_release_notes.md` 最终证据封版说明；
 - [ ] 如录制演示视频，视频注明固件 commit、测试条件和对应日志（可延期）；
 - [x] 演示视频当前明确标记为延期。
 
@@ -69,10 +68,14 @@
 
 - 演示视频；
 - Python 串口半自动回归；
+- 非法命令 / 越界命令专项回归；
+- run / stop 行为专项回归；
+- status 字段完整性专项检查；
 - 真实 fault snapshot 的有快照分支验证（前提是没有自然 fault，且不将其列为已验证能力）；
 - 示波器/逻辑分析仪波形和电流测量；
 - 日志可视化或自动生成图表；
 - ADC target 的专项验证；
+- HEX / BIN 发布包；
 - 与本次诊断封版无关的 GUI、上位机或新功能。
 
 延期项不能是未解释的安全异常，也不能与 release 声明中的已验证结论冲突。
@@ -94,17 +97,15 @@ v2.1 load-disturbance evidence freeze 可以收口
 
 但这不等于完整 v2.1 diagnostic release 已发布，也不授权自动创建 tag。
 
-### 7.2 完整 v2.1 diagnostic release tag
+### 7.2 本地 v2.1 diagnostic evidence tag
 
-- [ ] README、验证计划、报告和 release notes 的最终表述彼此一致；
-- [ ] 已记录包含全部候选证据的最终 commit hash；
-- [ ] 已记录 STM32CubeIDE、固件包、工具链版本和构建配置；
-- [ ] 已记录 v2.1 最终候选 ELF/HEX/BIN 的文件名、大小和生成时间；
-- [ ] 已计算 v2.1 最终候选构建产物 SHA-256；
-- [ ] commit、构建产物和测试日志能够建立唯一对应关系；
-- [ ] 所有阻断性异常已关闭，或决定不发布；
-- [ ] 最终工作树状态已检查，待发布文件已由项目负责人确认；
-- [ ] 若 release notes 声称包含 Python 串口半自动回归、非法/越界命令回归或 status 完整性专项检查，则必须补齐对应证据；否则必须在 release notes 中明确延期；
-- [ ] 项目负责人已经人工审阅本检查表并授权后续 tag 操作。
+- [x] README、验证计划、报告和最终 release notes 的表述彼此一致；
+- [x] Build Console、Debug ELF/MAP/LIST 和 SHA-256 已记录；
+- [x] HEX/BIN 未生成并明确排除，不冒充完整发布包；
+- [x] Python、非法/越界/run-stop、status、真实 snapshot、视频、仪器测量和 ADC 专项均明确延期；
+- [x] 当前没有未解释的阻断性安全异常；
+- [x] 最终 diff 和工作树状态已在 commit 前检查，变更仅限允许的证据文档；
+- [x] 项目负责人已在本任务中授权本地 commit 和本地 annotated tag；
+- [x] 明确禁止自动 push、远程 tag 或 GitHub Release。
 
-上述必需项完成前，不应把 v2.1 描述为“诊断验证已完成”，也不应创建 tag。
+本地 tag 只标记诊断验证证据封版，不代表工业级验证，也不代表远程 release 已发布。
