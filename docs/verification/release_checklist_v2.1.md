@@ -49,7 +49,7 @@
 - [x] 已记录 ELF/MAP/LIST 的文件名、大小、生成时间和 SHA-256；
 - [x] HEX/BIN 未生成，已明确不纳入 v2.1；
 - [x] LD-001/002/003 正式原始日志及证据文件已计算 SHA-256；
-- [ ] 最终封版 commit、构建产物和测试日志的对应关系需在本地 commit/tag 完成后核对。
+- [x] 最终封版 commit、构建产物和测试日志的对应关系已通过 `git show --stat v2.1-diagnostic-verification` 核对；tag 变更仅限证据文档，不涉及源码或工程配置。
 
 ## 5. README 与演示材料
 
