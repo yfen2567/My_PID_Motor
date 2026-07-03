@@ -14,6 +14,8 @@
 #include "tim.h"
 #include "App_Cmd.h"
 #include "LogTask.h"
+#include "ParamStore.h"
+
 static volatile uint8_t s_adc_target_enable = 1;
 static volatile uint8_t s_pwm_start_boost_tick=0;
 static volatile uint8_t s_pwm_start_boost_active=0;
@@ -27,7 +29,12 @@ static volatile uint8_t s_motor_pwm_saturation_count=0;
 static FaultSnapshot_t s_fault_snapshot;
 //初始化
 void Control_Init(){
+	ParamStore_Param_t params;
 	PID_Init(&s_pid, APP_PID_DEFAULT_KP, APP_PID_DEFAULT_KI, APP_PID_DEFAULT_KD, APP_CONTROL_DT_SEC, APP_PID_OUTPUT_MAX);
+	if(ParamStore_Load(&params))
+	{
+		PID_SetGains(&s_pid, params.kp, params.ki, params.kd);
+	}
 	ADC_Init();
 	s_motor_status=(Motor_Status_t){0};
 
@@ -447,6 +454,8 @@ FaultSnapshot_t Control_GetFaultShot(){
 
 }
 
+
+
 void Control_ApplyCommand(const App_Cmd_t *cmd){
 	if(cmd == 0){
 		return;
@@ -486,6 +495,7 @@ void Control_ApplyCommand(const App_Cmd_t *cmd){
 		Control_PID_Rst();
 	    Control_ResetFault();
 	    break;
+
 
 	default:
 		LogTask_PrintFaultSnapshot();

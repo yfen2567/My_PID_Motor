@@ -64,6 +64,7 @@ static void CmdTask_ProcessLine(void)
         return;
     }
 
+
     result = Cmd_Service_PostControlCommand(&cmd);
     switch (result)
     {

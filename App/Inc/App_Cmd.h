@@ -29,7 +29,11 @@ typedef enum{
 
 	    APP_CMD_STATUS,
 	    APP_CMD_HELP,
-	    APP_CMD_GET_FAULT
+	    APP_CMD_GET_FAULT,
+
+		APP_CMD_LOAD_PARAMS,
+		APP_CMD_SAVE_PARAMS,
+		APP_CMD_RESET_PARAMS,
 
 }App_Cmd_Type_t;
 

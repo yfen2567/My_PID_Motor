@@ -168,5 +168,23 @@ bool App_Cmd_Parse(const char *line, App_Cmd_t *cmd)
         return true;
     }
 
+    if(strcmp(line, "load params") == 0)
+    {
+    	cmd->type = APP_CMD_LOAD_PARAMS;
+    	return true;
+    }
+
+    if(strcmp(line, "save params") == 0)
+    {
+    	cmd->type = APP_CMD_SAVE_PARAMS;
+    	return true;
+    }
+
+    if(strcmp(line, "load params") == 0)
+    {
+    	cmd->type = APP_CMD_RESET_PARAMS;
+    	return true;
+    }
+
     return false;
 }
