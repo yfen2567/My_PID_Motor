@@ -51,6 +51,21 @@ typedef enum
     APP_CMD_PARSE_OUT_OF_RANGE
 } App_Cmd_ParseResult_t;
 
+typedef enum
+{
+    APP_CMD_EXEC_OK = 0,
+    APP_CMD_EXEC_BAD_ARG,
+    APP_CMD_EXEC_NOT_IDLE,
+    APP_CMD_EXEC_BUSY,
+    APP_CMD_EXEC_INVALID_STATE,
+    APP_CMD_EXEC_OUT_OF_RANGE,
+    APP_CMD_EXEC_QUEUE_FULL,
+    APP_CMD_EXEC_POOL_EMPTY,
+    APP_CMD_EXEC_STORAGE_READ_FAILED,
+    APP_CMD_EXEC_STORAGE_WRITE_FAILED,
+    APP_CMD_EXEC_UNSUPPORTED
+} App_Cmd_ExecResult_t;
+
 bool App_Cmd_Parse(const char *line, App_Cmd_t *cmd);
 
 #endif /* INC_APPCOMMAND_H_ */

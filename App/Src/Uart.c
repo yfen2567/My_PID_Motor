@@ -17,16 +17,19 @@
 
 static uint8_t s_uart_rx_idle_buf[APP_UART_RX_IDLE_CHUNK_SIZE];
 static uint8_t s_uart_ring_buf[APP_UART_RX_RING_SIZE];
-static volatile uint16_t s_uart_ring_head = 0;
-static volatile uint16_t s_uart_ring_tail = 0;
-static volatile uint8_t s_uart_ring_overflow = 0;
+static volatile uint16_t s_uart_ring_head;
+static volatile uint16_t s_uart_ring_tail;
+static volatile uint8_t s_uart_ring_overflow;
 static char s_uart_line_buf[APP_UART_LINE_SIZE];
-static uint16_t s_uart_line_len = 0;
-static uint8_t s_uart_line_discarding = 0;
+static uint16_t s_uart_line_len;
+static uint8_t s_uart_line_discarding;
 static char s_cmd_queue[APP_UART_LINE_QUEUE_DEPTH][APP_UART_LINE_SIZE];
-static uint8_t s_cmd_queue_head = 0;
-static uint8_t s_cmd_queue_tail = 0;
-static uint8_t s_cmd_queue_count = 0;
+static uint8_t s_cmd_queue_head;
+static uint8_t s_cmd_queue_tail;
+static uint8_t s_cmd_queue_count;
+static volatile uint8_t s_rx_restart_pending;
+static volatile uint16_t s_rx_restart_fail_count;
+static uint8_t s_uart_discard_too_long;
 
 static uint8_t Uart_LineQueueNext(uint8_t index)
 {
@@ -50,13 +53,24 @@ static uint8_t Uart_LineQueuePush(const char *line)
 	return 1;
 }
 
-static void Uart_StartReceiveToIdle(void)
+static uint8_t Uart_StartReceiveToIdle(void)
 {
+	if(huart1.RxState!=HAL_UART_STATE_READY)
+	{
+		s_rx_restart_pending=0U;
+		return 1U;
+	}
+
 	if (HAL_UARTEx_ReceiveToIdle_IT(&huart1,
 	                                s_uart_rx_idle_buf,
 	                                APP_UART_RX_IDLE_CHUNK_SIZE) != HAL_OK) {
-		Error_Handler();
+		s_rx_restart_pending=0U;
+		return 1U;
 	}
+
+	s_rx_restart_fail_count++;
+	s_rx_restart_pending=1U;
+	return 0U;
 }
 
 static uint16_t Uart_RingNext(uint16_t index)
@@ -125,6 +139,9 @@ void Uart_Init(void)
 	s_cmd_queue_head = 0;
 	s_cmd_queue_tail = 0;
 	s_cmd_queue_count = 0;
+	s_rx_restart_pending=0;
+	s_rx_restart_fail_count=0;
+	s_uart_discard_too_long=0;
 
 	Uart_StartReceiveToIdle();
 }
@@ -182,27 +199,36 @@ static void Uart_InvalidCmd(void)
 
 
 
-void Uart_Task(void)
+uint32_t Uart_Task(void)
 {
 	uint8_t ch = 0;
+	uint32_t events = 0U;
+
 
 	if (Uart_TakeRingOverflow() != 0) {
 		s_uart_line_len = 0;
 		s_uart_line_discarding = 1;
-		Uart_TxText("ERR:RX_OVERFLOW\r\n");
+		s_uart_discard_too_long=0;
+		events|=UART_EVENT_RX_OVERFLOW;
 	}
 
 	while (Uart_RingPop(&ch) != 0) {
-		if (ch == '\r' || ch == '\n') {
-			if (s_uart_line_discarding != 0) {
-				s_uart_line_discarding = 0;
-				s_uart_line_len = 0;
-				Uart_TxText("ERR:CMD_TOO_LONG\r\n");
-			}
+        if ((ch == '\r') || (ch == '\n'))
+        {
+            if (s_uart_line_discarding != 0U)
+            {
+                if (s_uart_discard_too_long != 0U)
+                {
+                    events |= UART_EVENT_CMD_TOO_LONG;
+                }
+                s_uart_line_discarding = 0U;
+                s_uart_line_len = 0U;
+                s_uart_discard_too_long = 0U;
+            }
 			else if (s_uart_line_len > 0) {
 				s_uart_line_buf[s_uart_line_len] = '\0';
 				if (Uart_LineQueuePush(s_uart_line_buf) == 0U) {
-					Uart_TxText("ERR:CMD_LINE_QUEUE_FULL\r\n");
+					events|=UART_EVENT_LINE_QUEUE_FULL;
 				}
 				s_uart_line_len = 0;
 			}
@@ -221,15 +247,19 @@ void Uart_Task(void)
 			else {
 				s_uart_line_len = 0;
 				s_uart_line_discarding = 1;
+				s_uart_discard_too_long = 1U;
 			}
 		}
 	}
+	return events;
 }
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-	if (huart->Instance == USART1) {
-		for (uint16_t i = 0; i < Size && i < APP_UART_RX_IDLE_CHUNK_SIZE; i++) {
+	if (huart->Instance == USART1)
+	{
+		for (uint16_t i = 0; i < Size && i < APP_UART_RX_IDLE_CHUNK_SIZE; i++)
+		{
 			Uart_RingPushFromIsr(s_uart_rx_idle_buf[i]);
 		}
 		Uart_StartReceiveToIdle();
@@ -238,7 +268,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-	if (huart->Instance == USART1) {
-		Uart_StartReceiveToIdle();
+	if (huart->Instance == USART1)
+	{
+		s_rx_restart_pending=1;
 	}
 }

@@ -147,12 +147,13 @@ void Control_ResetFault(){
 
 //目标速度限幅
 static int32_t Control_TargetSpeed_Limit(int32_t target_speed){
+	if(target_speed==APP_TARGET_SPEED_MIN){
+		return target_speed;
+	}
+
 	uint32_t abs_target_speed=0;
 	abs_target_speed=target_speed>0?target_speed:(-target_speed);
-	if(abs_target_speed<APP_TARGET_SPEED_MIN){
-		abs_target_speed=APP_TARGET_SPEED_MIN;
-		return abs_target_speed;
-	}
+
 	if(abs_target_speed>APP_TARGET_SPEED_MAX){
 		abs_target_speed=APP_TARGET_SPEED_MAX;
 	}

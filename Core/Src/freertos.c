@@ -81,6 +81,11 @@ osMutexId_t uartTxMutexHandle;
 const osMutexAttr_t uartTxMutex_attributes = {
   .name = "uartTxMutex"
 };
+/* Definitions for s_tx_done_Sem */
+osSemaphoreId_t s_tx_done_SemHandle;
+const osSemaphoreAttr_t s_tx_done_Sem_attributes = {
+  .name = "s_tx_done_Sem"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -129,6 +134,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
+
+  /* Create the semaphores(s) */
+  /* creation of s_tx_done_Sem */
+  s_tx_done_SemHandle = osSemaphoreNew(1, 0, &s_tx_done_Sem_attributes);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
