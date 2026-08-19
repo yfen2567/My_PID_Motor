@@ -30,6 +30,8 @@ static uint8_t s_cmd_queue_count;
 static volatile uint8_t s_rx_restart_pending;
 static volatile uint16_t s_rx_restart_fail_count;
 static uint8_t s_uart_discard_too_long;
+static volatile uint32_t s_max_line_len;
+static volatile uint8_t s_tx_active;
 
 static uint8_t Uart_LineQueueNext(uint8_t index)
 {
@@ -63,7 +65,7 @@ static uint8_t Uart_StartReceiveToIdle(void)
 
 	if (HAL_UARTEx_ReceiveToIdle_IT(&huart1,
 	                                s_uart_rx_idle_buf,
-	                                APP_UART_RX_IDLE_CHUNK_SIZE) != HAL_OK) {
+	                                APP_UART_RX_IDLE_CHUNK_SIZE) == HAL_OK) {
 		s_rx_restart_pending=0U;
 		return 1U;
 	}
@@ -142,7 +144,8 @@ void Uart_Init(void)
 	s_rx_restart_pending=0;
 	s_rx_restart_fail_count=0;
 	s_uart_discard_too_long=0;
-
+	s_max_line_len = 0U;
+	s_tx_active=0U;
 	Uart_StartReceiveToIdle();
 }
 
@@ -205,6 +208,8 @@ uint32_t Uart_Task(void)
 	uint32_t events = 0U;
 
 
+	if (s_rx_restart_pending != 0U) { (void)Uart_StartReceiveToIdle(); }
+
 	if (Uart_TakeRingOverflow() != 0) {
 		s_uart_line_len = 0;
 		s_uart_line_discarding = 1;
@@ -227,6 +232,7 @@ uint32_t Uart_Task(void)
             }
 			else if (s_uart_line_len > 0) {
 				s_uart_line_buf[s_uart_line_len] = '\0';
+				if (s_uart_line_len > s_max_line_len) { s_max_line_len = s_uart_line_len; }
 				if (Uart_LineQueuePush(s_uart_line_buf) == 0U) {
 					events|=UART_EVENT_LINE_QUEUE_FULL;
 				}
@@ -254,6 +260,40 @@ uint32_t Uart_Task(void)
 	return events;
 }
 
+
+bool Uart_WriteAsync(const uint8_t *data, uint16_t length)
+{
+    if ((data == NULL) || (length == 0U) || (s_tx_done_SemHandle == NULL) ||
+        (s_tx_active != 0U))
+    {
+        return false;
+    }
+
+    while (osSemaphoreAcquire(s_tx_done_SemHandle, 0U) == osOK) { }
+    s_tx_active = 1U;
+    if (HAL_UART_Transmit_IT(&huart1, (uint8_t *)data, length) != HAL_OK)
+    {
+        s_tx_active = 0U;
+        return false;
+    }
+    return true;
+}
+
+bool Uart_WaitTxComplete(uint32_t timeout_ms)
+{
+    uint32_t timeout_ticks;
+
+    timeout_ticks = pdMS_TO_TICKS(timeout_ms);
+    if ((s_tx_done_SemHandle == NULL) ||
+        (osSemaphoreAcquire(s_tx_done_SemHandle, timeout_ticks) != osOK))
+    {
+        (void)HAL_UART_AbortTransmit(&huart1);
+        s_tx_active = 0U;
+        return false;
+    }
+    return true;
+}
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == USART1)
@@ -264,6 +304,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 		}
 		Uart_StartReceiveToIdle();
 	}
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART1)
+    {
+        s_tx_active = 0U;
+        if (s_tx_done_SemHandle != NULL) { (void)osSemaphoreRelease(s_tx_done_SemHandle); }
+    }
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)

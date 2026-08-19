@@ -8,6 +8,8 @@
 #ifndef INC_UART_PROTOCOL_H_
 #define INC_UART_PROTOCOL_H_
 
+#include <stdint.h>
+
 typedef enum
 {
     UART_PROTOCOL_NOTICE_RX_OVERFLOW = 0,
@@ -28,6 +30,6 @@ typedef struct
     uint32_t comm_tx_queue_max;
     uint32_t cmd_queue_used;
     uint32_t cmd_queue_max;
-} Comm_StatsSnapshot_t;
+} Cmd_StatsSnapshot_t;
 
 #endif /* INC_UART_PROTOCOL_H_ */

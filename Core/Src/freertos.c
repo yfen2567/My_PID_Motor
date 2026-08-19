@@ -29,6 +29,7 @@
 #include "LogTask.h"
 #include "app_config.h"
 #include "Uart.h"
+#include "Cmd_Service.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,10 +72,15 @@ const osThreadAttr_t CmdTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for CmdQueue */
-osMessageQueueId_t CmdQueueHandle;
-const osMessageQueueAttr_t CmdQueue_attributes = {
-  .name = "CmdQueue"
+/* Definitions for ControlCmdQueue */
+osMessageQueueId_t ControlCmdQueueHandle;
+const osMessageQueueAttr_t ControlCmdQueue_attributes = {
+  .name = "ControlCmdQueue"
+};
+/* Definitions for UartTxMsgQueue */
+osMessageQueueId_t UartTxMsgQueueHandle;
+const osMessageQueueAttr_t UartTxMsgQueue_attributes = {
+  .name = "UartTxMsgQueue"
 };
 /* Definitions for uartTxMutex */
 osMutexId_t uartTxMutexHandle;
@@ -148,8 +154,11 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the queue(s) */
-  /* creation of CmdQueue */
-  CmdQueueHandle = osMessageQueueNew (16, sizeof(App_Cmd_t*), &CmdQueue_attributes);
+  /* creation of ControlCmdQueue */
+  ControlCmdQueueHandle = osMessageQueueNew (16, sizeof(App_Cmd_t*), &ControlCmdQueue_attributes);
+
+  /* creation of UartTxMsgQueue */
+  UartTxMsgQueueHandle = osMessageQueueNew (16, sizeof(Cmd_Message_t*), &UartTxMsgQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */

@@ -6,52 +6,8 @@
 #include "portable.h"
 #include "Uart_Protocol.h"
 
-typedef enum
-{
-    CMD_MESSAGE_NOTICE = 0,
-    CMD_MESSAGE_PARSE_ERROR,
-    CMD_MESSAGE_CMD_RESULT,
-	CMD_MESSAGE_STATUS,
-	CMD_MESSAGE_FAULT_SNAPSHOT,
-    CMD_MESSAGE_HELP,
-    CMD_MESSAGE_STATS
-} Cmd_MessageType_t;
-
-typedef struct
-{
-    App_Cmd_Type_t command;
-    App_Cmd_ExecResult_t result;
-} Comm_CommandResult_t;
-
-typedef struct
-{
-    Motor_Status_t status;
-    float kp;
-    float ki;
-    float kd;
-    uint8_t adc_target_enabled;
-    uint32_t tick_ms;
-} Comm_StatusMessage_t;
-
-typedef struct
-{
-    uint8_t valid;
-    FaultSnapshot_t snapshot;
-} Comm_FaultMessage_t;
-
-typedef struct
-{
-    Cmd_MessageType_t type;
-    union
-    {
-        Uart_ProtocolNotice_t notice;
-        App_Cmd_ParseResult_t parse_result;
-        Comm_CommandResult_t command_result;
-        Comm_StatusMessage_t status;
-        Comm_FaultMessage_t fault;
-        Comm_StatsSnapshot_t stats;
-    } payload;
-} Cmd_Message_t;
+static uint32_t s_dropped_count;
+static uint32_t s_queue_used_max;
 
 
 
@@ -65,7 +21,7 @@ Cmd_ServiceResult_t Cmd_Service_PostControlCommand(const App_Cmd_t *cmd)
         return CMD_SERVICE_BAD_ARG;
     }
 
-    if (CmdQueueHandle == NULL)
+    if (ControlCmdQueueHandle == NULL)
     {
         return CMD_SERVICE_QUEUE_NULL;
     }
@@ -78,7 +34,7 @@ Cmd_ServiceResult_t Cmd_Service_PostControlCommand(const App_Cmd_t *cmd)
 
     *queued_cmd = *cmd;
 
-    if (osMessageQueuePut(CmdQueueHandle, &queued_cmd, 0U, 0U) != osOK)
+    if (osMessageQueuePut(ControlCmdQueueHandle, &queued_cmd, 0U, 0U) != osOK)
     {
         vPortFree(queued_cmd);
         return CMD_SERVICE_QUEUE_FULL;
@@ -91,12 +47,12 @@ bool Cmd_Service_TryGetControlCommand(App_Cmd_t *cmd_out)
 {
     App_Cmd_t *cmd_ptr = NULL;
 
-    if ((cmd_out == NULL) || (CmdQueueHandle == NULL))
+    if ((cmd_out == NULL) || (ControlCmdQueueHandle == NULL))
     {
         return false;
     }
 
-    if (osMessageQueueGet(CmdQueueHandle, &cmd_ptr, NULL, 0U) != osOK)
+    if (osMessageQueueGet(ControlCmdQueueHandle, &cmd_ptr, NULL, 0U) != osOK)
     {
         return false;
     }
@@ -112,8 +68,50 @@ bool Cmd_Service_TryGetControlCommand(App_Cmd_t *cmd_out)
 }
 
 
+
+
 //串口消息_队列
+
+static void Comm_Service_Increment(uint32_t *counter)
+{
+	taskENTER_CRITICAL();
+	(*counter)++;
+	taskEXIT_CRITICAL();
+}
+
+static bool Cmd_Service_PostMessage(const Cmd_Message_t *message)
+{
+	uint32_t used;
+
+	if(message==NULL||UartTxMsgQueueHandle==NULL){return false;}
+	if(osMessageQueuePut(UartTxMsgQueueHandle, message, 0, 0)!=osOK)
+	{
+		Comm_Service_Increment(&s_dropped_count);
+		return false;
+	}
+
+	used=osMessageQueueGetCount(UartTxMsgQueueHandle);
+	taskENTER_CRITICAL();
+	if(used>s_queue_used_max)
+	{
+		s_queue_used_max=used;
+	}
+	taskEXIT_CRITICAL();
+	return true;
+}
+
 bool Cmd_Service_PostNotice(Uart_ProtocolNotice_t notice)
 {
-	return true;
+	Cmd_Message_t message={0};
+	message.type=CMD_MESSAGE_NOTICE;
+	message.payload.notice=notice;
+	return Cmd_Service_PostMessage(&message);
+}
+
+bool Comm_Service_PostParseError(App_Cmd_ParseResult_t result)
+{
+	Cmd_Message_t message={0};
+	message.type=CMD_MESSAGE_PARSE_ERROR;
+	message.payload.parse_result=result;
+	return Cmd_Service_PostMessage(&message);
 }

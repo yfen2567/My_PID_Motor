@@ -4,35 +4,60 @@
 #include "LogTask.h"
 #include "Uart.h"
 #include "app_config.h"
-
 #include "cmsis_os.h"
 
-static void CmdTask_ProcessLine(void);
+#define CMD_TASK_MAX_LINES_PER_CYCLE  4U
+
+static uint8_t CmdTask_ProcessLine(void);
 static void CmdTask_PrintHelp(void);
+
+static void CmdTask_PostUartEvents(uint32_t events)
+{
+	if((events&UART_EVENT_RX_OVERFLOW)!=0U)
+	{
+		(void)Cmd_Service_PostNotice(UART_PROTOCOL_NOTICE_RX_OVERFLOW);
+	}
+
+	if((events&UART_EVENT_LINE_QUEUE_FULL)!=0U)
+	{
+		(void)Cmd_Service_PostNotice(UART_PROTOCOL_NOTICE_CMD_LINE_QUEUE_FULL);
+	}
+
+	if((events&UART_EVENT_CMD_TOO_LONG)!=0U)
+	{
+		(void)Cmd_Service_PostParseError(APP_CMD_PARSE_TOO_LONG);
+	}
+}
 
 void StartCmdTask(void *argument)
 {
+	uint16_t count;
     (void)argument;
 
     for (;;)
     {
-        Uart_Task();
-        CmdTask_ProcessLine();
+        CmdTask_PostUartEvents(Uart_Task());
+        for(count=0U;count<CMD_TASK_MAX_LINES_PER_CYCLE;count++)
+        {
+        	if(CmdTask_ProcessLine()==0U){break;}
+        }
         osDelay(5U);
     }
 }
 
-static void CmdTask_ProcessLine(void)
+static uint8_t CmdTask_ProcessLine(void)
 {
     char line[APP_UART_LINE_SIZE];
     App_Cmd_t cmd;
     Cmd_ServiceResult_t result;
+    App_Cmd_ParseResult_t parse_result;
 
     if (Uart_ReadLine(line, sizeof(line)) == 0U)
     {
         return;
     }
 
+    parse_result=App_Cmd_Parse(line, &cmd);
     if (!App_Cmd_Parse(line, &cmd))
     {
         Uart_TxText("ERR:BAD_CMD\r\n");
