@@ -159,6 +159,44 @@ static void Uart_Protocol_FormatFloat3(char *buffer,
     }
 }
 
+static const char *Uart_Protocol_StateName(SystemState_t state)
+{
+    switch (state)
+    {
+        case SYS_IDLE:
+            return "IDLE";
+        case SYS_RUN:
+            return "RUN";
+        case SYS_FAULT:
+            return "FAULT";
+        case SYS_CALIB:
+            return "CALIB";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+
+
+static const char *Uart_Protocol_FaultName(FaultCode_t fault)
+{
+    switch (fault)
+    {
+        case FAULT_NONE:
+            return "NONE";
+        case FAULT_SPEED_OVER_LIMIT:
+            return "SPEED_OVER_LIMIT";
+        case FAULT_ENCODER_LOST:
+            return "ENCODER_LOST";
+        case FAULT_PWM_SATURATION:
+            return "PWM_SATURATION";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+
+
 uint16_t Uart_Protocol_FormatStatus(const Motor_Status_t *status,
                                     float kp,
                                     float ki,
@@ -201,5 +239,88 @@ uint16_t Uart_Protocol_FormatStatus(const Motor_Status_t *status,
         ki_text,
         kd_text);
 
+    return Uart_Protocol_FinalizeLength(written, buffer_size);
+}
+
+uint16_t Uart_Protocol_FormatFaultSnapshot(uint8_t valid,
+                                           const FaultSnapshot_t *snapshot,
+                                           char *buffer,
+                                           uint16_t buffer_size)
+{
+    int written;
+
+    if ((buffer == NULL) || (buffer_size == 0U))
+    {
+        return 0U;
+    }
+
+    if ((valid == 0U) || (snapshot == NULL))
+    {
+        return Uart_Protocol_CopyText(
+            "FAULT_SNAPSHOT_NONE\r\n", buffer, buffer_size);
+    }
+
+    written = snprintf(
+        buffer,
+        buffer_size,
+        "valid:%d,time:%lu,state:%s,fault:%s,T_speed:%ld,A_speed:%ld,pwm=%d,adc_target=%u,adc_aux=%u\r\n",
+        snapshot->valid,
+        (unsigned long)snapshot->tick_ms,
+        Uart_Protocol_StateName(snapshot->state),
+        Uart_Protocol_FaultName(snapshot->fault),
+        (long)snapshot->target_speed,
+        (long)snapshot->actual_speed,
+        snapshot->pwm,
+        (unsigned int)snapshot->adc_target,
+        (unsigned int)snapshot->adc_aux);
+
+    return Uart_Protocol_FinalizeLength(written, buffer_size);
+}
+
+uint16_t Uart_Protocol_FormatHelp(char *buffer, uint16_t buffer_size)
+{
+    return Uart_Protocol_CopyText(
+        "cmd:\r\n"
+        "  run=1:start\r\n"
+        "  stop\r\n"
+        "  t=num:set target\r\n"
+        "  set target adc\r\n"
+        "  set target uart\r\n"
+        "  kp=num:set kp 0.5\r\n"
+        "  ki=num:set ki 0.1\r\n"
+        "  kd=num:set kd 0\r\n"
+        "  save params\r\n"
+        "  load params\r\n"
+        "  reset params\r\n"
+        "  rst:reset\r\n"
+        "  status\r\n"
+        "  help | get fault | comm stats\r\n",
+        buffer,
+        buffer_size);
+}
+
+
+uint16_t Uart_Protocol_FormatStats(const Comm_StatsSnapshot_t *s,
+                                   char *buffer,
+                                   uint16_t buffer_size)
+{
+    int written;
+
+    if ((s == NULL) || (buffer == NULL) || (buffer_size == 0U)) { return 0U; }
+    written = snprintf(buffer, buffer_size,
+        "COMM_STATS rx_overflow:%lu,line_q_full:%lu,cmd_q_full:%lu,pool_fail:%lu,pool_max:%lu,tx_drop:%lu,tx_error:%lu,rx_restart_fail:%lu,max_line:%lu,comm_q:%lu/%lu,cmd_q:%lu/%lu\r\n",
+        (unsigned long)s->rx_overflow_count,
+        (unsigned long)s->line_queue_full_count,
+        (unsigned long)s->cmd_queue_full_count,
+        (unsigned long)s->cmd_pool_alloc_fail_count,
+        (unsigned long)s->cmd_pool_max_used,
+        (unsigned long)s->tx_dropped_count,
+        (unsigned long)s->tx_error_count,
+        (unsigned long)s->uart_rx_restart_fail_count,
+        (unsigned long)s->max_line_len,
+        (unsigned long)s->comm_tx_queue_used,
+        (unsigned long)s->comm_tx_queue_max,
+        (unsigned long)s->cmd_queue_used,
+        (unsigned long)s->cmd_queue_max);
     return Uart_Protocol_FinalizeLength(written, buffer_size);
 }

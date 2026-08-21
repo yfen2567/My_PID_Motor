@@ -30,6 +30,7 @@
 #include "app_config.h"
 #include "Uart.h"
 #include "Cmd_Service.h"
+#include "Comm_Service.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,10 +78,10 @@ osMessageQueueId_t ControlCmdQueueHandle;
 const osMessageQueueAttr_t ControlCmdQueue_attributes = {
   .name = "ControlCmdQueue"
 };
-/* Definitions for UartTxMsgQueue */
-osMessageQueueId_t UartTxMsgQueueHandle;
-const osMessageQueueAttr_t UartTxMsgQueue_attributes = {
-  .name = "UartTxMsgQueue"
+/* Definitions for CommTxQueue */
+osMessageQueueId_t CommTxQueueHandle;
+const osMessageQueueAttr_t CommTxQueue_attributes = {
+  .name = "CommTxQueue"
 };
 /* Definitions for uartTxMutex */
 osMutexId_t uartTxMutexHandle;
@@ -157,8 +158,8 @@ void MX_FREERTOS_Init(void) {
   /* creation of ControlCmdQueue */
   ControlCmdQueueHandle = osMessageQueueNew (16, sizeof(App_Cmd_t*), &ControlCmdQueue_attributes);
 
-  /* creation of UartTxMsgQueue */
-  UartTxMsgQueueHandle = osMessageQueueNew (16, sizeof(Cmd_Message_t*), &UartTxMsgQueue_attributes);
+  /* creation of CommTxQueue */
+  CommTxQueueHandle = osMessageQueueNew (8, sizeof(Comm_Message_t), &CommTxQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */

@@ -8,8 +8,10 @@
 #ifndef TASK_INC_LOGTASK_H_
 #define TASK_INC_LOGTASK_H_
 
+#include "stdbool.h"
+
 void StartLogTask(void *argument);
-void LogTask_PrintPeriodicStatus(void);
-void LogTask_PrintFaultSnapshot(void);
+bool LogTask_PostPeriodicStatus(void);
+bool LogTask_PostFaultSnapshot(void);
 
 #endif /* TASK_INC_LOGTASK_H_ */
