@@ -2,7 +2,7 @@
  * Uart.c
  *
  * USART1 command interface.
- * RX path: ReceiveToIdle interrupt -> ring buffer -> Uart_Task line parser.
+ * RX path: ReceiveToIdle interrupt -> ring buffer -> Uart_ProcessRx line parser.
  */
 #include <App_Cmd.h>
 #include "Uart.h"
@@ -23,15 +23,18 @@ static volatile uint8_t s_uart_ring_overflow;
 static char s_uart_line_buf[APP_UART_LINE_SIZE];
 static uint16_t s_uart_line_len;
 static uint8_t s_uart_line_discarding;
-static char s_cmd_queue[APP_UART_LINE_QUEUE_DEPTH][APP_UART_LINE_SIZE];
-static uint8_t s_cmd_queue_head;
-static uint8_t s_cmd_queue_tail;
-static uint8_t s_cmd_queue_count;
+static char s_line_queue[APP_UART_LINE_QUEUE_DEPTH][APP_UART_LINE_SIZE];
+static uint8_t s_line_queue_head;
+static uint8_t s_line_queue_tail;
+static uint8_t s_line_queue_count;
 static volatile uint8_t s_rx_restart_pending;
 static volatile uint16_t s_rx_restart_fail_count;
 static uint8_t s_uart_discard_too_long;
 static volatile uint32_t s_max_line_len;
 static volatile uint8_t s_tx_active;
+static volatile uint32_t s_rx_overflow_count;
+static volatile uint32_t s_line_queue_full_count;
+
 
 static uint8_t Uart_LineQueueNext(uint8_t index)
 {
@@ -44,15 +47,16 @@ static uint8_t Uart_LineQueueNext(uint8_t index)
 
 static uint8_t Uart_LineQueuePush(const char *line)
 {
-	if (s_cmd_queue_count >= APP_UART_LINE_QUEUE_DEPTH) {
-		return 0;
-	}
-
-	strncpy(s_cmd_queue[s_cmd_queue_head], line, APP_UART_LINE_SIZE - 1U);
-	s_cmd_queue[s_cmd_queue_head][APP_UART_LINE_SIZE - 1U] = '\0';
-	s_cmd_queue_head = Uart_LineQueueNext(s_cmd_queue_head);
-	s_cmd_queue_count++;
-	return 1;
+    if (s_line_queue_count >= APP_UART_LINE_QUEUE_DEPTH)
+    {
+        s_line_queue_full_count++;
+        return 0U;
+    }
+    strncpy(s_line_queue[s_line_queue_head], line, APP_UART_LINE_SIZE - 1U);
+    s_line_queue[s_line_queue_head][APP_UART_LINE_SIZE - 1U] = '\0';
+    s_line_queue_head = Uart_LineQueueNext(s_line_queue_head);
+    s_line_queue_count++;
+    return 1U;
 }
 
 static uint8_t Uart_StartReceiveToIdle(void)
@@ -86,15 +90,16 @@ static uint16_t Uart_RingNext(uint16_t index)
 
 static void Uart_RingPushFromIsr(uint8_t data)
 {
-	uint16_t next = Uart_RingNext(s_uart_ring_head);
+    uint16_t next = Uart_RingNext(s_uart_ring_head);
 
-	if (next == s_uart_ring_tail) {
-		s_uart_ring_overflow = 1;
-		return;
-	}
-
-	s_uart_ring_buf[s_uart_ring_head] = data;
-	s_uart_ring_head = next;
+    if (next == s_uart_ring_tail)
+    {
+        if (s_uart_ring_overflow == 0U) { s_rx_overflow_count++; }
+        s_uart_ring_overflow = 1U;
+        return;
+    }
+    s_uart_ring_buf[s_uart_ring_head] = data;
+    s_uart_ring_head = next;
 }
 
 static uint8_t Uart_RingPop(uint8_t *data)
@@ -131,21 +136,23 @@ void Uart_Init(void)
 	memset(s_uart_rx_idle_buf, 0, sizeof(s_uart_rx_idle_buf));
 	memset(s_uart_ring_buf, 0, sizeof(s_uart_ring_buf));
 	memset(s_uart_line_buf, 0, sizeof(s_uart_line_buf));
-	memset(s_cmd_queue, 0, sizeof(s_cmd_queue));
+	memset(s_line_queue, 0, sizeof(s_line_queue));
 
 	s_uart_ring_head = 0;
 	s_uart_ring_tail = 0;
 	s_uart_ring_overflow = 0;
 	s_uart_line_len = 0;
 	s_uart_line_discarding = 0;
-	s_cmd_queue_head = 0;
-	s_cmd_queue_tail = 0;
-	s_cmd_queue_count = 0;
+	s_line_queue_head = 0;
+	s_line_queue_tail = 0;
+	s_line_queue_count = 0;
 	s_rx_restart_pending=0;
 	s_rx_restart_fail_count=0;
 	s_uart_discard_too_long=0;
 	s_max_line_len = 0U;
 	s_tx_active=0U;
+	s_rx_overflow_count = 0U;
+	s_line_queue_full_count = 0U;
 	Uart_StartReceiveToIdle();
 }
 
@@ -155,54 +162,17 @@ uint8_t Uart_ReadLine(char *line, uint16_t size){
 		return 0;
 	}
 
-	if(s_cmd_queue_count==0){
+	if(s_line_queue_count==0){
 		return 0;
 	}
 
-	strncpy(line,s_cmd_queue[s_cmd_queue_tail],size-1);
+	strncpy(line,s_line_queue[s_line_queue_tail],size-1);
 	line[size-1]='\0';
-	s_cmd_queue_tail = Uart_LineQueueNext(s_cmd_queue_tail);
-	s_cmd_queue_count--;
+	s_line_queue_tail = Uart_LineQueueNext(s_line_queue_tail);
+	s_line_queue_count--;
 	return 1;
 }
-
-
-
-void Uart_TxText(const char* text)
-{
-	uint8_t lock_status=0;
-	if(text==NULL){
-		return;
-	}
-	if(uartTxMutexHandle!=NULL){
-		if(osMutexAcquire(uartTxMutexHandle,osWaitForever)!=osOK){
-			return;
-		}
-		lock_status=1;
-	}
-	HAL_UART_Transmit(&huart1, (uint8_t*)text, strlen(text), HAL_MAX_DELAY);
-	if(lock_status==1){
-		osMutexRelease(uartTxMutexHandle);
-	}
-}
-
-/*
-
-
-//命令无效
-static void Uart_InvalidCmd(void)
-{
-	Uart_TxText("ERR:INVALID_CMD\r\n");
-}
-
-
-*/
-
-
-
-
-
-uint32_t Uart_Task(void)
+uint32_t Uart_ProcessRx(void)
 {
 	uint8_t ch = 0;
 	uint32_t events = 0U;
@@ -321,4 +291,15 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 	{
 		s_rx_restart_pending=1;
 	}
+}
+
+void Uart_GetStats(Uart_Stats_t *stats)
+{
+    if (stats == NULL) { return; }
+    __disable_irq();
+    stats->rx_overflow_count = s_rx_overflow_count;
+    stats->line_queue_full_count = s_line_queue_full_count;
+    stats->rx_restart_fail_count = s_rx_restart_fail_count;
+    stats->max_line_len = s_max_line_len;
+    __enable_irq();
 }

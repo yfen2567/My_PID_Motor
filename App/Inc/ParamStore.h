@@ -31,7 +31,8 @@ typedef struct
 } ParamStore_Param_t;
 
 bool ParamStore_Load(ParamStore_Param_t *param);
-bool ParamStore_Save(ParamStore_Param_t* param);
+bool ParamStore_Save(const ParamStore_Param_t *params);
 bool ParamStore_Reset(ParamStore_Param_t* params);
+void ParamStore_GetDefaults(ParamStore_Param_t *params);
 
 #endif /* INC_PARAMSTORE_H_ */

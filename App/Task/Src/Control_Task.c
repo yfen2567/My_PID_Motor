@@ -1,8 +1,34 @@
 #include "Cmd_Service.h"
 #include "Control_Task.h"
 #include "Control.h"
-
+#include "App_Cmd.h"
 #include "cmsis_os.h"
+
+#include "Nv_Service.h"
+#include "Comm_Service.h"
+#include "App_Cmd.h"
+#include "CmdPool.h"
+#include "Control_Task.h"
+
+static App_Cmd_ExecResult_t ControlTask_PostNvRequest(const App_Cmd_t *cmd)
+{
+    Motor_Status_t status;
+    NvRequest_t request = {0};
+
+    Control_GetStatusSnapshot(&status);
+    if ((status.enable != 0U) || (status.state != SYS_IDLE))
+    {
+        return APP_CMD_EXEC_NOT_IDLE;
+    }
+    if (Nv_Service_IsBusy()) { return APP_CMD_EXEC_BUSY; }
+
+    request.operation = cmd->type;
+    if (cmd->type == APP_CMD_SAVE_PARAMS)
+    {
+        Control_GetPID(&request.params.kp, &request.params.ki, &request.params.kd);
+    }
+    return Nv_Service_Post(&request) ? APP_CMD_EXEC_OK : APP_CMD_EXEC_QUEUE_FULL;
+}
 
 void StartControlTask(void *argument)
 {

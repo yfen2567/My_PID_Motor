@@ -44,3 +44,25 @@ bool Cmd_Service_TryGetControlCommand(App_Cmd_t **cmd_out)
     }
     return (*cmd_out != NULL);
 }
+
+uint32_t Cmd_Service_GetQueueFullCount(void)
+{
+    return s_queue_full_count;
+}
+
+uint32_t Cmd_Service_GetQueueUsed(void)
+{
+    return (ControlCmdQueueHandle != NULL) ?
+           osMessageQueueGetCount(ControlCmdQueueHandle) :
+           0U;
+}
+
+uint32_t Cmd_Service_GetQueueUsedMax(void)
+{
+    return s_queue_used_max;
+}
+
+uint32_t Cmd_Service_GetQueueCapacity(void)
+{
+    return 16U;
+}

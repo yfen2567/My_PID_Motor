@@ -26,4 +26,11 @@ Cmd_ServiceResult_t Cmd_Service_PostControlCommand(App_Cmd_t *cmd);
 
 bool Cmd_Service_TryGetControlCommand(App_Cmd_t **cmd_out);
 
+uint32_t Cmd_Service_GetQueueFullCount(void);
+
+uint32_t Cmd_Service_GetQueueUsed(void);
+
+uint32_t Cmd_Service_GetQueueUsedMax(void);
+
+uint32_t Cmd_Service_GetQueueCapacity(void);
 #endif /* INC_TASK_CMD_SERVICE_H_ */

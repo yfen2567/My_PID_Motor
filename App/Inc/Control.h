@@ -68,13 +68,11 @@ void Control_SetKi(float ki);
 void Control_SetKd(float kd);
 void Control_UseAdcTarget(uint8_t enable);
 uint8_t Control_IsAdcTargetEnabled(void);
-const char* Control_StateName(SystemState_t state);
-const char* Control_FaultName(FaultCode_t fault);
 void Control_PID_Rst();
 void Control_ResetFault();
 void Control_ReportFault(FaultCode_t fault);
 FaultSnapshot_t Control_GetFaultShot();
 uint8_t Control_HasFaultShot();
-void Control_ApplyCommand(const App_Cmd_t *cmd);
+App_Cmd_ExecResult_t Control_ApplyCommand(const App_Cmd_t *cmd);
 #endif /* INC_CONTROL_H_ */
 

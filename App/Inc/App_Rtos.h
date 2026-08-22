@@ -12,6 +12,6 @@
 
 extern osMessageQueueId_t ControlCmdQueueHandle;
 extern osMessageQueueId_t CommTxQueueHandle;
-extern osMutexId_t uartTxMutexHandle;
 extern osSemaphoreId_t s_tx_done_SemHandle;
+extern osMessageQueueId_t NvRequestQueueHandle;
 #endif /* INC_APP_RTOS_H_ */

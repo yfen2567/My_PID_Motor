@@ -1,6 +1,8 @@
 #include "App_Cmd.h"
 #include "app_config.h"
 #include <errno.h>
+#include <limits.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,24 +32,25 @@ static App_Cmd_ParseResult_t App_Cmd_ParseInt(const char *text, int32_t *value)
     return APP_CMD_PARSE_OK;
 }
 
-static uint8_t App_Cmd_ParseFloat(const char *text, float *value)
+static App_Cmd_ParseResult_t App_Cmd_ParseFloat(const char *text, float *value)
 {
     char *end = NULL;
     float result = 0.0f;
 
     if ((text == NULL) || (value == NULL))
     {
-        return 0U;
+        return APP_CMD_PARSE_BAD_FLOAT;
     }
 
+    errno = 0;
     result = strtof(text, &end);
-    if ((end == text) || (*end != '\0'))
+    if ((end == text) || (*end != '\0') || (errno == ERANGE) || !isfinite(result))
     {
-        return 0U;
+        return APP_CMD_PARSE_BAD_FLOAT;
     }
 
     *value = result;
-    return 1U;
+    return APP_CMD_PARSE_OK;
 }
 
 static uint8_t App_Cmd_CheckPidGains(float gains)
@@ -135,4 +138,11 @@ App_Cmd_ParseResult_t App_Cmd_Parse(const char *line, App_Cmd_t *cmd)
     }
 
     return APP_CMD_PARSE_INVALID;
+}
+
+uint8_t App_Cmd_IsParamStoreCommand(App_Cmd_Type_t type)
+{
+    return ((type == APP_CMD_SAVE_PARAMS) ||
+            (type == APP_CMD_LOAD_PARAMS) ||
+            (type == APP_CMD_RESET_PARAMS)) ? 1U : 0U;
 }

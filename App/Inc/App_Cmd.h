@@ -36,13 +36,19 @@ typedef enum{
 		APP_CMD_SAVE_PARAMS,
 		APP_CMD_RESET_PARAMS,
 
+		APP_CMD_APPLY_STORED_PARAMS,
 }App_Cmd_Type_t;
 
-typedef struct{
-	int32_t value;
-	App_Cmd_Type_t type;
-	float fvalue;
-}App_Cmd_t;
+typedef struct
+{
+    int32_t value;
+    App_Cmd_Type_t type;
+    float fvalue;
+    float kp;
+    float ki;
+    float kd;
+    App_Cmd_Type_t origin_type;
+} App_Cmd_t;
 
 typedef enum
 {
@@ -71,5 +77,6 @@ typedef enum
 } App_Cmd_ExecResult_t;
 
 App_Cmd_ParseResult_t App_Cmd_Parse(const char *line, App_Cmd_t *cmd);
+uint8_t App_Cmd_IsParamStoreCommand(App_Cmd_Type_t type);
 
 #endif /* INC_APPCOMMAND_H_ */

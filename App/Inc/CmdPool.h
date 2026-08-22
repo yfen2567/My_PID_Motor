@@ -14,8 +14,16 @@
 
 #define CMD_POOL_CAPACITY  16U
 
+
 void CmdPool_Init(void);
 App_Cmd_t *CmdPool_Alloc(void);
 void CmdPool_Free(App_Cmd_t *cmd);
 
+uint32_t CmdPool_GetAllocFailCount(void);
+
+uint32_t CmdPool_GetInUse(void);
+
+uint32_t CmdPool_GetInUseMax(void);
+
+uint32_t CmdPool_GetCapacity(void);
 #endif /* INC_CMDPOOL_H_ */

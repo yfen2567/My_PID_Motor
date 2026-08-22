@@ -13,7 +13,6 @@
 #include "ADC_Sensor.h"
 #include "tim.h"
 #include "App_Cmd.h"
-#include "LogTask.h"
 #include "ParamStore.h"
 
 static volatile uint8_t s_adc_target_enable = 1;
@@ -413,38 +412,6 @@ uint8_t Control_IsAdcTargetEnabled(void){
 	return s_adc_target_enable;
 }
 
-const char* Control_StateName(SystemState_t state){
-	switch(state){
-	case SYS_IDLE:
-		return "IDLE";
-	case SYS_RUN:
-		return "RUN";
-	case SYS_FAULT:
-		return "FAULT";
-	case SYS_CALIB:
-		return "CALIB";
-	default:
-		return "UNKNOWN";
-	}
-}
-
-const char* Control_FaultName(FaultCode_t fault){
-	switch(fault){
-	case FAULT_NONE:
-		return "NONE";
-	case FAULT_SPEED_OVER_LIMIT:
-		return "SPEED_OVER_LIMIT";
-	case FAULT_ENCODER_LOST:
-		return "ENCODER_LOST";
-	case FAULT_PWM_SATURATION:
-		return "PWM_SATURATION";
-	default:
-		return "UNKNOWN";
-	}
-}
-
-
-
 //获取错误状态快照对外接口
 uint8_t Control_HasFaultShot(){
 	return s_fault_snapshot.valid;
@@ -457,12 +424,18 @@ FaultSnapshot_t Control_GetFaultShot(){
 
 
 
-void Control_ApplyCommand(const App_Cmd_t *cmd){
+App_Cmd_ExecResult_t Control_ApplyCommand(const App_Cmd_t *cmd){
 	if(cmd == 0){
-		return;
+		return APP_CMD_EXEC_BAD_ARG;
 	}
 	switch(cmd->type){
-	case APP_CMD_RUN:Control_SetEnable(1);break;
+	case APP_CMD_RUN:
+		if((s_motor_status.fault != FAULT_NONE) ||
+		   (s_motor_status.state == SYS_CALIB)){
+			return APP_CMD_EXEC_INVALID_STATE;
+		}
+		Control_SetEnable(1);
+		break;
 
 	case APP_CMD_STOP:
 	    Control_SetEnable(0U);
@@ -492,15 +465,25 @@ void Control_ApplyCommand(const App_Cmd_t *cmd){
 	    Control_SetKd(cmd->fvalue);
 	    break;
 
+	case APP_CMD_SAVE_PARAMS:
+	case APP_CMD_LOAD_PARAMS:
+	case APP_CMD_RESET_PARAMS:
+		/* Flash operations are owned by NvTask, never ControlTask. */
+		return APP_CMD_EXEC_UNSUPPORTED;
+
+	case APP_CMD_APPLY_STORED_PARAMS:
+		/* NvTask returns data through CmdQueue so PID mutation stays here. */
+		Control_SetPID(cmd->kp, cmd->ki, cmd->kd);
+		break;
+
 	case APP_CMD_RESET:
 		Control_PID_Rst();
 	    Control_ResetFault();
 	    break;
 
-
 	default:
-		LogTask_PrintFaultSnapshot();
-	    break;
+		return APP_CMD_EXEC_UNSUPPORTED;
 	}
 
+	return APP_CMD_EXEC_OK;
 }

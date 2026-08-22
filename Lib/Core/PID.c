@@ -62,7 +62,7 @@ void PID_Init(
 
 //PID更新数据
 float PID_Update(PID_t* s_pid,float target_speed,float actual_speed){
-	if (s_pid == NULL||s_pid->dt <= 0.0f) return -1.0;
+	if (s_pid == NULL||s_pid->dt <= 0.0f) return -1.0f;
 	s_pid->error=target_speed-actual_speed;
 	s_pid->integral+=s_pid->error*s_pid->dt;
 	s_pid->derivative=(s_pid->error-s_pid->last_error)/s_pid->dt;

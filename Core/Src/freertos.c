@@ -31,6 +31,8 @@
 #include "Uart.h"
 #include "Cmd_Service.h"
 #include "Comm_Service.h"
+#include "CmdPool.h"
+#include "Nv_Service.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,6 +75,20 @@ const osThreadAttr_t CmdTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for NvTask */
+osThreadId_t NvTaskHandle;
+const osThreadAttr_t NvTask_attributes = {
+  .name = "NvTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+/* Definitions for CommTxTask */
+osThreadId_t CommTxTaskHandle;
+const osThreadAttr_t CommTxTask_attributes = {
+  .name = "CommTxTask",
+  .stack_size = 320 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for ControlCmdQueue */
 osMessageQueueId_t ControlCmdQueueHandle;
 const osMessageQueueAttr_t ControlCmdQueue_attributes = {
@@ -83,10 +99,10 @@ osMessageQueueId_t CommTxQueueHandle;
 const osMessageQueueAttr_t CommTxQueue_attributes = {
   .name = "CommTxQueue"
 };
-/* Definitions for uartTxMutex */
-osMutexId_t uartTxMutexHandle;
-const osMutexAttr_t uartTxMutex_attributes = {
-  .name = "uartTxMutex"
+/* Definitions for NvRequestQueue */
+osMessageQueueId_t NvRequestQueueHandle;
+const osMessageQueueAttr_t NvRequestQueue_attributes = {
+  .name = "NvRequestQueue"
 };
 /* Definitions for s_tx_done_Sem */
 osSemaphoreId_t s_tx_done_SemHandle;
@@ -102,6 +118,8 @@ const osSemaphoreAttr_t s_tx_done_Sem_attributes = {
 void StartLogTask(void *argument);
 void StartControlTask(void *argument);
 void StartCmdTask(void *argument);
+void StartNvTask(void *argument);
+void StartCommTxTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -134,9 +152,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
-  /* Create the mutex(es) */
-  /* creation of uartTxMutex */
-  uartTxMutexHandle = osMutexNew(&uartTxMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -161,8 +176,12 @@ void MX_FREERTOS_Init(void) {
   /* creation of CommTxQueue */
   CommTxQueueHandle = osMessageQueueNew (8, sizeof(Comm_Message_t), &CommTxQueue_attributes);
 
+  /* creation of NvRequestQueue */
+  NvRequestQueueHandle = osMessageQueueNew (2, sizeof(NvRequest_t), &NvRequestQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  CmdPool_Init();
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -174,6 +193,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of CmdTask */
   CmdTaskHandle = osThreadNew(StartCmdTask, NULL, &CmdTask_attributes);
+
+  /* creation of NvTask */
+  NvTaskHandle = osThreadNew(StartNvTask, NULL, &NvTask_attributes);
+
+  /* creation of CommTxTask */
+  CommTxTaskHandle = osThreadNew(StartCommTxTask, NULL, &CommTxTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -238,6 +263,42 @@ __weak void StartCmdTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartCmdTask */
+}
+
+/* USER CODE BEGIN Header_StartNvTask */
+/**
+* @brief Function implementing the NvTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartNvTask */
+__weak void StartNvTask(void *argument)
+{
+  /* USER CODE BEGIN StartNvTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartNvTask */
+}
+
+/* USER CODE BEGIN Header_StartCommTxTask */
+/**
+* @brief Function implementing the CommTxTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartCommTxTask */
+__weak void StartCommTxTask(void *argument)
+{
+  /* USER CODE BEGIN StartCommTxTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartCommTxTask */
 }
 
 /* Private application code --------------------------------------------------*/

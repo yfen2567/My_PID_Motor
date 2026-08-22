@@ -1,37 +1,9 @@
 #include "LogTask.h"
 #include "Comm_Service.h"
 #include "Control.h"
-#include "Uart.h"
 #include "app_config.h"
 #include "main.h"
 #include "cmsis_os2.h"
-#include <stdint.h>
-#include <stdio.h>
-#include "usart.h"
-#include "string.h"
-
-static void LogTask_FormatFloat3(char *buf, uint8_t size, float num)
-{
-    uint32_t scaled = 0U;
-    uint32_t integer = 0U;
-    uint32_t fraction = 0U;
-
-    if (num >= 0.0f)
-    {
-        scaled = (uint32_t)(num * 1000.0f + 0.5f);
-        integer = scaled / 1000U;
-        fraction = scaled % 1000U;
-        snprintf(buf, size, "%lu.%03lu", (unsigned long)integer, (unsigned long)fraction);
-    }
-    else
-    {
-        scaled = (uint32_t)((-num) * 1000.0f + 0.5f);
-        integer = scaled / 1000U;
-        fraction = scaled % 1000U;
-        snprintf(buf, size, "-%lu.%03lu", (unsigned long)integer, (unsigned long)fraction);
-    }
-}
-
 
 bool LogTask_PostPeriodicStatus(void)
 {

@@ -63,3 +63,23 @@ void CmdPool_Free(App_Cmd_t *cmd)
     }
     taskEXIT_CRITICAL();
 }
+
+uint32_t CmdPool_GetAllocFailCount(void)
+{
+    return s_alloc_fail_count;
+}
+
+uint32_t CmdPool_GetInUse(void)
+{
+    return s_in_use_count;
+}
+
+uint32_t CmdPool_GetInUseMax(void)
+{
+    return s_in_use_max;
+}
+
+uint32_t CmdPool_GetCapacity(void)
+{
+    return CMD_POOL_CAPACITY;
+}

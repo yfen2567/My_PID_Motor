@@ -38,7 +38,7 @@ void StartCmdTask(void *argument)
 
     for (;;)
     {
-        CmdTask_PostUartEvents(Uart_Task());
+        CmdTask_PostUartEvents(Uart_ProcessRx());
         for(count=0U;count<CMD_TASK_MAX_LINES_PER_CYCLE;count++)
         {
         	if(CmdTask_ProcessLine()==0U){break;}

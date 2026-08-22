@@ -9,6 +9,10 @@
 #include "task.h"
 #include "Uart_Protocol.h"
 #include "app_config.h"
+#include "CmdPool.h"
+#include "Cmd_Service.h"
+
+#define COMM_TX_QUEUE_DEPTH  8U
 
 static uint32_t s_dropped_count;
 static uint32_t s_tx_error_count;
@@ -107,6 +111,12 @@ static uint16_t Comm_Service_Format(const Comm_Message_t *message,
             return Uart_Protocol_FormatParseError(
                 message->payload.parse_result, buffer, size);
 
+        case COMM_MESSAGE_COMMAND_RESULT:
+            return Uart_Protocol_FormatCommandResult(
+                message->payload.command_result.command,
+                message->payload.command_result.result,
+                buffer, size);
+
         case COMM_MESSAGE_STATUS:
             return Uart_Protocol_FormatStatus(
                 &message->payload.status.status,
@@ -125,6 +135,9 @@ static uint16_t Comm_Service_Format(const Comm_Message_t *message,
 
         case COMM_MESSAGE_HELP:
             return Uart_Protocol_FormatHelp(buffer, size);
+
+        case COMM_MESSAGE_STATS:
+            return Uart_Protocol_FormatStats(&message->payload.stats, buffer, size);
         default:
             return 0U;
     }
@@ -167,5 +180,58 @@ bool Comm_Service_PostCommandResult(App_Cmd_Type_t command,
     message.type = COMM_MESSAGE_COMMAND_RESULT;
     message.payload.command_result.command = command;
     message.payload.command_result.result = result;
+    return Comm_Service_PostMessage(&message);
+}
+
+uint32_t Comm_Service_GetDroppedCount(void)
+{
+    return s_dropped_count;
+}
+
+uint32_t Comm_Service_GetTxErrorCount(void)
+{
+    return s_tx_error_count;
+}
+
+uint32_t Comm_Service_GetQueueUsed(void)
+{
+    return (CommTxQueueHandle != NULL) ?
+           osMessageQueueGetCount(CommTxQueueHandle) :
+           0U;
+}
+
+uint32_t Comm_Service_GetQueueUsedMax(void)
+{
+    return s_queue_used_max;
+}
+
+uint32_t Comm_Service_GetQueueCapacity(void)
+{
+    return (CommTxQueueHandle != NULL) ?
+           osMessageQueueGetCapacity(CommTxQueueHandle) :
+           0U;
+}
+
+bool Comm_Service_PostStats(void)
+{
+    Comm_Message_t message = {0};
+    Uart_Stats_t uart_stats;
+
+    Uart_GetStats(&uart_stats);
+    message.type = COMM_MESSAGE_STATS;
+    message.payload.stats.rx_overflow_count = uart_stats.rx_overflow_count;
+    message.payload.stats.line_queue_full_count = uart_stats.line_queue_full_count;
+    message.payload.stats.uart_rx_restart_fail_count = uart_stats.rx_restart_fail_count;
+    message.payload.stats.max_line_len = uart_stats.max_line_len;
+    message.payload.stats.cmd_queue_full_count = Cmd_Service_GetQueueFullCount();
+    message.payload.stats.cmd_pool_alloc_fail_count = CmdPool_GetAllocFailCount();
+    message.payload.stats.cmd_pool_max_used = CmdPool_GetInUseMax();
+    message.payload.stats.tx_dropped_count = s_dropped_count;
+    message.payload.stats.tx_error_count = s_tx_error_count;
+    /* Include this stats message itself in current queue usage. */
+    message.payload.stats.comm_tx_queue_used = Comm_Service_GetQueueUsed() + 1U;
+    message.payload.stats.comm_tx_queue_max = COMM_TX_QUEUE_DEPTH;
+    message.payload.stats.cmd_queue_used = Cmd_Service_GetQueueUsed();
+    message.payload.stats.cmd_queue_max = Cmd_Service_GetQueueCapacity();
     return Comm_Service_PostMessage(&message);
 }

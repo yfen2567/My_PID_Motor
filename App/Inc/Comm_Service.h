@@ -70,4 +70,14 @@ bool Comm_Service_PostCommandResult(App_Cmd_Type_t command,
 bool Comm_Service_ProcessTx(void);
 
 
+uint32_t Comm_Service_GetDroppedCount(void);
+
+uint32_t Comm_Service_GetTxErrorCount(void);
+
+uint32_t Comm_Service_GetQueueUsed(void);
+
+uint32_t Comm_Service_GetQueueUsedMax(void);
+
+uint32_t Comm_Service_GetQueueCapacity(void);
+bool Comm_Service_PostStats(void);
 #endif /* APP_INC_COMM_SERVICE_H_ */
