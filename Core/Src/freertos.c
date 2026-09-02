@@ -159,7 +159,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the semaphores(s) */
   /* creation of s_tx_done_Sem */
-  s_tx_done_SemHandle = osSemaphoreNew(1, 0, &s_tx_done_Sem_attributes);
+  s_tx_done_SemHandle = osSemaphoreNew(1, 1, &s_tx_done_Sem_attributes);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */

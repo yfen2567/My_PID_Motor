@@ -84,6 +84,12 @@ static uint8_t CmdTask_ProcessLine(void)
         return 1U;
     }
 
+
+ /*传入地址是为了节省内存，但如果是传入parsed的地址的话，会出现这里把地址传进去了，但地址还在队列里面排队
+    等待被取出来使用，但是按照这个顺序下去，这个CmdTask_ProcessLine执行完毕后，parsed就会被销毁，等到把地址
+    取出来使用的时候就会发现，里面的数据早就被销毁，留下的是脏数据，所以这里弄了一个命令池，专门弄了一块
+    内存去长期保存这个数据，到时候从队列里面取数据的时候，通过取出来的数据就会指向这个命令池
+ */
     queued = CmdPool_Alloc();
     if (queued == NULL)
     {

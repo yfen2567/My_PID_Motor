@@ -27,6 +27,5 @@ void Uart_Init();
 uint32_t Uart_ProcessRx(void);
 uint8_t Uart_ReadLine(char *line, uint16_t size);
 bool Uart_WriteAsync(const uint8_t *data, uint16_t length);
-bool Uart_WaitTxComplete(uint32_t timeout_ms);
 void Uart_GetStats(Uart_Stats_t *stats);
 #endif /* INC_UART_H_ */

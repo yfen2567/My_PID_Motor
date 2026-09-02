@@ -156,8 +156,8 @@ bool Comm_Service_ProcessTx(void)
         return false;
     }
     length = Comm_Service_Format(&message, buffer, sizeof(buffer));
-    if ((length == 0U) || !Uart_WriteAsync((const uint8_t *)buffer, length) ||
-        !Uart_WaitTxComplete(APP_UART_TX_TIMEOUT_MS))
+    if ((length == 0U) ||
+        !Uart_WriteAsync((const uint8_t *)buffer, length))
     {
         Comm_Service_Increment(&s_tx_error_count);
     }

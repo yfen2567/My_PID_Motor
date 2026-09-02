@@ -31,7 +31,6 @@ static volatile uint8_t s_rx_restart_pending;
 static volatile uint16_t s_rx_restart_fail_count;
 static uint8_t s_uart_discard_too_long;
 static volatile uint32_t s_max_line_len;
-static volatile uint8_t s_tx_active;
 static volatile uint32_t s_rx_overflow_count;
 static volatile uint32_t s_line_queue_full_count;
 
@@ -102,12 +101,19 @@ static void Uart_RingPushFromIsr(uint8_t data)
     s_uart_ring_head = next;
 }
 
+
+/*
+ 这里关闭中断，主要是除了这里的拿命令会读head与读写tail以外，串口接收数据也需要写head这个变量，
+ 这些是非原子操作，不关中断的话，可能会这里读head与tail读到旧值，串口接收数据就把head改变了。这就有可能出现
+ 内存上明明 s_uart_ring_tail != s_uart_ring_head，但由于head被提前读进寄存器里面去了，所以本次判断缓冲区为空，
+ 从而导致本周期错误判断，只能等到下一个周期再对这个命令进行处理，从而降低的对缓冲区的处理效率
+ */
 static uint8_t Uart_RingPop(uint8_t *data)
 {
 	uint8_t has_data = 0;
 
 	__disable_irq();
-	if (s_uart_ring_tail != s_uart_ring_head) {
+	if ( s_uart_ring_head != s_uart_ring_tail ) {
 		*data = s_uart_ring_buf[s_uart_ring_tail];
 		s_uart_ring_tail = Uart_RingNext(s_uart_ring_tail);
 		has_data = 1;
@@ -150,7 +156,6 @@ void Uart_Init(void)
 	s_rx_restart_fail_count=0;
 	s_uart_discard_too_long=0;
 	s_max_line_len = 0U;
-	s_tx_active=0U;
 	s_rx_overflow_count = 0U;
 	s_line_queue_full_count = 0U;
 	Uart_StartReceiveToIdle();
@@ -233,32 +238,18 @@ uint32_t Uart_ProcessRx(void)
 
 bool Uart_WriteAsync(const uint8_t *data, uint16_t length)
 {
-    if ((data == NULL) || (length == 0U) || (s_tx_done_SemHandle == NULL) ||
-        (s_tx_active != 0U))
+    if ((data == NULL) || (length == 0U) || (s_tx_done_SemHandle == NULL))
     {
         return false;
     }
 
-    while (osSemaphoreAcquire(s_tx_done_SemHandle, 0U) == osOK) { }
-    s_tx_active = 1U;
+    if (osSemaphoreAcquire(s_tx_done_SemHandle, 1000) != osOK)
+    {
+        return false;
+    }
     if (HAL_UART_Transmit_IT(&huart1, (uint8_t *)data, length) != HAL_OK)
     {
-        s_tx_active = 0U;
-        return false;
-    }
-    return true;
-}
-
-bool Uart_WaitTxComplete(uint32_t timeout_ms)
-{
-    uint32_t timeout_ticks;
-
-    timeout_ticks = pdMS_TO_TICKS(timeout_ms);
-    if ((s_tx_done_SemHandle == NULL) ||
-        (osSemaphoreAcquire(s_tx_done_SemHandle, timeout_ticks) != osOK))
-    {
-        (void)HAL_UART_AbortTransmit(&huart1);
-        s_tx_active = 0U;
+    	(void)osSemaphoreRelease(s_tx_done_SemHandle);
         return false;
     }
     return true;
@@ -280,7 +271,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART1)
     {
-        s_tx_active = 0U;
         if (s_tx_done_SemHandle != NULL) { (void)osSemaphoreRelease(s_tx_done_SemHandle); }
     }
 }
