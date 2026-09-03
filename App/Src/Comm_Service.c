@@ -3,7 +3,7 @@
 #include "App_Rtos.h"
 #include "Uart.h"
 #include "app_config.h"
-
+#include "Control_Task.h"
 #include "FreeRTOS.h"
 #include "cmsis_os2.h"
 #include "task.h"
@@ -180,6 +180,19 @@ bool Comm_Service_PostCommandResult(App_Cmd_Type_t command,
     message.type = COMM_MESSAGE_COMMAND_RESULT;
     message.payload.command_result.command = command;
     message.payload.command_result.result = result;
+    return Comm_Service_PostMessage(&message);
+}
+
+bool Comm_Service_PostControlTiming(void)
+{
+	Control_TimingStats_t stats;
+	Control_Timing_GetStats(&stats);
+    Comm_Message_t message = {0};
+    message.type = COMM_MESSAGE_STATS;
+    message.payload.stats2.control_tick_execution_us=stats.control_tick_execution_us;
+    message.payload.stats2.execution_us=stats.execution_us;
+    message.payload.stats2.period_us=stats.period_us;
+    message.payload.stats2.timeout_count=stats.timeout_count;
     return Comm_Service_PostMessage(&message);
 }
 

@@ -4,7 +4,7 @@
 #include "App_Cmd.h"
 #include "Control.h"
 #include "Uart_Protocol.h"
-
+#include  "Control_Task.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -52,6 +52,7 @@ typedef struct
         Comm_StatusMessage_t status;
         Comm_FaultMessage_t fault;
         Comm_StatsSnapshot_t stats;
+        Control_TimingStats_t stats2;
     } payload;
 } Comm_Message_t;
 

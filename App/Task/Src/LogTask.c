@@ -38,6 +38,10 @@ bool LogTask_PostFaultSnapshot(void)
     return Comm_Service_PostFaultSnapshot(1U, &snapshot);
 }
 
+bool LogTask_PostControlTimingStats(void)
+{
+
+}
 void StartLogTask(void *argument)
 {
     (void)argument;
