@@ -40,7 +40,12 @@ bool LogTask_PostFaultSnapshot(void)
 
 bool LogTask_PostControlTimingStats(void)
 {
+	/*获取stats*/
+    Control_TimingStats_t stats;
+    Control_Timing_GetStats(&stats);
 
+    /*上报stats*/
+    return Comm_Service_PostControlTiming(stats);
 }
 void StartLogTask(void *argument)
 {

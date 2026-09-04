@@ -138,6 +138,10 @@ static uint16_t Comm_Service_Format(const Comm_Message_t *message,
 
         case COMM_MESSAGE_STATS:
             return Uart_Protocol_FormatStats(&message->payload.stats, buffer, size);
+
+        case COMM_MESSAGE_CONTROL_TIMING_STATS:
+            return Uart_Protocol_FormatControlTimingStats(
+                &message->payload.control_timing_stats, buffer, size);
         default:
             return 0U;
     }
@@ -183,16 +187,12 @@ bool Comm_Service_PostCommandResult(App_Cmd_Type_t command,
     return Comm_Service_PostMessage(&message);
 }
 
-bool Comm_Service_PostControlTiming(void)
+bool Comm_Service_PostControlTiming(Control_TimingStats_t stats)
 {
-	Control_TimingStats_t stats;
-	Control_Timing_GetStats(&stats);
     Comm_Message_t message = {0};
-    message.type = COMM_MESSAGE_STATS;
-    message.payload.stats2.control_tick_execution_us=stats.control_tick_execution_us;
-    message.payload.stats2.execution_us=stats.execution_us;
-    message.payload.stats2.period_us=stats.period_us;
-    message.payload.stats2.timeout_count=stats.timeout_count;
+    message.type = COMM_MESSAGE_CONTROL_TIMING_STATS;
+    message.payload.control_timing_stats=stats;
+
     return Comm_Service_PostMessage(&message);
 }
 

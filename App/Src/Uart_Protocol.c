@@ -324,3 +324,28 @@ uint16_t Uart_Protocol_FormatStats(const Comm_StatsSnapshot_t *s,
         (unsigned long)s->cmd_queue_max);
     return Uart_Protocol_FinalizeLength(written, buffer_size);
 }
+
+uint16_t Uart_Protocol_FormatControlTimingStats(
+    const Control_TimingStats_t *stats,
+    char *buffer,
+    uint16_t buffer_size)
+{
+    /*检查参数*/
+    if ((stats == NULL) || (buffer == NULL) || (buffer_size == 0U))
+    {
+        return 0U;
+    }
+
+    /*格式化信息*/
+    int written = snprintf(
+        buffer,
+        buffer_size,
+        "TIMING_STATS period_us:%lu,exec_us:%lu,"
+        "tick_exec_us:%lu,timeout_count:%u\r\n",
+        (unsigned long)stats->period_us,
+        (unsigned long)stats->execution_us,
+        (unsigned long)stats->control_tick_execution_us,
+        (unsigned int)stats->timeout_count);
+
+    return Uart_Protocol_FinalizeLength(written, buffer_size);
+}

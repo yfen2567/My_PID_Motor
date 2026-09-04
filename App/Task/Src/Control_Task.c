@@ -49,14 +49,14 @@ static void DebugGpio_CycleLow()
 	HAL_GPIO_WritePin(GPIO_CYCLE_GPIO_Port,GPIO_CYCLE_Pin,GPIO_PIN_RESET);
 }
 
-static void DebugGpio_TickHigh()
+static void DebugGpio_TickHigh(void)
 {
-	HAL_GPIO_WritePin(GPIO_CYCLE_GPIO_Port,GPIO_CYCLE_Pin,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIO_TICK_GPIO_Port, GPIO_TICK_Pin, GPIO_PIN_SET);
 }
 
-static void DebugGpio_TickLow()
+static void DebugGpio_TickLow(void)
 {
-	HAL_GPIO_WritePin(GPIO_CYCLE_GPIO_Port,GPIO_CYCLE_Pin,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIO_TICK_GPIO_Port, GPIO_TICK_Pin, GPIO_PIN_RESET);
 }
 
 void Control_Timing_GetStats(Control_TimingStats_t *out)
@@ -67,7 +67,7 @@ void Control_Timing_GetStats(Control_TimingStats_t *out)
 	out->timeout_count=timeout_count;
 }
 
-static void StartControlTask(void *argument)
+void StartControlTask(void *argument)
 {
     App_Cmd_t *cmd;
     App_Cmd_ExecResult_t result;
@@ -90,7 +90,7 @@ static void StartControlTask(void *argument)
     	previous_updata_start=updata_start;
 
     	/*记录超期次数*/
-    	if(period_us>=1000U)
+    	if(period_us>10000U)
     	{
     		timeout_count++;
     	}

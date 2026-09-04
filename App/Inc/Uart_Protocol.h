@@ -10,6 +10,7 @@
 
 #include "App_Cmd.h"
 #include "Control.h"
+#include "Control_Task.h"
 
 #include <stdint.h>
 
@@ -68,4 +69,9 @@ uint16_t Uart_Protocol_FormatHelp(char *buffer, uint16_t buffer_size);
 uint16_t Uart_Protocol_FormatStats(const Comm_StatsSnapshot_t *s,
                                    char *buffer,
                                    uint16_t buffer_size);
+
+uint16_t Uart_Protocol_FormatControlTimingStats(
+    const Control_TimingStats_t *stats,
+    char *buffer,
+    uint16_t buffer_size);
 #endif /* INC_UART_PROTOCOL_H_ */

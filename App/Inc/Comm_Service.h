@@ -16,7 +16,8 @@ typedef enum
     COMM_MESSAGE_STATUS,
     COMM_MESSAGE_FAULT_SNAPSHOT,
     COMM_MESSAGE_HELP,
-    COMM_MESSAGE_STATS
+    COMM_MESSAGE_STATS,
+	COMM_MESSAGE_CONTROL_TIMING_STATS,
 } Comm_MessageType_t;
 
 typedef struct
@@ -52,7 +53,7 @@ typedef struct
         Comm_StatusMessage_t status;
         Comm_FaultMessage_t fault;
         Comm_StatsSnapshot_t stats;
-        Control_TimingStats_t stats2;
+        Control_TimingStats_t control_timing_stats;
     } payload;
 } Comm_Message_t;
 
