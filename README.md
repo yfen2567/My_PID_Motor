@@ -1,20 +1,23 @@
 # My_PID_Motor
 
-基于 STM32F103C8Tx、STM32 HAL 和 FreeRTOS 的直流电机速度控制项目。项目已经完成 RTOS 命令队列发布基线，并在此基础上完成前馈修正、默认比例参数验证和轻载扰动观察。
+基于 STM32F103C8Tx、STM32 HAL 和 FreeRTOS 的直流电机速度控制项目。v2.2 在既有控制与诊断基线上补充了异步 PID 参数持久化、命令回归和启停回归的实机证据。
 
 ## 1. 项目状态
 
-当前主线处于 `v2.1-diagnostic-verification` 本地证据封版阶段。LD-001 / LD-002 / LD-003 负载扰动证据链与 Debug Clean + Build 记录已经收口；本状态不代表工业级验证或远程 release 已发布。
+当前分支处于 `v2.2-param-persist-and-abnormal-regression` 本地证据封版阶段。v2.2 已完成参数持久化、非法/越界命令和 status/run/stop/restart 三项实机回归；本状态不代表工业级验证或 GitHub Release 已发布。
 
 已经完成：
 
-- ControlTask、CmdTask、LogTask 的 FreeRTOS 任务链路；
-- UART 命令解析、命令队列传递和状态输出；
+- ControlTask、CmdTask、LogTask、NvTask、CommTxTask 的 FreeRTOS 任务链路；
+- UART ReceiveToIdle、ring buffer、行队列、命令对象池和控制命令队列；
+- CommTxQueue 单一发送任务与 UART 中断发送完成同步；
+- NvTask 独占 Flash 参数保存、加载和恢复默认值操作；
 - 20 条、50 条连续命令压力验证；
 - fault snapshot 字段评审及无快照分支验证；
 - 零 PID 前馈基线验证；
 - `Kp=0.05, Ki=0, Kd=0` 的正反向全范围验证；
 - `target=600` 人工轻载扰动验证；
+- v2.2 参数持久化、非法/越界命令、status/run/stop/restart 实机回归；
 - 诊断结论、release 基线和验证记录审计。
 
 当前正式默认参数为：
@@ -43,12 +46,13 @@
 - 三组负载扰动测试均未记录 fault；
 - stop 后软件状态与 PWM 命令归零；
 - `get fault` 无快照分支返回 `FAULT_SNAPSHOT_NONE`。
+- v2.2 在 `ee1f51d` 固件上完成 PID 参数保存、显式加载、恢复默认值和断电重启保持验证；
+- v2.2 的 8 条代表性非法/越界命令均返回冻结协议对应错误，最终控制基线未变；
+- v2.2 的两次 run/stop/restart 均进入预期 RUN/IDLE 状态，最终 `get fault` 返回 `FAULT_SNAPSHOT_NONE`。
 
 ### 待验证 / 可延期
 
-- Python 串口半自动回归；
-- 非法命令 / 越界命令 / run-stop 的候选固件回归；
-- status 字段完整性专项检查；
+- Python 串口日志解析或更完整的自动回归；
 - 真实 fault snapshot 有快照分支；
 - demo video；
 - 示波器 / 逻辑分析仪 / 电流测量；
@@ -76,7 +80,7 @@
 - 启动助推、速度前馈和 PID 修正；
 - 正反向速度控制；
 - UART 文本命令与状态查询；
-- FreeRTOS 命令队列、串口发送互斥和周期日志；
+- FreeRTOS 命令队列、NvTask 参数存储、CommTxTask 串口发送和周期日志；
 - 基础故障状态及 fault snapshot 查询接口。
 
 当前主要实测控制路径为 UART 目标源，非零目标的已验证范围为 `±500` 至 `±1000`。
@@ -84,35 +88,38 @@
 ## 3. 控制与命令架构
 
 ```text
-USART1 接收
+USART1 ReceiveToIdle 中断
     │
     ▼
-UART 行缓冲 / 行队列
+UART ring buffer / 行队列
     │
     ▼
 CmdTask：解析命令
-    ├── status / help / get fault：直接查询并输出
-    └── 控制命令：写入 CmdQueue
-                         │
-                         ▼
-              ControlTask（10 ms）
-                         │
-             应用命令、读取反馈、执行控制
-                         │
-             方向引脚 + TIM1 PWM 输出
+    ├── status / help / get fault / comm stats：投递查询结果
+    └── 控制命令：CmdPool -> ControlCmdQueue
+                                      │
+                                      ▼
+                           ControlTask（10 ms）
+                                      │
+                    控制命令 / NvRequestQueue / PID 更新
+                                      │
+                    NvTask（Flash）  方向引脚 + TIM1 PWM
 
-LogTask（1000 ms）── 周期输出运行状态
+LogTask（1000 ms）── 周期 status ──┐
+CmdTask / ControlTask / NvTask ─────┼── CommTxQueue ── CommTxTask ── USART1 TX
 ```
 
-命令入队成功返回 `OK:CMD_QUEUED`。该回应只代表命令成功进入队列；控制状态是否改变仍应结合后续 `status` 和真实硬件现象判断。
+当前控制命令的 `OK:` 文本表示 ControlTask 或 NvTask 已完成对应动作，例如 `OK:RUN`、`OK:STOPPED`、`OK:PARAMS_SAVED`。后续 `status` 仍用于确认持续的软件状态；旧版本的 `OK:CMD_QUEUED` 不适用于 v2.2 协议。
 
 ## 4. FreeRTOS 任务
 
-| 任务 | 周期或阻塞方式 | 主要职责 |
+| 任务 | 优先级与周期/阻塞方式 | 主要职责 |
 | --- | --- | --- |
-| `ControlTask` | 10 ms 周期 | 消费控制命令、更新控制状态、执行测速和 PWM 输出 |
-| `CmdTask` | UART 行接收，约 5 ms 轮询间隔 | 接收并解析命令，执行查询或投递 `CmdQueue` |
-| `LogTask` | 1000 ms 周期 | 输出 `status` 格式的运行状态 |
+| `ControlTask` | AboveNormal，10 ms `vTaskDelayUntil` 周期 | 消费控制命令、发起 Nv 请求、更新控制状态、执行测速和 PWM 输出 |
+| `CmdTask` | Normal，约 5 ms 轮询 | 处理 UART ring buffer/行队列，解析命令，投递查询或控制请求 |
+| `CommTxTask` | Normal，阻塞等待 `CommTxQueue` | 串行格式化并通过 UART 中断发送所有文本输出 |
+| `NvTask` | BelowNormal，阻塞等待 `NvRequestQueue` | 执行 Flash 保存、加载、恢复默认值，并回投内部参数应用命令 |
+| `LogTask` | Low，1000 ms 周期 | 采集控制状态并投递周期 status |
 
 当前应用源码未创建名为 `defaultTask` 的业务任务，因此不把 FreeRTOS 内部空闲任务列入应用任务表。
 
@@ -122,17 +129,22 @@ LogTask（1000 ms）── 周期输出运行状态
 
 | 命令 | 作用 | 备注 |
 | --- | --- | --- |
-| `run=1` | 启动运行 | 使用当前目标源和目标值 |
-| `run=0` / `stop` | 停止运行 | 进入安全停止状态 |
+| `run=1` | 启动运行 | 成功返回 `OK:RUN` |
+| `run=0` / `stop` | 停止运行 | 成功返回 `OK:STOPPED`，后续 status 应为 IDLE/PWM=0 |
 | `status` | 查询当前状态 | 返回控制、反馈、PWM、故障和 PID 字段 |
 | `get fault` | 查询 fault snapshot | 无快照时返回 `FAULT_SNAPSHOT_NONE` |
-| `t=600` | 设置 UART 速度目标 | 绝对上限为 1000；当前非零支持区间为 `±500…±1000` |
-| `kp=0.05` | 设置比例系数 | 在线参数设置 |
-| `ki=0` | 设置积分系数 | 当前默认值为 0 |
-| `kd=0` | 设置微分系数 | 当前默认值为 0 |
-| `set target uart` | 选择 UART 目标源 | 当前控制验证采用该目标源 |
-| `set target adc` | 选择 ADC 目标源 | 已实现，低速策略一致性尚未专项验证 |
-| `rst` | 复位控制相关状态 | 具体行为以当前固件实现为准 |
+| `t=600` | 设置 UART 速度目标 | 成功返回 `OK:TARGET_SET`；绝对上限为 1000，当前非零支持区间为 `±500…±1000` |
+| `kp=0.05` | 设置比例系数 | 成功返回 `OK:KP_SET`；解析范围 0…100 |
+| `ki=0` | 设置积分系数 | 成功返回 `OK:KI_SET`；解析范围 0…100 |
+| `kd=0` | 设置微分系数 | 成功返回 `OK:KD_SET`；解析范围 0…100 |
+| `set target uart` | 选择 UART 目标源 | 成功返回 `OK:TARGET_SOURCE_UART` |
+| `set target adc` | 选择 ADC 目标源 | 成功返回 `OK:TARGET_SOURCE_ADC`；低速策略一致性尚未专项验证 |
+| `save params` | 保存当前 `kp/ki/kd` | 仅 IDLE；成功返回 `OK:PARAMS_SAVED` |
+| `load params` | 加载已保存 `kp/ki/kd` | 仅 IDLE；成功返回 `OK:PARAMS_LOADED` |
+| `reset params` | 恢复默认 `kp/ki/kd` 并写入 Flash | 仅 IDLE；成功返回 `OK:PARAMS_RESET` |
+| `comm stats` | 查询 UART、队列、对象池和 TX 计数 | 返回 `COMM_STATS ...` |
+| `help` | 输出命令帮助 | 查询命令，不进入控制队列 |
+| `rst` | 清 PID 状态和 fault 状态 | 成功返回 `OK:RESET`；不是 MCU 重启，不能验证参数重启加载 |
 
 `status` 当前包含：
 
@@ -190,7 +202,18 @@ adc1, adc2, fault, kp, ki, kd
 - [v2.0 release 诊断摘要](release/v2.0-rtos-cmdqueue/DIAGNOSIS_SUMMARY.md)
 - [release 文件校验值](release/v2.0-rtos-cmdqueue/SHA256SUMS.txt)
 
-v2.1 候选证据链资料：
+v2.2 证据链资料：
+
+- [v2.2 参数持久化测试计划](docs/verification/v2.2_param_persistence_test_plan.md)
+- [v2.2 异常命令回归计划](docs/verification/v2.2_abnormal_command_regression_plan.md)
+- [v2.2 status/run/stop 测试计划](docs/verification/v2.2_status_and_run_stop_test_plan.md)
+- [v2.2 参数持久化报告](reports/v2.2_param_persistence_report.md)
+- [v2.2 异常命令回归报告](reports/v2.2_abnormal_command_regression_report.md)
+- [v2.2 status/run/stop 报告](reports/v2.2_status_run_stop_report.md)
+- [v2.2 证据索引](reports/v2.2_evidence_index.md)
+- [v2.2 LLCom 回归脚本](scripts/llcom/)
+
+v2.1 历史证据链资料：
 
 - [v2.1 验证计划](docs/verification/v2.1_verification_plan.md)
 - [日志字段字典](docs/verification/log_field_dictionary.md)
@@ -206,7 +229,7 @@ v2.1 候选证据链资料：
 - [v2.1 Build Console](reports/v2.1_build_console.txt)
 - [v2.1 历史测试记录索引](reports/v2.1_legacy_test_records.md)
 
-`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。v2.1 当前完成的是本地诊断验证证据封版，不表示远程 release 已发布。部分控制测试原始日志保存在项目目录外，证据完整度和人工确认项以《验证记录归档审计》和 v2.1 证据索引为准；没有归档的日志不会被表述为已经完整纳入仓库。
+`v2.0-rtos-cmdqueue` release 目录同时保留对应 ELF。v2.2 当前完成的是本地证据封版，不表示 GitHub Release 已发布。v2.2 三份原始日志和报告已归档于 `logs/` 与 `reports/`；v2.1 历史证据的完整度和人工确认项仍以《验证记录归档审计》和 v2.1 证据索引为准。
 
 ## 8. 已知边界
 
@@ -236,6 +259,9 @@ My_PID_Motor/
 ├─ Drivers/                STM32 HAL/CMSIS 驱动
 ├─ Lib/                    项目使用的独立库
 ├─ Middlewares/            FreeRTOS 等中间件
+├─ logs/                   v2.1/v2.2 原始日志，legacy/ 保存探索性旧日志
+├─ reports/                验证报告、构建与证据索引
+├─ scripts/llcom/          v2.2 LLCom 半自动回归脚本
 ├─ docs/diagnosis/         诊断、调参、结果和证据审计文档
 ├─ release/
 │  └─ v2.0-rtos-cmdqueue/ 发布说明、诊断摘要、校验值和 ELF
