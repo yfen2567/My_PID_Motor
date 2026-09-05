@@ -82,4 +82,5 @@ uint32_t Comm_Service_GetQueueUsedMax(void);
 
 uint32_t Comm_Service_GetQueueCapacity(void);
 bool Comm_Service_PostStats(void);
+bool Comm_Service_PostControlTiming(Control_TimingStats_t stats);
 #endif /* APP_INC_COMM_SERVICE_H_ */

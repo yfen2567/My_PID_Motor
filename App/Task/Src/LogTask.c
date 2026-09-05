@@ -38,6 +38,7 @@ bool LogTask_PostFaultSnapshot(void)
     return Comm_Service_PostFaultSnapshot(1U, &snapshot);
 }
 
+//统计控制时序
 bool LogTask_PostControlTimingStats(void)
 {
 	/*获取stats*/
@@ -47,6 +48,7 @@ bool LogTask_PostControlTimingStats(void)
     /*上报stats*/
     return Comm_Service_PostControlTiming(stats);
 }
+
 void StartLogTask(void *argument)
 {
     (void)argument;

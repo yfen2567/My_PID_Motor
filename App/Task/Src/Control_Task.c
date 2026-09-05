@@ -17,7 +17,7 @@ uint32_t period_us=0;
 uint32_t execution_us=0;
 uint32_t control_tick_execution_us =0;
 uint16_t timeout_count=0;
-
+Control_TimingStats_t control_timingsnapshot;//统计结构体复用为快照结构体类型
 
 static App_Cmd_ExecResult_t ControlTask_PostNvRequest(const App_Cmd_t *cmd)
 {
@@ -59,13 +59,24 @@ static void DebugGpio_TickLow(void)
     HAL_GPIO_WritePin(GPIO_TICK_GPIO_Port, GPIO_TICK_Pin, GPIO_PIN_RESET);
 }
 
+static void Control_Timing_TrySaveSnapshot(void)
+{
+	taskENTER_CRITICAL();
+	control_timingsnapshot.control_tick_execution_us=control_tick_execution_us;
+	control_timingsnapshot.execution_us=execution_us;
+	control_timingsnapshot.period_us=period_us;
+	control_timingsnapshot.timeout_count=timeout_count;
+	taskEXIT_CRITICAL();
+}
+
 void Control_Timing_GetStats(Control_TimingStats_t *out)
 {
-	out->control_tick_execution_us=control_tick_execution_us;
-	out->execution_us=execution_us;
-	out->period_us=period_us;
-	out->timeout_count=timeout_count;
+	taskENTER_CRITICAL();
+	*out=control_timingsnapshot;
+	taskEXIT_CRITICAL();
 }
+
+
 
 void StartControlTask(void *argument)
 {
@@ -90,10 +101,13 @@ void StartControlTask(void *argument)
     	previous_updata_start=updata_start;
 
     	/*记录超期次数*/
-    	if(period_us>10000U)
-    	{
+    	if(period_us>10000U){
     		timeout_count++;
     	}
+
+    	/*保存控制时序快照*/
+    	Control_Timing_TrySaveSnapshot();//当传递的信息是多个不同时机才能更新的消息时，在合适的时机使用快照对信息进行保存可以保证多个数据所处上下文的一致性。再结合临界区就很不错了
+
 
     	/*接收并处理命令*/
         while (Cmd_Service_TryGetControlCommand(&cmd))

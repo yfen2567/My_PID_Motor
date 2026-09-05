@@ -68,6 +68,11 @@ static uint8_t CmdTask_ProcessLine(void)
         (void)LogTask_PostPeriodicStatus();
         return 1U;
     }
+    if (parsed.type == APP_CMD_CONTROL_TIMING_STATUS)
+    {
+        (void)LogTask_PostControlTimingStats();
+        return 1U;
+    }
     if (parsed.type == APP_CMD_HELP)
     {
         (void)Comm_Service_PostHelp();

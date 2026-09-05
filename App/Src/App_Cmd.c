@@ -101,6 +101,8 @@ App_Cmd_ParseResult_t App_Cmd_Parse(const char *line, App_Cmd_t *cmd)
     { cmd->type = APP_CMD_GET_FAULT; return APP_CMD_PARSE_OK; }
     if (strcmp(line, "comm stats") == 0)
     { cmd->type = APP_CMD_COMM_STATS; return APP_CMD_PARSE_OK; }
+    if (strcmp(line, "timing stats") == 0)
+    { cmd->type = APP_CMD_CONTROL_TIMING_STATUS; return APP_CMD_PARSE_OK; }
 
     if (strncmp(line, "t=", 2) == 0)
     {
