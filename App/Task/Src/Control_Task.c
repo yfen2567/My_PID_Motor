@@ -155,20 +155,20 @@ void StartControlTask(void *argument)
     (void)argument;
     for (;;)
     {
-    	/*拉高GPIO_CYCLE*/
-    	DebugGpio_CycleHigh();
+        /*拉高GPIO_CYCLE*/
+        DebugGpio_CycleHigh();
 
-    	/*记录开始时间，并计算任务周期*/
-    	uint32_t updata_start = DWT->CYCCNT;
-    	uint32_t period_cycles=updata_start-previous_updata_start;
-    	period_us=period_cycles/cycles_per_us;
+        /*记录开始时间，并计算任务周期*/
+        uint32_t updata_start = DWT->CYCCNT;
+        uint32_t period_cycles=updata_start-previous_updata_start;
+        period_us=period_cycles/cycles_per_us;
         if (previous_updata_start != 0U)
         {
             timeout_valid = 1U;
         }
-    	previous_updata_start=updata_start;
+        previous_updata_start=updata_start;
 
-    	/*记录超期次数*/
+        /*记录超期次数*/
         if (period_us > (APP_CONTROL_PERIOD_US + APP_CONTROL_PERIOD_TOLERANCE_US))//freertos唤醒依靠的是SysTick，但是他可能会被阻塞,根据测试，发现正常抖动一般在10微秒左右
         {
             if (timeout_valid != 0U)
@@ -177,11 +177,11 @@ void StartControlTask(void *argument)
             }
         }
 
-    	/*保存控制时序快照*/
-    Control_Timing_TrySaveSnapshot(timeout_valid);//当传递的信息是多个不同时机才能更新的消息时，在合适的时机使用快照对信息进行保存可以保证多个数据所处上下文的一致性。再结合临界区就很不错了
+        /*保存控制时序快照*/
+        Control_Timing_TrySaveSnapshot(timeout_valid);//当传递的信息是多个不同时机才能更新的消息时，在合适的时机使用快照对信息所处上下文的一致性。再结合临界区就很不错了
 
 
-    	/*接收并处理命令*/
+        /*接收并处理命令*/
         while (Cmd_Service_TryGetControlCommand(&cmd))
         {
             if (cmd->type == APP_CMD_APPLY_STORED_PARAMS)
@@ -217,7 +217,7 @@ void StartControlTask(void *argument)
  * 使劲弥补落后的那些周期。后者则是落后了，那干脆不弥补了，从现在重新开始计时间。*/
 
         /*执行周期控制，并记录控制时间*/
-    	/*拉高GPIO_TICK后再拉低*/
+        /*拉高GPIO_TICK后再拉低*/
         uint32_t execution_start=DWT->CYCCNT;
         DebugGpio_TickHigh();
         Control_Tick10ms();
