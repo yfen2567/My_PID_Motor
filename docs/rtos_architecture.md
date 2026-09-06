@@ -1,19 +1,55 @@
-# FreeRTOS 阶段架构说明
+# v2.2 FreeRTOS 架构说明
 
-当前工程已经从早期的裸机轮询/定时中断调度，整理为一个最小可展示的 FreeRTOS 任务化版本。系统仍然围绕直流电机闭环控制展开，但控制、命令接收和日志输出已经拆到不同任务中，避免所有逻辑堆在主循环或中断回调里。
+当前工程使用 CMSIS-RTOS V2 接口和 FreeRTOS。控制、命令、Flash 存储、日志和串口发送由不同任务承担，控制任务不阻塞在串口输入、Flash 擦写或 UART 发送上。
 
 ## 任务划分
 
-`ControlTask` 是周期控制任务，入口函数为 `StartControlTask()`，实际文件在 `App/Task/Src/Control_Task.c`。该任务以 10 ms 为周期运行，每个周期先从 `CmdQueue` 中非阻塞读取待处理控制命令，再调用 `Control_Tick10ms()` 执行控制逻辑。控制任务不等待串口输入，也不直接处理串口收发。
+| 任务 | 优先级 | 周期或阻塞方式 | 职责 |
+| --- | --- | --- | --- |
+| `ControlTask` | AboveNormal | 10 ms `vTaskDelayUntil` | 消费控制命令、检查参数存储前置条件、更新控制状态、执行 PID/测速/PWM |
+| `CmdTask` | Normal | 约 5 ms 轮询 | 消费 UART 行队列、解析命令、投递查询或控制请求 |
+| `CommTxTask` | Normal | 阻塞等待 `CommTxQueue` | 格式化所有文本消息并发起 UART 中断发送 |
+| `NvTask` | BelowNormal | 阻塞等待 `NvRequestQueue` | 执行 Flash 保存、加载和恢复默认值 |
+| `LogTask` | Low | 1000 ms 周期 | 获取控制快照并投递周期 status |
 
-`CmdTask` 是串口命令任务，入口函数为 `StartCmdTask()`，实际文件在 `App/Task/Src/CmdTask.c`。它周期调用 `Uart_Task()`，把 USART1 ReceiveToIdle 中断放入 ring buffer 的数据组装成命令行，然后通过 `App_Cmd_Parse()` 解析命令。`status`、`help`、`get fault` 属于查询或显示类命令，可以由 `CmdTask` 直接触发输出；`run=1`、`stop`、`t=xxx`、`kp=x`、`ki=x`、`kd=x`、`rst` 等会改变控制状态的命令，会打包为 `App_Cmd_t`，通过命令服务放入 `CmdQueue`，交给 `ControlTask` 处理。
+## 数据流
 
-`LogTask` 是周期日志任务，入口函数为 `StartLogTask()`，实际文件在 `App/Task/Src/LogTask.c`。它每 3000 ms 调用 `LogTask_PrintPeriodicStatus()` 输出一次状态行。状态内容来自 `Control_GetStatusSnapshot()` 和 `Control_GetPID()`，包括系统时间、enable、状态、目标来源、目标速度、实际速度、PWM、ADC、fault 以及 PID 参数。
+```text
+USART1 ReceiveToIdle ISR
+    -> UART ring buffer
+    -> CmdTask 行组装与解析
+       -> 查询命令 -> CommTxQueue
+       -> 控制命令 -> CmdPool -> ControlCmdQueue -> ControlTask
+       -> 参数存储命令 -> ControlTask IDLE 检查 -> NvRequestQueue -> NvTask
+                                                        -> ControlCmdQueue 内部应用命令
 
-## 队列与互斥锁
+ControlTask / CmdTask / NvTask / LogTask
+    -> CommTxQueue
+    -> CommTxTask
+    -> Uart_WriteAsync
+    -> HAL_UART_TxCpltCallback
+```
 
-`CmdQueue` 在 `Core/Src/freertos.c` 中创建，当前长度为 16，item size 为 `sizeof(App_Cmd_t*)`。命令队列采用“队列传结构体指针”的方式：`Cmd_Service_PostControlCommand()` 中申请内存并投递指针，`Cmd_Service_TryGetControlCommand()` 中取出指针、拷贝命令内容并释放内存。这样可以把队列和动态内存细节封装在 `Cmd_Service.c`，避免散落到 `CmdTask` 或 `ControlTask` 里。
+## RTOS 对象
 
-`uartTxMutex` 同样在 `Core/Src/freertos.c` 中创建，并通过 `App/Inc/App_Rtos.h` 对外声明。它用于保护 USART1 发送。当前多个任务都可能调用串口发送：`CmdTask` 会输出 `OK:CMD_QUEUED`、错误提示、help、status 和 fault snapshot；`LogTask` 会周期输出状态日志。如果两个任务同时调用 HAL 串口发送，输出可能出现交叉、粘连，例如 status 行中插入 OK 或 fault 信息。
+| 对象 | 长度 | 内容 | 作用 |
+| --- | ---: | --- | --- |
+| `ControlCmdQueue` | 16 | `App_Cmd_t *` | CmdTask 和 NvTask 向 ControlTask 交付命令对象指针 |
+| `CommTxQueue` | 8 | `Comm_Message_t` | 所有任务向 CommTxTask 交付待发送文本消息 |
+| `NvRequestQueue` | 2 | `NvRequest_t` | ControlTask 向 NvTask 交付 Flash 参数操作 |
+| `s_tx_done_Sem` | 最大 1 | 二进制发送许可 | 保护单个在飞 UART TX；发送完成回调归还许可 |
+| `CmdPool` | 16 块 | 静态 `App_Cmd_t` | 避免把 CmdTask 局部变量地址放入异步队列 |
 
-当前解决方式是：所有串口文本输出统一走 `Uart_TxText()`，该函数内部在 `uartTxMutexHandle` 有效时先 `osMutexAcquire()`，发送完成后再 `osMutexRelease()`。这样串口发送在文本级别串行化，保证一整条状态、OK 或 fault snapshot 输出不会被其他任务打断。
+## 参数存储边界
+
+Flash 擦写只在 NvTask 中执行。ControlTask 只在 `enable=0` 且 `State=IDLE` 时向 `NvRequestQueue` 投递参数请求；这避免控制 10 ms 路径直接执行 Flash 操作。`load params` 和 `reset params` 成功后，NvTask 通过内部命令把参数交回 ControlTask 应用，保证 PID 状态的修改仍由控制模块拥有。
+
+## 串口发送边界
+
+所有响应、status、fault 和统计信息先复制为 `Comm_Message_t` 并入 `CommTxQueue`。CommTxTask 是 UART 文本发送的唯一任务所有者；`Uart_WriteAsync` 获取发送许可、启动 `HAL_UART_Transmit_IT`，TX 完成回调释放许可。这样不同任务不会直接竞争同一个 HAL UART 发送调用。
+
+## 已知边界
+
+- ControlTask 使用绝对 10 ms 调度；当前 v2.2 未提供周期、抖动或执行时间统计，这些属于 v2.3.1 的工作。
+- NvTask 仅允许在 IDLE 处理参数存储，不验证运行中 Flash 操作。
+- 当前发送许可等待超时/错误恢复、长时间通信压力和所有队列极限不属于 v2.2 实机回归范围。

@@ -1,0 +1,101 @@
+LLCom v2.2 parameter persistence regression
+firmware_branch=v2.2-param-persist-and-abnormal-regression
+firmware_commit=ee1f51d
+serial=115200,8N1,CRLF
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.2_param_persistence_raw_20260905_155551.txt
+
+[2026-09-05 15:55:51] TEST_START v2.2 parameter persistence
+[2026-09-05 15:55:51] FIRMWARE branch=v2.2-param-persist-and-abnormal-regression, commit=ee1f51d
+[2026-09-05 15:55:51] CASE PP-001 save and reboot reload
+[2026-09-05 15:55:51] TX stop
+[2026-09-05 15:55:52] RX OK:STOPPED
+[2026-09-05 15:55:52] TX set target uart
+[2026-09-05 15:55:52] RX OK:TARGET_SOURCE_UART
+[2026-09-05 15:55:52] RX ms:5003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2209,adc2:2023,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:55:52] TX status
+[2026-09-05 15:55:53] RX ms:5333,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2065,adc2:2050,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:55:53] RX ms:6003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2214,adc2:2035,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:55:54] TX kp=0.06
+[2026-09-05 15:55:54] RX OK:KP_SET
+[2026-09-05 15:55:54] TX ki=0.01
+[2026-09-05 15:55:54] RX ms:7003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2216,adc2:2034,fault:NONE,kp:0.060,ki:0.000,kd:0.000
+OK:KI_SET
+[2026-09-05 15:55:55] TX kd=0.02
+[2026-09-05 15:55:55] RX OK:KD_SET
+[2026-09-05 15:55:55] TX status
+[2026-09-05 15:55:55] RX ms:8003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2220,adc2:2033,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+ms:8088,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2215,adc2:2040,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:55:56] RX ms:9003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2228,adc2:2044,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:55:56] TX save params
+[2026-09-05 15:55:57] RX OK:PARAMS_SAVED
+[2026-09-05 15:55:57] RX ms:10003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2224,adc2:2040,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:55:58] EXPECT OK:PARAMS_SAVED
+[2026-09-05 15:55:58] MANUAL_ACTION Within 15 seconds, press NRST, power-cycle the MCU, or use ST-Link Reset. Do not send rst.
+[2026-09-05 15:55:58] RX ms:11003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2222,adc2:2037,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:55:59] RX ms:12003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2213,adc2:2034,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:00] RX ms:13003,enable:0,State:IDLE,source:Uart,target:536,actual:0,delta:0,PWM:0,adc1:2195,adc2:2022,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:05] RX ms:3,enable:0,State:IDLE,source:ADC,target:494,actual:0,delta:0,PWM:0,adc1:2027,adc2:2193,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:06] RX ms:1003,enable:0,State:IDLE,source:ADC,target:496,actual:0,delta:0,PWM:0,adc1:2032,adc2:2213,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:07] RX ms:2003,enable:0,State:IDLE,source:ADC,target:496,actual:0,delta:0,PWM:0,adc1:2024,adc2:2204,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:08] RX ms:3003,enable:0,State:IDLE,source:ADC,target:495,actual:0,delta:0,PWM:0,adc1:2024,adc2:2204,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:09] RX ms:4003,enable:0,State:IDLE,source:ADC,target:536,actual:0,delta:0,PWM:0,adc1:2208,adc2:2027,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:10] RX ms:5003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2200,adc2:2017,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:11] RX ms:6003,enable:0,State:IDLE,source:ADC,target:537,actual:0,delta:0,PWM:0,adc1:2211,adc2:2025,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:12] RX ms:7003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2204,adc2:2026,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:13] TX status
+[2026-09-05 15:56:13] RX ms:7688,enable:0,State:IDLE,source:ADC,target:537,actual:0,delta:0,PWM:0,adc1:2204,adc2:2024,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:13] RX ms:8003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2212,adc2:2029,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:14] EXPECT kp:0.060,ki:0.010,kd:0.020, enable:0,State:IDLE,PWM:0,fault:NONE
+[2026-09-05 15:56:14] CASE PP-002 explicit load
+[2026-09-05 15:56:14] TX stop
+[2026-09-05 15:56:14] RX OK:STOPPED
+ms:9003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2207,adc2:2028,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:14] TX kp=0.07
+[2026-09-05 15:56:15] RX OK:KP_SET
+[2026-09-05 15:56:15] TX ki=0.03
+[2026-09-05 15:56:15] RX OK:KI_SET
+ms:10003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2213,adc2:2030,fault:NONE,kp:0.070,ki:0.030,kd:0.020
+[2026-09-05 15:56:15] TX kd=0.04
+[2026-09-05 15:56:16] RX OK:KD_SET
+[2026-09-05 15:56:16] TX status
+[2026-09-05 15:56:16] RX ms:11003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2213,adc2:2030,fault:NONE,kp:0.070,ki:0.030,kd:0.040
+ms:11018,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2213,adc2:2029,fault:NONE,kp:0.070,ki:0.030,kd:0.040
+[2026-09-05 15:56:17] RX ms:12003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2216,adc2:2029,fault:NONE,kp:0.070,ki:0.030,kd:0.040
+[2026-09-05 15:56:17] TX load params
+[2026-09-05 15:56:17] RX OK:PARAMS_LOADED
+[2026-09-05 15:56:18] RX ms:13003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2227,adc2:2037,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:18] EXPECT OK:PARAMS_LOADED
+[2026-09-05 15:56:18] TX status
+[2026-09-05 15:56:19] RX ms:13468,enable:0,State:IDLE,source:ADC,target:541,actual:0,delta:0,PWM:0,adc1:2219,adc2:2039,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:19] RX ms:14003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2218,adc2:2038,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:20] EXPECT kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:20] CASE PP-003 reset defaults and reboot reload
+[2026-09-05 15:56:20] TX stop
+[2026-09-05 15:56:20] RX OK:STOPPED
+[2026-09-05 15:56:20] RX ms:15003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2228,adc2:2041,fault:NONE,kp:0.060,ki:0.010,kd:0.020
+[2026-09-05 15:56:20] TX reset params
+[2026-09-05 15:56:20] RX OK:PARAMS_RESET
+[2026-09-05 15:56:21] RX ms:16003,enable:0,State:IDLE,source:ADC,target:541,actual:0,delta:0,PWM:0,adc1:2223,adc2:2040,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:21] EXPECT OK:PARAMS_RESET
+[2026-09-05 15:56:21] TX status
+[2026-09-05 15:56:22] RX ms:16403,enable:0,State:IDLE,source:ADC,target:541,actual:0,delta:0,PWM:0,adc1:2221,adc2:2044,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:22] RX ms:17003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2220,adc2:2039,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:23] EXPECT kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:23] MANUAL_ACTION Within 15 seconds, perform a real MCU reset again. Do not send rst.
+[2026-09-05 15:56:23] RX ms:18003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2231,adc2:2047,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:24] RX ms:19003,enable:0,State:IDLE,source:ADC,target:536,actual:0,delta:0,PWM:0,adc1:2225,adc2:2041,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:25] RX ms:20003,enable:0,State:IDLE,source:ADC,target:537,actual:0,delta:0,PWM:0,adc1:2219,adc2:2027,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:26] RX ms:21003,enable:0,State:IDLE,source:ADC,target:540,actual:0,delta:0,PWM:0,adc1:2228,adc2:2047,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:26] RX ms:3,enable:0,State:IDLE,source:ADC,target:494,actual:0,delta:0,PWM:0,adc1:2023,adc2:2193,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:31] RX ms:3,enable:0,State:IDLE,source:ADC,target:493,actual:0,delta:0,PWM:0,adc1:2019,adc2:2181,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:32] RX ms:1003,enable:0,State:IDLE,source:ADC,target:536,actual:0,delta:0,PWM:0,adc1:2222,adc2:2041,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:33] RX ms:2003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2222,adc2:2040,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:34] RX ms:3003,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2212,adc2:2036,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:35] RX ms:4003,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2217,adc2:2035,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:36] RX ms:5003,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2212,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:37] RX ms:6003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2219,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:38] TX status
+[2026-09-05 15:56:38] RX ms:6598,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2204,adc2:2021,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:38] RX ms:7003,enable:0,State:IDLE,source:ADC,target:539,actual:0,delta:0,PWM:0,adc1:2210,adc2:2032,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 15:56:39] EXPECT kp:0.050,ki:0.000,kd:0.000, enable:0,State:IDLE,PWM:0,fault:NONE
+[2026-09-05 15:56:39] TEST_DONE Review the expected responses and reboot-time status lines.

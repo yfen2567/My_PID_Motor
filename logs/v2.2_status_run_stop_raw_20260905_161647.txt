@@ -1,0 +1,75 @@
+LLCom v2.2 status/run/stop/restart regression
+firmware_branch=v2.2-param-persist-and-abnormal-regression
+firmware_commit=ee1f51d
+serial=115200,8N1,CRLF
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.2_status_run_stop_raw_20260905_161647.txt
+
+[2026-09-05 16:16:47] TEST_START v2.2 status/run/stop/restart
+[2026-09-05 16:16:47] FIRMWARE branch=v2.2-param-persist-and-abnormal-regression, commit=ee1f51d
+[2026-09-05 16:16:47] CASE stopped baseline
+[2026-09-05 16:16:47] TX stop
+[2026-09-05 16:16:47] RX OK:STOPPED
+[2026-09-05 16:16:47] TX status
+[2026-09-05 16:16:47] RX ms:4003,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2199,adc2:2019,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:47] RX ms:4128,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2196,adc2:2019,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:48] RX ms:5003,enable:0,State:IDLE,source:ADC,target:538,actual:0,delta:0,PWM:0,adc1:2197,adc2:2017,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:48] TX set target uart
+[2026-09-05 16:16:48] RX OK:TARGET_SOURCE_UART
+[2026-09-05 16:16:49] TX kp=0.05
+[2026-09-05 16:16:49] RX OK:KP_SET
+[2026-09-05 16:16:49] RX ms:6003,enable:0,State:IDLE,source:Uart,target:538,actual:0,delta:0,PWM:0,adc1:2207,adc2:2034,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:49] TX ki=0
+[2026-09-05 16:16:49] RX OK:KI_SET
+[2026-09-05 16:16:50] TX kd=0
+[2026-09-05 16:16:50] RX OK:KD_SET
+ms:7003,enable:0,State:IDLE,source:Uart,target:538,actual:0,delta:0,PWM:0,adc1:2208,adc2:2026,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:50] TX t=600
+[2026-09-05 16:16:50] RX OK:TARGET_SET
+[2026-09-05 16:16:51] TX status
+[2026-09-05 16:16:51] RX ms:7943,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2203,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:8003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2216,adc2:2037,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:52] RX ms:9003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2216,adc2:2031,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:52] EXPECT source:Uart,target:600,enable:0,State:IDLE,PWM:0,fault:NONE
+[2026-09-05 16:16:52] CASE first run
+[2026-09-05 16:16:52] TX run=1
+[2026-09-05 16:16:52] RX OK:RUN
+[2026-09-05 16:16:53] RX ms:10003,enable:1,State:RUN,source:Uart,target:600,actual:514,delta:2,PWM:132,adc1:2220,adc2:2039,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:54] RX ms:11003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:3,PWM:130,adc1:2223,adc2:2046,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:54] EXPECT OK:RUN
+[2026-09-05 16:16:54] TX status
+[2026-09-05 16:16:54] RX ms:11178,enable:1,State:RUN,source:Uart,target:600,actual:514,delta:3,PWM:132,adc1:2195,adc2:2018,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:55] RX ms:12003,enable:1,State:RUN,source:Uart,target:600,actual:514,delta:2,PWM:132,adc1:2217,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:55] EXPECT enable:1,State:RUN,source:Uart,target:600,fault:NONE
+[2026-09-05 16:16:55] CASE first stop
+[2026-09-05 16:16:55] TX stop
+[2026-09-05 16:16:55] RX OK:STOPPED
+[2026-09-05 16:16:56] EXPECT OK:STOPPED
+[2026-09-05 16:16:56] TX status
+[2026-09-05 16:16:56] RX ms:12923,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2212,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:13003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2219,adc2:2046,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:57] RX ms:14003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2216,adc2:2038,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:57] EXPECT enable:0,State:IDLE,PWM:0
+[2026-09-05 16:16:57] CASE second run
+[2026-09-05 16:16:57] TX run=1
+[2026-09-05 16:16:57] RX OK:RUN
+[2026-09-05 16:16:58] RX ms:15003,enable:1,State:RUN,source:Uart,target:600,actual:514,delta:2,PWM:132,adc1:2216,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:59] RX ms:16003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2206,adc2:2028,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:16:59] EXPECT OK:RUN
+[2026-09-05 16:16:59] TX status
+[2026-09-05 16:16:59] RX ms:16168,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2212,adc2:2034,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:17:00] RX ms:17003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:3,PWM:130,adc1:2205,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:17:00] EXPECT enable:1,State:RUN,source:Uart,target:600,fault:NONE
+[2026-09-05 16:17:00] CASE final stop
+[2026-09-05 16:17:00] TX stop
+[2026-09-05 16:17:00] RX OK:STOPPED
+[2026-09-05 16:17:01] EXPECT OK:STOPPED
+[2026-09-05 16:17:01] TX status
+[2026-09-05 16:17:01] RX ms:17893,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2207,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:17:01] RX ms:18003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2212,adc2:2031,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:17:02] EXPECT enable:0,State:IDLE,PWM:0
+[2026-09-05 16:17:02] TX get fault
+[2026-09-05 16:17:02] RX ms:19003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2199,adc2:2019,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+FAULT_SNAPSHOT_NONE
+[2026-09-05 16:17:03] RX ms:20003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2202,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-05 16:17:03] EXPECT FAULT_SNAPSHOT_NONE
+[2026-09-05 16:17:03] TEST_DONE Check every stated run/stop status transition.

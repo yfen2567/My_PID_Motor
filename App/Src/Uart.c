@@ -254,7 +254,7 @@ bool Uart_WriteAsync(const uint8_t *data, uint16_t length)
 
     if (HAL_UART_Transmit_IT(&huart1, (uint8_t *)s_uart_tx_buf, length) != HAL_OK)
     {
-    	(void)osSemaphoreRelease(s_tx_done_SemHandle);
+        (void)osSemaphoreRelease(s_tx_done_SemHandle);
         return false;
     }
     return true;
