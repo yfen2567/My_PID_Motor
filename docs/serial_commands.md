@@ -62,3 +62,15 @@ ms,enable,State,source,target,actual,delta,PWM,adc1,adc2,fault,kp,ki,kd
 - [参数持久化报告](../reports/v2.2_param_persistence_report.md)
 - [异常命令回归报告](../reports/v2.2_abnormal_command_regression_report.md)
 - [status/run/stop/restart 报告](../reports/v2.2_status_run_stop_report.md)
+
+## v2.3.1 timing stats
+
+`timing stats` 是查询命令，不进入控制命令队列。当前输出格式为：
+
+```text
+TIMING_STATS sample_count:...,period_us:...,period_min_us:...,period_max_us:...,max_abs_jitter_us:...,exec_us:...,exec_min_us:...,exec_max_us:...,tick_exec_us:...,tick_exec_min_us:...,tick_exec_max_us:...,timeout_count:...
+```
+
+`period_us`、`exec_us` 和 `tick_exec_us` 是最近一次有效样本；其余 `sample_count`、min/max 和 `max_abs_jitter_us` 是自 ControlTask 第一份有效样本以来的累计聚合结果。`timeout_count` 使用当前 `10010 us` 容差阈值。
+
+M0-M3 历史日志是在聚合字段加入前生成的；新增字段由独立聚合冒烟测试验证。M4 GPIO 波形验证因暂无逻辑分析仪或示波器而延期。
