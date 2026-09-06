@@ -7,20 +7,12 @@
 
 bool LogTask_PostPeriodicStatus(void)
 {
-    Motor_Status_t motor_status;
-    float kp = 0.0f;
-    float ki = 0.0f;
-    float kd = 0.0f;
+	Control_TelemetrySnapshot_t snapshot;
 
-    Control_GetStatusSnapshot(&motor_status);
-    Control_GetPID(&kp, &ki, &kd);
+    Control_GetTelemetrySnapshot(&snapshot);
 
     return Comm_Service_PostStatus(
-        &motor_status,
-        kp,
-        ki,
-        kd,
-        Control_IsAdcTargetEnabled(),
+        snapshot,
         HAL_GetTick());
 }
 
@@ -28,14 +20,11 @@ bool LogTask_PostPeriodicStatus(void)
 bool LogTask_PostFaultSnapshot(void)
 {
     FaultSnapshot_t snapshot;
-
-    if (Control_HasFaultShot() == 0U)
+    if(Control_GetFaultShot(&snapshot))
     {
-        return Comm_Service_PostFaultSnapshot(0U, NULL);
+        return Comm_Service_PostFaultSnapshot(1U, &snapshot);
     }
-
-    snapshot = Control_GetFaultShot();
-    return Comm_Service_PostFaultSnapshot(1U, &snapshot);
+    return Comm_Service_PostFaultSnapshot(0U, NULL);
 }
 
 //统计控制时序

@@ -33,7 +33,7 @@ static uint8_t s_uart_discard_too_long;
 static volatile uint32_t s_max_line_len;
 static volatile uint32_t s_rx_overflow_count;
 static volatile uint32_t s_line_queue_full_count;
-
+static uint8_t s_uart_tx_buf[APP_UART_TX_SIZE];
 
 static uint8_t Uart_LineQueueNext(uint8_t index)
 {
@@ -238,7 +238,7 @@ uint32_t Uart_ProcessRx(void)
 
 bool Uart_WriteAsync(const uint8_t *data, uint16_t length)
 {
-    if ((data == NULL) || (length == 0U) || (s_tx_done_SemHandle == NULL))
+    if ((data == NULL) || (length == 0U) ||length > sizeof(s_uart_tx_buf)|| (s_tx_done_SemHandle == NULL))
     {
         return false;
     }
@@ -247,7 +247,12 @@ bool Uart_WriteAsync(const uint8_t *data, uint16_t length)
     {
         return false;
     }
-    if (HAL_UART_Transmit_IT(&huart1, (uint8_t *)data, length) != HAL_OK)
+
+    /*复制到生命周期足够长的发送缓冲区*/
+
+    memcpy(s_uart_tx_buf, data, length);//不这样做的话，由于字符串或者数组传递信息必须传地址，这会导致Comm_Service_ProcessTx中的buffer消失，而且这个buffer提升为全局变量会导致数据覆盖，所以不能弄成全局变量
+
+    if (HAL_UART_Transmit_IT(&huart1, (uint8_t *)s_uart_tx_buf, length) != HAL_OK)
     {
     	(void)osSemaphoreRelease(s_tx_done_SemHandle);
         return false;

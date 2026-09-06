@@ -2,6 +2,7 @@
 #include "Control_Task.h"
 #include "Control.h"
 #include "App_Cmd.h"
+#include "app_config.h"
 #include "cmsis_os.h"
 #include "main.h"
 
@@ -17,7 +18,7 @@ uint32_t period_us=0;
 uint32_t execution_us=0;
 uint32_t control_tick_execution_us =0;
 uint16_t timeout_count=0;
-Control_TimingStats_t control_timingsnapshot;//统计结构体复用为快照结构体类型
+Control_TimingStats_t control_timingsnapshot = {0};//统计结构体类型复用为快照结构体类型
 
 static App_Cmd_ExecResult_t ControlTask_PostNvRequest(const App_Cmd_t *cmd)
 {
@@ -59,18 +60,81 @@ static void DebugGpio_TickLow(void)
     HAL_GPIO_WritePin(GPIO_TICK_GPIO_Port, GPIO_TICK_Pin, GPIO_PIN_RESET);
 }
 
-static void Control_Timing_TrySaveSnapshot(void)
+static void Control_Timing_TrySaveSnapshot(uint8_t sample_valid)
 {
+	uint32_t period_jitter_us;
+
+	if (sample_valid == 0U)
+	{
+		return;
+	}
+
+	if (period_us >= APP_CONTROL_PERIOD_US)
+	{
+		period_jitter_us = period_us - APP_CONTROL_PERIOD_US;
+	}
+	else
+	{
+		period_jitter_us = APP_CONTROL_PERIOD_US - period_us;
+	}
+
 	taskENTER_CRITICAL();
-	control_timingsnapshot.control_tick_execution_us=control_tick_execution_us;
-	control_timingsnapshot.execution_us=execution_us;
-	control_timingsnapshot.period_us=period_us;
-	control_timingsnapshot.timeout_count=timeout_count;
-	taskEXIT_CRITICAL();
+	control_timingsnapshot.sample_count++;
+	control_timingsnapshot.period_us = period_us;
+	control_timingsnapshot.execution_us = execution_us;
+	control_timingsnapshot.control_tick_execution_us = control_tick_execution_us;
+	control_timingsnapshot.timeout_count = timeout_count;
+
+	if (control_timingsnapshot.sample_count == 1U)
+	{
+		control_timingsnapshot.period_min_us = period_us;
+		control_timingsnapshot.period_max_us = period_us;
+		control_timingsnapshot.max_abs_jitter_us = period_jitter_us;
+		control_timingsnapshot.execution_min_us = execution_us;
+		control_timingsnapshot.execution_max_us = execution_us;
+		control_timingsnapshot.control_tick_min_us = control_tick_execution_us;
+		control_timingsnapshot.control_tick_max_us = control_tick_execution_us;
+	}
+	else
+	{
+		if (period_us < control_timingsnapshot.period_min_us)
+		{
+			control_timingsnapshot.period_min_us = period_us;
+		}
+		if (period_us > control_timingsnapshot.period_max_us)
+		{
+			control_timingsnapshot.period_max_us = period_us;
+		}
+		if (period_jitter_us > control_timingsnapshot.max_abs_jitter_us)
+		{
+			control_timingsnapshot.max_abs_jitter_us = period_jitter_us;
+		}
+		if (execution_us < control_timingsnapshot.execution_min_us)
+		{
+			control_timingsnapshot.execution_min_us = execution_us;
+		}
+		if (execution_us > control_timingsnapshot.execution_max_us)
+		{
+			control_timingsnapshot.execution_max_us = execution_us;
+		}
+		if (control_tick_execution_us < control_timingsnapshot.control_tick_min_us)
+		{
+			control_timingsnapshot.control_tick_min_us = control_tick_execution_us;
+		}
+		if (control_tick_execution_us > control_timingsnapshot.control_tick_max_us)
+		{
+			control_timingsnapshot.control_tick_max_us = control_tick_execution_us;
+		}
+	}
+    taskEXIT_CRITICAL();
 }
 
 void Control_Timing_GetStats(Control_TimingStats_t *out)
 {
+	if (out == NULL)
+	{
+		return;
+	}
 	taskENTER_CRITICAL();
 	*out=control_timingsnapshot;
 	taskEXIT_CRITICAL();
@@ -86,6 +150,7 @@ void StartControlTask(void *argument)
     TickType_t last_time = xTaskGetTickCount();
     const TickType_t period = pdMS_TO_TICKS(10);
     uint32_t cycles_per_us=SystemCoreClock/1000000;
+    uint8_t timeout_valid=0;//第一个周期不判断是否超时，也不保存快照，因为需要用第一个周期的快照为基准
 
     (void)argument;
     for (;;)
@@ -97,16 +162,23 @@ void StartControlTask(void *argument)
     	uint32_t updata_start = DWT->CYCCNT;
     	uint32_t period_cycles=updata_start-previous_updata_start;
     	period_us=period_cycles/cycles_per_us;
-
+        if (previous_updata_start != 0U)
+        {
+            timeout_valid = 1U;
+        }
     	previous_updata_start=updata_start;
 
     	/*记录超期次数*/
-    	if(period_us>10000U){
-    		timeout_count++;
-    	}
+        if (period_us > (APP_CONTROL_PERIOD_US + APP_CONTROL_PERIOD_TOLERANCE_US))//freertos唤醒依靠的是SysTick，但是他可能会被阻塞,根据测试，发现正常抖动一般在10微秒左右
+        {
+            if (timeout_valid != 0U)
+            {
+                timeout_count++;
+            }
+        }
 
     	/*保存控制时序快照*/
-    	Control_Timing_TrySaveSnapshot();//当传递的信息是多个不同时机才能更新的消息时，在合适的时机使用快照对信息进行保存可以保证多个数据所处上下文的一致性。再结合临界区就很不错了
+    Control_Timing_TrySaveSnapshot(timeout_valid);//当传递的信息是多个不同时机才能更新的消息时，在合适的时机使用快照对信息进行保存可以保证多个数据所处上下文的一致性。再结合临界区就很不错了
 
 
     	/*接收并处理命令*/

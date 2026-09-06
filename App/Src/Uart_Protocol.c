@@ -294,7 +294,7 @@ uint16_t Uart_Protocol_FormatHelp(char *buffer, uint16_t buffer_size)
         "  reset params\r\n"
         "  rst:reset\r\n"
         "  status\r\n"
-        "  help | get fault | comm stats\r\n",
+        "  help | get fault | comm stats | timing stats\r\n",
         buffer,
         buffer_size);
 }
@@ -340,11 +340,22 @@ uint16_t Uart_Protocol_FormatControlTimingStats(
     int written = snprintf(
         buffer,
         buffer_size,
-        "TIMING_STATS period_us:%lu,exec_us:%lu,"
-        "tick_exec_us:%lu,timeout_count:%u\r\n",
+        "TIMING_STATS sample_count:%lu,period_us:%lu,"
+        "period_min_us:%lu,period_max_us:%lu,max_abs_jitter_us:%lu,"
+        "exec_us:%lu,exec_min_us:%lu,exec_max_us:%lu,"
+        "tick_exec_us:%lu,tick_exec_min_us:%lu,tick_exec_max_us:%lu,"
+        "timeout_count:%u\r\n",
+        (unsigned long)stats->sample_count,
         (unsigned long)stats->period_us,
+        (unsigned long)stats->period_min_us,
+        (unsigned long)stats->period_max_us,
+        (unsigned long)stats->max_abs_jitter_us,
         (unsigned long)stats->execution_us,
+        (unsigned long)stats->execution_min_us,
+        (unsigned long)stats->execution_max_us,
         (unsigned long)stats->control_tick_execution_us,
+        (unsigned long)stats->control_tick_min_us,
+        (unsigned long)stats->control_tick_max_us,
         (unsigned int)stats->timeout_count);
 
     return Uart_Protocol_FinalizeLength(written, buffer_size);

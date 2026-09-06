@@ -1,10 +1,10 @@
 # My_PID_Motor
 
-基于 STM32F103C8Tx、STM32 HAL 和 FreeRTOS 的直流电机速度控制项目。项目已经完成 RTOS 命令队列发布基线，并在此基础上完成前馈修正、默认比例参数验证和轻载扰动观察。
+基于 STM32F103C8Tx、STM32 HAL 和 FreeRTOS 的直流电机速度控制项目。项目已经完成 RTOS 命令队列发布基线、参数持久化回归，并正在完成 v2.3.1 控制任务时序可观测性收尾。
 
 ## 1. 项目状态
 
-当前主线处于 `v2.1-diagnostic-verification` 本地证据封版阶段。LD-001 / LD-002 / LD-003 负载扰动证据链与 Debug Clean + Build 记录已经收口；本状态不代表工业级验证或远程 release 已发布。
+当前 `v2.3.1-timing-observability` 工作区已完成 M0-M3 基础字段实机回归，并完成新增时序聚合字段冒烟验证；M4 GPIO 波形验证因暂无逻辑分析仪/示波器延期。本状态不代表工业级验证或远程 release 已发布。
 
 已经完成：
 
@@ -16,6 +16,7 @@
 - `Kp=0.05, Ki=0, Kd=0` 的正反向全范围验证；
 - `target=600` 人工轻载扰动验证；
 - 诊断结论、release 基线和验证记录审计。
+- v2.3.1 M0-M3 时序观测回归与聚合字段冒烟验证。
 
 当前正式默认参数为：
 
@@ -43,6 +44,15 @@
 - 三组负载扰动测试均未记录 fault；
 - stop 后软件状态与 PWM 命令归零；
 - `get fault` 无快照分支返回 `FAULT_SNAPSHOT_NONE`。
+
+v2.3.1 证据与范围说明见：
+
+- `reports/v2.3.1_scope.md`
+- `reports/v2.3_m0_timing_smoke_report.md`
+- `reports/v2.3_m1_timing_idle_baseline_report.md`
+- `reports/v2.3_m2_timing_run_report.md`
+- `reports/v2.3_m3_timing_command_pressure_report.md`
+- `reports/v2.3_timing_aggregate_smoke_report.md`
 
 ### 待验证 / 可延期
 
@@ -104,7 +114,7 @@ CmdTask：解析命令
 LogTask（1000 ms）── 周期输出运行状态
 ```
 
-命令入队成功返回 `OK:CMD_QUEUED`。该回应只代表命令成功进入队列；控制状态是否改变仍应结合后续 `status` 和真实硬件现象判断。
+当前控制命令返回动作完成回执，例如 `OK:RUN`、`OK:STOPPED`、`OK:TARGET_SET` 和 `OK:KP_SET`；参数持久化命令由 NvTask 完成后返回对应 `OK:PARAMS_*`。后续 `status` 仍用于确认持续的软件状态。
 
 ## 4. FreeRTOS 任务
 
@@ -133,12 +143,21 @@ LogTask（1000 ms）── 周期输出运行状态
 | `set target uart` | 选择 UART 目标源 | 当前控制验证采用该目标源 |
 | `set target adc` | 选择 ADC 目标源 | 已实现，低速策略一致性尚未专项验证 |
 | `rst` | 复位控制相关状态 | 具体行为以当前固件实现为准 |
+| `timing stats` | 查询当前时序与累计聚合统计 | 输出当前样本、样本数、min/max、最大绝对抖动和超期次数 |
 
 `status` 当前包含：
 
 ```text
 ms, enable, State, source, target, actual, delta, PWM,
 adc1, adc2, fault, kp, ki, kd
+```
+
+`timing stats` 当前包含：
+
+```text
+sample_count, period_us, period_min_us, period_max_us, max_abs_jitter_us,
+exec_us, exec_min_us, exec_max_us,
+tick_exec_us, tick_exec_min_us, tick_exec_max_us, timeout_count
 ```
 
 ## 6. 控制验证结果

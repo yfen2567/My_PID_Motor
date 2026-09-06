@@ -1,0 +1,45 @@
+LLCom v2.3.1 timing aggregate-field smoke test
+firmware_branch=v2.3.1-timing-observability
+firmware_commit=3aa18c2
+working_tree=uncommitted v2.3 timing changes; verify before release
+serial=115200,8N1,CRLF
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.3_timing_aggregate_smoke_raw_20260906_160148.txt
+
+[2026-09-06 16:01:48] TEST_START Timing aggregate-field smoke
+[2026-09-06 16:01:48] PURPOSE Validate sample_count, min/max values and max_abs_jitter_us output/update.
+[2026-09-06 16:01:48] EXPECT_FIELDS sample_count,period_us,period_min_us,period_max_us,max_abs_jitter_us,exec_us,exec_min_us,exec_max_us,tick_exec_us,tick_exec_min_us,tick_exec_max_us,timeout_count
+[2026-09-06 16:01:48] TX stop
+[2026-09-06 16:01:48] RX OK:STOPPED
+[2026-09-06 16:01:48] RX ms:3003,enable:0,State:IDLE,source:ADC,target:555,actual:0,delta:0,PWM:0,adc1:2216,adc2:2456,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:49] TX set target uart
+[2026-09-06 16:01:49] RX OK:TARGET_SOURCE_UART
+[2026-09-06 16:01:49] RX ms:4003,enable:0,State:IDLE,source:Uart,target:555,actual:0,delta:0,PWM:0,adc1:2339,adc2:2462,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:49] TX t=600
+[2026-09-06 16:01:49] RX OK:TARGET_SET
+[2026-09-06 16:01:50] TX status
+[2026-09-06 16:01:50] RX ms:4698,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2330,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:50] RX ms:5003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2336,adc2:2035,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:51] SAMPLE 1
+[2026-09-06 16:01:51] TX timing stats
+[2026-09-06 16:01:51] RX TIMING_STATS sample_count:570,period_us:9999,period_min_us:9998,period_max_us:10006,max_abs_jitter_us:6,exec_us:22,exec_min_us:22,exec_max_us:66,tick_exec_us:14,tick_exec_min_us:14,tick_exec_max_us:21,timeout_count:0
+[2026-09-06 16:01:51] RX ms:6003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2208,adc2:2448,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:52] RX ms:7003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2335,adc2:2036,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:52] SAMPLE 2
+[2026-09-06 16:01:52] TX timing stats
+[2026-09-06 16:01:52] RX TIMING_STATS sample_count:723,period_us:10000,period_min_us:9998,period_max_us:10006,max_abs_jitter_us:6,exec_us:22,exec_min_us:22,exec_max_us:66,tick_exec_us:14,tick_exec_min_us:14,tick_exec_max_us:21,timeout_count:0
+[2026-09-06 16:01:53] RX ms:8003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2206,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:54] SAMPLE 3
+[2026-09-06 16:01:54] TX timing stats
+[2026-09-06 16:01:54] RX TIMING_STATS sample_count:876,period_us:10000,period_min_us:9998,period_max_us:10006,max_abs_jitter_us:6,exec_us:22,exec_min_us:22,exec_max_us:66,tick_exec_us:14,tick_exec_min_us:14,tick_exec_max_us:21,timeout_count:0
+[2026-09-06 16:01:54] RX ms:9003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2340,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:54] TX comm stats
+[2026-09-06 16:01:54] RX COMM_STATS rx_overflow:0,line_q_full:0,cmd_q_full:0,pool_fail:0,pool_max:1,tx_drop:0,tx_error:0,rx_restart_fail:0,max_line:15,comm_q:1/8,cmd_q:0/16
+[2026-09-06 16:01:55] RX ms:10003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2218,adc2:2460,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 16:01:55] CHECK_1 sample_count should be greater than zero.
+[2026-09-06 16:01:55] CHECK_2 sample_count should increase between samples 1, 2 and 3.
+[2026-09-06 16:01:55] CHECK_3 period_min_us <= period_us <= period_max_us.
+[2026-09-06 16:01:55] CHECK_4 exec_min_us <= exec_us <= exec_max_us.
+[2026-09-06 16:01:55] CHECK_5 tick_exec_min_us <= tick_exec_us <= tick_exec_max_us.
+[2026-09-06 16:01:55] CHECK_6 max_abs_jitter_us >= abs(period_us - 10000).
+[2026-09-06 16:01:55] CHECK_7 No parse error, queue error, pool failure or TX error.
+[2026-09-06 16:01:55] TEST_DONE Review the three TIMING_STATS lines and COMM_STATS manually.

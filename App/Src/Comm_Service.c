@@ -62,21 +62,17 @@ bool Comm_Service_PostParseError(App_Cmd_ParseResult_t result)
 }
 
 
-bool Comm_Service_PostStatus(const Motor_Status_t *status,
-                             float kp, float ki, float kd,
-                             uint8_t adc_target_enabled,
+bool Comm_Service_PostStatus(const Control_TelemetrySnapshot_t snapshot,
                              uint32_t tick_ms)
 {
     Comm_Message_t message = {0};
 
-    if (status == NULL) { return false; }
-
     message.type = COMM_MESSAGE_STATUS;
-    message.payload.status.status = *status;
-    message.payload.status.kp = kp;
-    message.payload.status.ki = ki;
-    message.payload.status.kd = kd;
-    message.payload.status.adc_target_enabled = adc_target_enabled;
+    message.payload.status.status = snapshot.status;
+    message.payload.status.kp = snapshot.kp;
+    message.payload.status.ki = snapshot.ki;
+    message.payload.status.kd = snapshot.kd;
+    message.payload.status.adc_target_enabled = snapshot.adc_target_enabled;
     message.payload.status.tick_ms = tick_ms;
 
     return Comm_Service_PostMessage(&message);

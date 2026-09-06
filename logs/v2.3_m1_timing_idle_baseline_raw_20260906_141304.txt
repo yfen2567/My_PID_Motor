@@ -1,0 +1,91 @@
+LLCom v2.3.1 M1 idle timing baseline
+firmware_branch=v2.3.1-timing-observability
+firmware_commit=3aa18c2
+working_tree=uncommitted v2.3 timing changes; verify before release
+serial=115200,8N1,CRLF
+sample_count=20
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.3_m1_timing_idle_baseline_raw_20260906_141304.txt
+
+[2026-09-06 14:13:04] TEST_START M1 idle timing baseline
+[2026-09-06 14:13:04] PURPOSE Measure the no-motor baseline of the 10 ms ControlTask schedule.
+[2026-09-06 14:13:04] TX stop
+[2026-09-06 14:13:04] RX OK:STOPPED
+[2026-09-06 14:13:04] TX set target uart
+[2026-09-06 14:13:05] RX OK:TARGET_SOURCE_UART
+ms:14005,enable:0,State:IDLE,source:Uart,target:550,actual:0,delta:0,PWM:0,adc1:2198,adc2:2028,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:13:05] TX t=600
+[2026-09-06 14:13:05] RX OK:TARGET_SET
+[2026-09-06 14:13:05] TX status
+[2026-09-06 14:13:05] RX ms:14465,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2208,adc2:2019,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:13:06] RX ms:15005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2201,adc2:2445,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:13:06] EXPECT Baseline state should be enable=0, State=IDLE, PWM=0, fault=NONE.
+[2026-09-06 14:13:06] SAMPLE 1
+[2026-09-06 14:13:06] TX timing stats
+[2026-09-06 14:13:06] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:16
+[2026-09-06 14:13:06] SAMPLE 2
+[2026-09-06 14:13:06] TX timing stats
+[2026-09-06 14:13:06] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:16
+[2026-09-06 14:13:07] SAMPLE 3
+[2026-09-06 14:13:07] TX timing stats
+[2026-09-06 14:13:07] RX ms:16005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2332,adc2:2026,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+TIMING_STATS period_us:10001,exec_us:20,tick_exec_us:14,timeout_count:17
+[2026-09-06 14:13:07] SAMPLE 4
+[2026-09-06 14:13:07] TX timing stats
+[2026-09-06 14:13:07] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:17
+[2026-09-06 14:13:07] SAMPLE 5
+[2026-09-06 14:13:07] TX timing stats
+[2026-09-06 14:13:07] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:17
+[2026-09-06 14:13:07] SAMPLE 6
+[2026-09-06 14:13:07] TX timing stats
+[2026-09-06 14:13:08] RX TIMING_STATS period_us:9999,exec_us:20,tick_exec_us:14,timeout_count:17
+[2026-09-06 14:13:08] SAMPLE 7
+[2026-09-06 14:13:08] TX timing stats
+[2026-09-06 14:13:08] RX ms:17005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2195,adc2:2445,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+TIMING_STATS period_us:9999,exec_us:20,tick_exec_us:14,timeout_count:18
+[2026-09-06 14:13:08] SAMPLE 8
+[2026-09-06 14:13:08] TX timing stats
+[2026-09-06 14:13:08] RX TIMING_STATS period_us:10001,exec_us:20,tick_exec_us:14,timeout_count:19
+[2026-09-06 14:13:08] SAMPLE 9
+[2026-09-06 14:13:08] TX timing stats
+[2026-09-06 14:13:08] RX TIMING_STATS period_us:9999,exec_us:20,tick_exec_us:14,timeout_count:19
+[2026-09-06 14:13:08] SAMPLE 10
+[2026-09-06 14:13:08] TX timing stats
+[2026-09-06 14:13:09] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:19
+ms:18005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2332,adc2:2027,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:13:09] SAMPLE 11
+[2026-09-06 14:13:09] TX timing stats
+[2026-09-06 14:13:09] RX TIMING_STATS period_us:9999,exec_us:20,tick_exec_us:14,timeout_count:20
+[2026-09-06 14:13:09] SAMPLE 12
+[2026-09-06 14:13:09] TX timing stats
+[2026-09-06 14:13:09] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:20
+[2026-09-06 14:13:09] SAMPLE 13
+[2026-09-06 14:13:09] TX timing stats
+[2026-09-06 14:13:09] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:20
+[2026-09-06 14:13:10] SAMPLE 14
+[2026-09-06 14:13:10] TX timing stats
+[2026-09-06 14:13:10] RX ms:19005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2204,adc2:2453,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+TIMING_STATS period_us:9999,exec_us:20,tick_exec_us:14,timeout_count:21
+[2026-09-06 14:13:10] SAMPLE 15
+[2026-09-06 14:13:10] TX timing stats
+[2026-09-06 14:13:10] RX TIMING_STATS period_us:9999,exec_us:20,tick_exec_us:14,timeout_count:21
+[2026-09-06 14:13:10] SAMPLE 16
+[2026-09-06 14:13:10] TX timing stats
+[2026-09-06 14:13:10] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:21
+[2026-09-06 14:13:10] SAMPLE 17
+[2026-09-06 14:13:10] TX timing stats
+[2026-09-06 14:13:11] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:21
+[2026-09-06 14:13:11] RX ms:20005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2329,adc2:2022,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:13:11] SAMPLE 18
+[2026-09-06 14:13:11] TX timing stats
+[2026-09-06 14:13:11] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:22
+[2026-09-06 14:13:11] SAMPLE 19
+[2026-09-06 14:13:11] TX timing stats
+[2026-09-06 14:13:11] RX TIMING_STATS period_us:10002,exec_us:20,tick_exec_us:14,timeout_count:23
+[2026-09-06 14:13:11] SAMPLE 20
+[2026-09-06 14:13:11] TX timing stats
+[2026-09-06 14:13:11] RX TIMING_STATS period_us:10000,exec_us:20,tick_exec_us:14,timeout_count:23
+[2026-09-06 14:13:12] TX comm stats
+[2026-09-06 14:13:12] RX COMM_STATS rx_overflow:0,line_q_full:0,cmd_q_full:0,pool_fail:0,pool_max:1,tx_drop:0,tx_error:0,rx_restart_fail:0,max_line:15,comm_q:1/8,cmd_q:0/16
+ms:21005,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2198,adc2:2028,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:13:13] EXPECT period_us should be near 10000; timeout_count should not increase during idle baseline.
+[2026-09-06 14:13:13] TEST_DONE Review all TIMING_STATS samples and COMM_STATS.

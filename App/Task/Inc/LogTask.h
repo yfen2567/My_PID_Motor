@@ -13,5 +13,6 @@
 void StartLogTask(void *argument);
 bool LogTask_PostPeriodicStatus(void);
 bool LogTask_PostFaultSnapshot(void);
+bool LogTask_PostControlTimingStats(void);
 
 #endif /* TASK_INC_LOGTASK_H_ */

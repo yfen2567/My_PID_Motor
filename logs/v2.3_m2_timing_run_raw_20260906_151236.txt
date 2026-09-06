@@ -1,0 +1,110 @@
+LLCom v2.3.1 M2 running timing test
+firmware_branch=v2.3.1-timing-observability
+firmware_commit=3aa18c2
+working_tree=uncommitted v2.3 timing changes; verify before release
+serial=115200,8N1,CRLF
+target=600,source=UART
+sample_count=20
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.3_m2_timing_run_raw_20260906_151236.txt
+
+[2026-09-06 15:12:36] TEST_START M2 running timing
+[2026-09-06 15:12:36] PURPOSE Measure timing while the closed-loop motor control is running.
+[2026-09-06 15:12:36] SAFETY Stop and remove power immediately if noise, runaway, heat or fault appears.
+[2026-09-06 15:12:36] TX stop
+[2026-09-06 15:12:36] RX OK:STOPPED
+ms:4003,enable:0,State:IDLE,source:ADC,target:549,actual:0,delta:0,PWM:0,adc1:2145,adc2:2046,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:36] TX set target uart
+[2026-09-06 15:12:36] RX OK:TARGET_SOURCE_UART
+[2026-09-06 15:12:36] TX t=600
+[2026-09-06 15:12:36] RX OK:TARGET_SET
+[2026-09-06 15:12:37] TX status
+[2026-09-06 15:12:37] RX ms:4918,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2214,adc2:2450,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:5003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2326,adc2:2024,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:38] CASE run and settle
+[2026-09-06 15:12:38] TX run=1
+[2026-09-06 15:12:38] RX OK:RUN
+ms:6003,enable:1,State:RUN,source:Uart,target:600,actual:857,delta:3,PWM:115,adc1:2206,adc2:2027,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:39] RX ms:7003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2195,adc2:2441,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:40] TX status
+[2026-09-06 15:12:40] RX ms:7948,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2327,adc2:2021,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:8003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2334,adc2:2024,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:41] EXPECT enable=1, State=RUN, source=Uart, target=600, fault=NONE.
+[2026-09-06 15:12:41] SAMPLE 1
+[2026-09-06 15:12:41] TX timing stats
+[2026-09-06 15:12:41] RX TIMING_STATS period_us:10000,exec_us:65,tick_exec_us:58,timeout_count:0
+ms:9003,enable:1,State:RUN,source:Uart,target:600,actual:600,delta:3,PWM:128,adc1:2198,adc2:2443,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:41] SAMPLE 2
+[2026-09-06 15:12:41] TX timing stats
+[2026-09-06 15:12:41] RX TIMING_STATS period_us:10002,exec_us:63,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:41] SAMPLE 3
+[2026-09-06 15:12:41] TX timing stats
+[2026-09-06 15:12:41] RX TIMING_STATS period_us:10000,exec_us:65,tick_exec_us:58,timeout_count:0
+[2026-09-06 15:12:42] SAMPLE 4
+[2026-09-06 15:12:42] TX timing stats
+[2026-09-06 15:12:42] RX TIMING_STATS period_us:9999,exec_us:65,tick_exec_us:59,timeout_count:0
+ms:10003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2324,adc2:2023,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:42] SAMPLE 5
+[2026-09-06 15:12:42] TX timing stats
+[2026-09-06 15:12:42] RX TIMING_STATS period_us:9999,exec_us:60,tick_exec_us:54,timeout_count:0
+[2026-09-06 15:12:42] SAMPLE 6
+[2026-09-06 15:12:42] TX timing stats
+[2026-09-06 15:12:42] RX TIMING_STATS period_us:10000,exec_us:62,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:43] SAMPLE 7
+[2026-09-06 15:12:43] TX timing stats
+[2026-09-06 15:12:43] RX TIMING_STATS period_us:10000,exec_us:63,tick_exec_us:56,timeout_count:0
+ms:11003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2195,adc2:2444,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:43] SAMPLE 8
+[2026-09-06 15:12:43] TX timing stats
+[2026-09-06 15:12:43] RX TIMING_STATS period_us:9999,exec_us:63,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:43] SAMPLE 9
+[2026-09-06 15:12:43] TX timing stats
+[2026-09-06 15:12:43] RX TIMING_STATS period_us:10000,exec_us:65,tick_exec_us:58,timeout_count:0
+[2026-09-06 15:12:44] SAMPLE 10
+[2026-09-06 15:12:44] TX timing stats
+[2026-09-06 15:12:44] RX TIMING_STATS period_us:10000,exec_us:62,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:44] RX ms:12003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:3,PWM:130,adc1:2323,adc2:2022,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:44] SAMPLE 11
+[2026-09-06 15:12:44] TX timing stats
+[2026-09-06 15:12:44] RX TIMING_STATS period_us:10000,exec_us:65,tick_exec_us:58,timeout_count:0
+[2026-09-06 15:12:44] SAMPLE 12
+[2026-09-06 15:12:44] TX timing stats
+[2026-09-06 15:12:44] RX TIMING_STATS period_us:10000,exec_us:60,tick_exec_us:54,timeout_count:0
+[2026-09-06 15:12:45] SAMPLE 13
+[2026-09-06 15:12:45] TX timing stats
+[2026-09-06 15:12:45] RX TIMING_STATS period_us:9999,exec_us:62,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:45] RX ms:13003,enable:1,State:RUN,source:Uart,target:600,actual:600,delta:3,PWM:128,adc1:2199,adc2:2023,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:45] SAMPLE 14
+[2026-09-06 15:12:45] TX timing stats
+[2026-09-06 15:12:45] RX TIMING_STATS period_us:9999,exec_us:63,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:45] SAMPLE 15
+[2026-09-06 15:12:45] TX timing stats
+[2026-09-06 15:12:45] RX TIMING_STATS period_us:9999,exec_us:60,tick_exec_us:54,timeout_count:0
+[2026-09-06 15:12:46] SAMPLE 16
+[2026-09-06 15:12:46] TX timing stats
+[2026-09-06 15:12:46] RX TIMING_STATS period_us:10000,exec_us:63,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:46] RX ms:14003,enable:1,State:RUN,source:Uart,target:600,actual:557,delta:2,PWM:130,adc1:2195,adc2:2441,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:46] SAMPLE 17
+[2026-09-06 15:12:46] TX timing stats
+[2026-09-06 15:12:46] RX TIMING_STATS period_us:10000,exec_us:62,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:46] SAMPLE 18
+[2026-09-06 15:12:46] TX timing stats
+[2026-09-06 15:12:46] RX TIMING_STATS period_us:10000,exec_us:63,tick_exec_us:56,timeout_count:0
+[2026-09-06 15:12:47] SAMPLE 19
+[2026-09-06 15:12:47] TX timing stats
+[2026-09-06 15:12:47] RX TIMING_STATS period_us:9999,exec_us:65,tick_exec_us:59,timeout_count:0
+[2026-09-06 15:12:47] SAMPLE 20
+[2026-09-06 15:12:47] TX timing stats
+[2026-09-06 15:12:47] RX ms:15003,enable:1,State:RUN,source:Uart,target:600,actual:600,delta:3,PWM:128,adc1:2330,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:47] RX TIMING_STATS period_us:10000,exec_us:60,tick_exec_us:54,timeout_count:0
+[2026-09-06 15:12:47] TX comm stats
+[2026-09-06 15:12:47] RX COMM_STATS rx_overflow:0,line_q_full:0,cmd_q_full:0,pool_fail:0,pool_max:1,tx_drop:0,tx_error:0,rx_restart_fail:0,max_line:15,comm_q:1/8,cmd_q:0/16
+[2026-09-06 15:12:48] RX ms:16003,enable:1,State:RUN,source:Uart,target:600,actual:600,delta:3,PWM:128,adc1:2196,adc2:2443,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:48] CASE stop and settle
+[2026-09-06 15:12:48] TX stop
+[2026-09-06 15:12:48] RX OK:STOPPED
+[2026-09-06 15:12:49] RX ms:17003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2320,adc2:2019,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:49] TX status
+[2026-09-06 15:12:49] RX ms:17193,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2203,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:50] RX ms:18003,enable:0,State:IDLE,source:Uart,target:600,actual:0,delta:0,PWM:0,adc1:2199,adc2:2444,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 15:12:50] EXPECT enable=0, State=IDLE, PWM=0, fault=NONE after stop.
+[2026-09-06 15:12:50] TEST_DONE Review running samples, final status and COMM_STATS.

@@ -1,0 +1,30 @@
+LLCom v2.3.1 M0 timing-observability smoke test
+firmware_branch=v2.3.1-timing-observability
+firmware_commit=3aa18c2
+working_tree=uncommitted v2.3 timing changes; verify before release
+serial=115200,8N1,CRLF
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.3_m0_timing_smoke_raw_20260906_140656.txt
+
+[2026-09-06 14:06:56] TEST_START M0 timing-observability smoke
+[2026-09-06 14:06:56] PURPOSE Verify timing stats command, snapshot, queue and UART output chain.
+[2026-09-06 14:06:56] TX stop
+[2026-09-06 14:06:56] RX OK:STOPPED
+ms:4003,enable:0,State:IDLE,source:ADC,target:550,actual:0,delta:0,PWM:0,adc1:2200,adc2:2447,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:06:56] TX status
+[2026-09-06 14:06:57] RX ms:4438,enable:0,State:IDLE,source:ADC,target:550,actual:0,delta:0,PWM:0,adc1:2213,adc2:2032,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:06:57] RX ms:5003,enable:0,State:IDLE,source:ADC,target:553,actual:0,delta:0,PWM:0,adc1:2322,adc2:2021,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:06:57] SAMPLE 1
+[2026-09-06 14:06:57] TX timing stats
+[2026-09-06 14:06:58] RX TIMING_STATS period_us:9999,exec_us:28,tick_exec_us:22,timeout_count:6
+[2026-09-06 14:06:58] SAMPLE 2
+[2026-09-06 14:06:58] TX timing stats
+[2026-09-06 14:06:58] RX TIMING_STATS period_us:10000,exec_us:28,tick_exec_us:22,timeout_count:6
+ms:6003,enable:0,State:IDLE,source:ADC,target:551,actual:0,delta:0,PWM:0,adc1:2204,adc2:2024,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:06:58] SAMPLE 3
+[2026-09-06 14:06:58] TX timing stats
+[2026-09-06 14:06:59] RX TIMING_STATS period_us:9999,exec_us:28,tick_exec_us:22,timeout_count:7
+[2026-09-06 14:06:59] TX comm stats
+[2026-09-06 14:06:59] RX COMM_STATS rx_overflow:0,line_q_full:0,cmd_q_full:0,pool_fail:0,pool_max:1,tx_drop:0,tx_error:0,rx_restart_fail:0,max_line:12,comm_q:1/8,cmd_q:0/16
+ms:7003,enable:0,State:IDLE,source:ADC,target:549,actual:0,delta:0,PWM:0,adc1:2190,adc2:2439,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 14:07:00] EXPECT Three complete TIMING_STATS lines with numeric fields; no parse error.
+[2026-09-06 14:07:00] TEST_DONE Review TIMING_STATS and COMM_STATS in the raw log.

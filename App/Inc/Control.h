@@ -42,6 +42,14 @@ typedef struct{
 	 uint8_t enable;
 }Motor_Status_t;
 
+typedef struct {
+    Motor_Status_t status;
+    float kp;
+    float ki;
+    float kd;
+    uint8_t adc_target_enabled;
+} Control_TelemetrySnapshot_t;
+
 
 typedef struct
 {
@@ -71,8 +79,9 @@ uint8_t Control_IsAdcTargetEnabled(void);
 void Control_PID_Rst();
 void Control_ResetFault();
 void Control_ReportFault(FaultCode_t fault);
-FaultSnapshot_t Control_GetFaultShot();
+bool Control_GetFaultShot(FaultSnapshot_t *out);
 uint8_t Control_HasFaultShot();
 App_Cmd_ExecResult_t Control_ApplyCommand(const App_Cmd_t *cmd);
+void Control_GetTelemetrySnapshot(Control_TelemetrySnapshot_t* snapshot);
 #endif /* INC_CONTROL_H_ */
 

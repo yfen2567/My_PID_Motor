@@ -59,9 +59,7 @@ typedef struct
 
 bool Comm_Service_PostNotice(Uart_ProtocolNotice_t notice);
 bool Comm_Service_PostParseError(App_Cmd_ParseResult_t result);
-bool Comm_Service_PostStatus(const Motor_Status_t *status,
-                             float kp, float ki, float kd,
-                             uint8_t adc_target_enabled,
+bool Comm_Service_PostStatus(const Control_TelemetrySnapshot_t snapshot,
                              uint32_t tick_ms);
 bool Comm_Service_PostFaultSnapshot(uint8_t valid,
                                     const FaultSnapshot_t *snapshot);

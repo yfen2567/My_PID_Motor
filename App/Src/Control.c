@@ -319,6 +319,32 @@ void Control_GetPID(float *kp, float *ki, float *kd){
 	__enable_irq();
 }
 
+void Control_GetTelemetrySnapshot(Control_TelemetrySnapshot_t* snapshot)
+{
+	if (snapshot == NULL)
+	{
+	    return;
+	}
+	__disable_irq();
+	(snapshot->status).target_speed=s_motor_status.target_speed;
+	(snapshot->status).actual_speed=s_motor_status.actual_speed;
+	(snapshot->status).PWM=s_motor_status.PWM;
+	(snapshot->status).state=s_motor_status.state;
+	(snapshot->status).adc_raw=s_motor_status.adc_raw;
+	(snapshot->status).adc_aux_raw=s_motor_status.adc_aux_raw;
+	(snapshot->status).adc_filtered=s_motor_status.adc_filtered;
+	(snapshot->status).encoder_delta=s_motor_status.encoder_delta;
+	(snapshot->status).fault=s_motor_status.fault;
+	(snapshot->status).enable=s_motor_status.enable;
+	snapshot->adc_target_enabled=s_adc_target_enable;
+
+	snapshot->kp=s_pid.kp;
+	snapshot->ki=s_pid.ki;
+	snapshot->kd=s_pid.kd;
+
+	__enable_irq();
+}
+
 
 //设置数据
 
@@ -417,9 +443,25 @@ uint8_t Control_HasFaultShot(){
 	return s_fault_snapshot.valid;
 }
 
-FaultSnapshot_t Control_GetFaultShot(){
-		return s_fault_snapshot;
+bool Control_GetFaultShot(FaultSnapshot_t *out){
+    bool valid = false;
 
+    if (out == NULL)
+    {
+        return false;
+    }
+
+    __disable_irq();
+
+    if (s_fault_snapshot.valid != 0U)
+    {
+        *out = s_fault_snapshot;
+        valid = true;
+    }
+
+    __enable_irq();
+
+    return valid;
 }
 
 
