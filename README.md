@@ -52,6 +52,7 @@
 
 v2.3.1 时序观测证据：
 
+- [v2.3.1 Release Notes](reports/v2.3.1_release_notes.md)
 - [v2.3.1 范围说明](reports/v2.3.1_scope.md)
 - [M0 时序观测链路报告](reports/v2.3_m0_timing_smoke_report.md)
 - [M1 IDLE 基线报告](reports/v2.3_m1_timing_idle_baseline_report.md)
