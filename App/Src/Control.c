@@ -389,6 +389,7 @@ void Control_SetEnable(uint8_t enable){
 
 }
 
+//神了今天测试目标速度从800到500居然经常就是直接停止转动了，但偶尔也能正常转动。这个偶发停转原因根本找不到，只能设计一个停转恢复的功能来兜住这个bug
 void Control_SetTargetSpeed(int32_t target_speed){
 	target_speed=Control_TargetSpeed_Limit(target_speed);
 	__disable_irq();

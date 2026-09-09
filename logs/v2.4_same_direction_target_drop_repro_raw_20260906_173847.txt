@@ -1,0 +1,237 @@
+LLCom v2.4 same-direction target-drop reproduction
+firmware_branch=v2.4
+firmware_commit=f49ecb5
+baseline_pid=kp=0.05,ki=0,kd=0
+serial=115200,8N1,CRLF
+sample_interval_ms=50
+script_log=F:/hal_stm32_project/My_PID_Motor/logs/v2.4_same_direction_target_drop_repro_raw_20260906_173847.txt
+
+[2026-09-06 17:38:47] TEST_START same-direction target-drop reproduction
+[2026-09-06 17:38:47] PURPOSE Compare 800->500 while running against direct start at 500.
+[2026-09-06 17:38:47] SUSPECT After same-direction target drop: actual may become 0 while PWM remains near 140 and State remains RUN.
+[2026-09-06 17:38:47] SAFETY Stop and remove power immediately if noise, runaway, heat or fault appears.
+[2026-09-06 17:38:47] TX stop
+[2026-09-06 17:38:47] RX OK:STOPPED
+[2026-09-06 17:38:48] RX ms:9003,enable:0,State:IDLE,source:ADC,target:555,actual:0,delta:0,PWM:0,adc1:2336,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:48] TX set target uart
+[2026-09-06 17:38:48] RX OK:TARGET_SOURCE_UART
+[2026-09-06 17:38:48] TX kp=0.05
+[2026-09-06 17:38:48] RX OK:KP_SET
+[2026-09-06 17:38:49] RX ms:10003,enable:0,State:IDLE,source:Uart,target:551,actual:0,delta:0,PWM:0,adc1:2216,adc2:2460,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:49] TX ki=0
+[2026-09-06 17:38:49] RX OK:KI_SET
+[2026-09-06 17:38:49] TX kd=0
+[2026-09-06 17:38:49] RX OK:KD_SET
+[2026-09-06 17:38:50] RX ms:11003,enable:0,State:IDLE,source:Uart,target:551,actual:0,delta:0,PWM:0,adc1:2339,adc2:2463,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:50] CASE A: run at 800 then drop to 500
+[2026-09-06 17:38:50] TX t=800
+[2026-09-06 17:38:50] RX OK:TARGET_SET
+[2026-09-06 17:38:50] TX run=1
+[2026-09-06 17:38:50] RX OK:RUN
+[2026-09-06 17:38:51] RX ms:12003,enable:1,State:RUN,source:Uart,target:800,actual:771,delta:3,PWM:154,adc1:2337,adc2:2038,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:52] RX ms:13003,enable:1,State:RUN,source:Uart,target:800,actual:814,delta:4,PWM:152,adc1:2208,adc2:2448,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:52] TX status
+[2026-09-06 17:38:52] RX ms:13793,enable:1,State:RUN,source:Uart,target:800,actual:771,delta:4,PWM:154,adc1:2322,adc2:2023,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:53] RX ms:14003,enable:1,State:RUN,source:Uart,target:800,actual:814,delta:4,PWM:152,adc1:2335,adc2:2036,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:53] EXPECT Before drop: State=RUN, target=800, actual should be nonzero.
+[2026-09-06 17:38:53] TX t=500
+[2026-09-06 17:38:53] RX OK:TARGET_SET
+[2026-09-06 17:38:54] PHASE_START DROP_800_TO_500,duration_ms=2000
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] RX ms:15003,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2210,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:15038,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2324,adc2:2451,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] RX ms:15143,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2210,adc2:2456,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] RX ms:15238,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:3,PWM:118,adc1:2324,adc2:2020,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:15328,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2210,adc2:2457,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] RX ms:15428,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2217,adc2:2458,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:54] RX ms:15533,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2198,adc2:2448,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:15618,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:1,PWM:120,adc1:2325,adc2:2022,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:15718,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2205,adc2:2451,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:54] TX status
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] RX ms:15833,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2322,adc2:2022,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:15943,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2334,adc2:2465,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16003,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2336,adc2:2032,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16048,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:3,PWM:120,adc1:2331,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16143,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2335,adc2:2028,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] RX ms:16253,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2322,adc2:2022,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] RX ms:16348,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2335,adc2:2034,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] RX ms:16438,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:1,PWM:120,adc1:2324,adc2:2455,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16533,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2322,adc2:2022,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:55] TX status
+[2026-09-06 17:38:56] RX ms:16618,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2196,adc2:2446,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16728,enable:1,State:RUN,source:Uart,target:500,actual:342,delta:2,PWM:122,adc1:2207,adc2:2451,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16828,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2208,adc2:2453,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:16923,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2338,adc2:2465,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] RX ms:17003,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:3,PWM:120,adc1:2207,adc2:2456,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:17023,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2336,adc2:2034,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] RX ms:17118,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:1,PWM:120,adc1:2205,adc2:2454,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:17203,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2334,adc2:2465,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:17298,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2326,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] RX ms:17393,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2205,adc2:2454,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] RX ms:17483,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2340,adc2:2465,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] RX ms:17578,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2330,adc2:2031,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] TX status
+[2026-09-06 17:38:56] RX ms:17673,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:2,PWM:120,adc1:2212,adc2:2454,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:17768,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2338,adc2:2465,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:17863,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2337,adc2:2036,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] RX ms:17973,enable:1,State:RUN,source:Uart,target:500,actual:342,delta:2,PWM:122,adc1:2328,adc2:2457,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:18003,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2343,adc2:2463,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:18068,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2334,adc2:2035,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] RX ms:18173,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2327,adc2:2026,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] RX ms:18298,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2201,adc2:2448,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] RX ms:18393,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2326,adc2:2457,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:18483,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2334,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] RX ms:18588,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2217,adc2:2462,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:57] RX ms:18678,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2328,adc2:2459,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:57] TX status
+[2026-09-06 17:38:58] PHASE_END DROP_800_TO_500
+[2026-09-06 17:38:58] TX stop
+[2026-09-06 17:38:58] RX ms:18783,enable:1,State:RUN,source:Uart,target:500,actual:342,delta:2,PWM:122,adc1:2215,adc2:2458,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:18898,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2200,adc2:2443,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+OK:STOPPED
+ms:19003,enable:0,State:IDLE,source:Uart,target:500,actual:428,delta:1,PWM:0,adc1:2337,adc2:2035,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:58] CASE B: direct start at 500 control
+[2026-09-06 17:38:58] TX t=500
+[2026-09-06 17:38:58] RX OK:TARGET_SET
+[2026-09-06 17:38:59] RX ms:20003,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2210,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:38:59] TX run=1
+[2026-09-06 17:38:59] RX OK:RUN
+[2026-09-06 17:39:00] RX ms:21003,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2331,adc2:2032,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:01] RX ms:22003,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:2,PWM:120,adc1:2210,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:01] TX status
+[2026-09-06 17:39:01] RX ms:22243,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2334,adc2:2465,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:01] EXPECT Direct start: State=RUN, target=500, actual should be nonzero or show startup behavior.
+[2026-09-06 17:39:01] PHASE_START DIRECT_START_500,duration_ms=2000
+[2026-09-06 17:39:01] TX status
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:22958,enable:1,State:RUN,source:Uart,target:500,actual:342,delta:2,PWM:122,adc1:2202,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:23003,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2336,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:23048,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2331,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23143,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2333,adc2:2032,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23243,enable:1,State:RUN,source:Uart,target:500,actual:300,delta:2,PWM:125,adc1:2330,adc2:2033,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:23338,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2196,adc2:2447,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23438,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:2,PWM:114,adc1:2328,adc2:2457,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23543,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:2,PWM:120,adc1:2209,adc2:2450,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23643,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:1,PWM:120,adc1:2332,adc2:2463,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23758,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2198,adc2:2447,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:02] RX ms:23868,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2207,adc2:2451,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:02] TX status
+[2026-09-06 17:39:03] RX ms:23973,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2209,adc2:2454,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:24003,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2203,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] RX ms:24093,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:3,PWM:120,adc1:2329,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] RX ms:24198,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2327,adc2:2024,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] RX ms:24303,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2331,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] RX ms:24408,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2333,adc2:2026,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:24508,enable:1,State:RUN,source:Uart,target:500,actual:342,delta:2,PWM:122,adc1:2330,adc2:2031,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] RX ms:24613,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2327,adc2:2026,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] TX status
+[2026-09-06 17:39:03] RX ms:24703,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2210,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:24798,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:3,PWM:120,adc1:2329,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:24893,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2330,adc2:2026,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:24983,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2208,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:25003,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2337,adc2:2460,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:25088,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2204,adc2:2451,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:25213,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:3,PWM:120,adc1:2330,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:25323,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:1,PWM:120,adc1:2332,adc2:2459,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:25413,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2330,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:25518,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2212,adc2:2455,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:25608,enable:1,State:RUN,source:Uart,target:500,actual:385,delta:1,PWM:120,adc1:2332,adc2:2459,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:04] RX ms:25713,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2207,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:04] TX status
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:25823,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2208,adc2:2452,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:25938,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2212,adc2:2455,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:26003,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:2,PWM:118,adc1:2333,adc2:2035,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:26043,enable:1,State:RUN,source:Uart,target:500,actual:300,delta:2,PWM:125,adc1:2328,adc2:2029,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:26143,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2213,adc2:2455,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:26233,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2334,adc2:2459,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:26333,enable:1,State:RUN,source:Uart,target:500,actual:300,delta:2,PWM:125,adc1:2330,adc2:2030,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:26423,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2212,adc2:2455,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:26523,enable:1,State:RUN,source:Uart,target:500,actual:514,delta:3,PWM:114,adc1:2202,adc2:2453,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:26653,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2330,adc2:2459,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:05] RX ms:26753,enable:1,State:RUN,source:Uart,target:500,actual:300,delta:2,PWM:125,adc1:2327,adc2:2028,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:05] TX status
+[2026-09-06 17:39:06] PHASE_END DIRECT_START_500
+[2026-09-06 17:39:06] CASE final stop
+[2026-09-06 17:39:06] TX stop
+[2026-09-06 17:39:06] RX ms:26848,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:3,PWM:116,adc1:2213,adc2:2455,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:26938,enable:1,State:RUN,source:Uart,target:500,actual:471,delta:2,PWM:116,adc1:2332,adc2:2459,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+ms:27003,enable:1,State:RUN,source:Uart,target:500,actual:428,delta:1,PWM:118,adc1:2203,adc2:2448,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+OK:STOPPED
+[2026-09-06 17:39:06] TX status
+[2026-09-06 17:39:06] RX ms:27753,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2212,adc2:2458,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:07] RX ms:28003,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2325,adc2:2028,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:07] TX get fault
+[2026-09-06 17:39:07] RX FAULT_SNAPSHOT_NONE
+[2026-09-06 17:39:08] RX ms:29003,enable:0,State:IDLE,source:Uart,target:500,actual:0,delta:0,PWM:0,adc1:2214,adc2:2451,fault:NONE,kp:0.050,ki:0.000,kd:0.000
+[2026-09-06 17:39:08] EXPECT Final state: enable=0, State=IDLE, PWM=0, fault=NONE.
+[2026-09-06 17:39:08] ANALYSIS Compare DROP_800_TO_500 with DIRECT_START_500; focus on actual, delta, PWM, State and fault.
+[2026-09-06 17:39:08] TEST_DONE Review raw status lines; no automatic PASS/FAIL was applied.
